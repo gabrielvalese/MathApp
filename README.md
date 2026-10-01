@@ -1,4 +1,4 @@
-# Projeto-Final---Mobile
+# MathApp
 
 ## Membros:
  - Cristhian Santana
