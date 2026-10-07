@@ -1,0 +1,92 @@
+CREATE TABLE Turma 
+( 
+ id INT PRIMARY KEY,  
+ nome INT,  
+ chave INT,  
+ descricao INT,  
+); 
+
+CREATE TABLE Questão 
+( 
+ id INT PRIMARY KEY,  
+ enunciado INT,  
+); 
+
+CREATE TABLE Usuario 
+( 
+ nascimento INT,  
+ id INT PRIMARY KEY,  
+ nome INT,  
+ email INT,  
+ senha INT,  
+); 
+
+CREATE TABLE Estudante 
+( 
+ id INT PRIMARY KEY,  
+); 
+
+CREATE TABLE Professor 
+( 
+ id INT PRIMARY KEY,  
+); 
+
+CREATE TABLE Questao_Vestibular 
+( 
+ Dificuldade INT,  
+ instituicao INT,  
+); 
+
+CREATE TABLE Questao_Introdutoria 
+( 
+); 
+
+CREATE TABLE Simulado 
+( 
+ id INT PRIMARY KEY,  
+ numero_questoes INT,  
+ tempo_limite INT,  
+ tempo_utilizado INT,  
+ status INT,  
+); 
+
+CREATE TABLE Competicao 
+( 
+ id INT PRIMARY KEY,  
+ nome INT,  
+ descricao INT,  
+ chave INT,  
+); 
+
+CREATE TABLE Passo_a_Passo 
+( 
+ id INT PRIMARY KEY,  
+ ordem_passo INT,  
+ texto INT,  
+ resposta_correta INT,  
+); 
+
+CREATE TABLE Conteudo 
+( 
+ nome INT,  
+ id INT PRIMARY KEY,  
+ dificuldade INT,  
+ descricao INT,  
+); 
+
+CREATE TABLE Admin 
+( 
+ id INT PRIMARY KEY,  
+); 
+
+CREATE TABLE Alternativa 
+( 
+ id INT PRIMARY KEY,  
+ letra INT,  
+ correta INT,  
+ texto INT,  
+); 
+
+ALTER TABLE Estudante ADD FOREIGN KEY(id) REFERENCES Usuario (id)
+ALTER TABLE Professor ADD FOREIGN KEY(id) REFERENCES Usuario (id)
+ALTER TABLE Admin ADD FOREIGN KEY(id) REFERENCES Usuario (id)
