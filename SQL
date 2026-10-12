@@ -46,6 +46,50 @@ CREATE TABLE Competicao (
 
 
 
+CREATE TABLE Simulado (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ tempo_limite INT,
+ numero_questoes INT
+ );
+
+CREATE TABLE Questao (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    enunciado TEXT NOT NULL
+);
+
+CREATE TABLE Questao_Vestibular (
+    id INT PRIMARY KEY,
+    instituicao VARCHAR(100),
+    dificuldade ENUM('facil', 'medio', 'dificil') NOT NULL,
+    FOREIGN KEY (id) REFERENCES Questao(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Questao_Introdutoria (
+    id INT PRIMARY KEY,
+    FOREIGN KEY (id) REFERENCES Questao(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Alternativa (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    questao_id INT,
+    texto TEXT NOT NULL,
+    letra CHAR(1) NOT NULL,
+    correta BOOLEAN NOT NULL,
+
+    FOREIGN KEY (questao_id) REFERENCES Questao(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Conteudo (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  dificuldade ENUM('facil', 'medio', 'dificil') NOT NULL,
+  descricao VARCHAR(400),
+  nome VARCHAR(50)
+);
+
+
+CREATE
+
+
 CREATE TABLE Estudante_Competicao (
   id_estudante INT,
   id_competicao INT,
