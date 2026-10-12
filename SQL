@@ -1,0 +1,45 @@
+-- 1. Tabela Mãe (Super-tipo Usuário)
+CREATE TABLE usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    nascimento DATE NOT NULL
+);
+
+-- 2. Sub-tipo: Estudante
+CREATE TABLE estudante (
+    id INT PRIMARY KEY,
+    FOREIGN KEY (id) REFERENCES usuario(id) ON DELETE CASCADE
+);
+
+-- 3. Sub-tipo: Professor
+CREATE TABLE professor (
+    id INT PRIMARY KEY,
+    FOREIGN KEY (id) REFERENCES usuario(id) ON DELETE CASCADE
+);
+
+-- 4. Sub-tipo: Admin
+CREATE TABLE admin (
+    id INT PRIMARY KEY,
+    FOREIGN KEY (id) REFERENCES usuario(id) ON DELETE CASCADE
+);
+
+-- 5. Tabela de Competição
+CREATE TABLE Competicao (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  descricao VARCHAR(600),
+  nome VARCHAR(60),
+  chave VARCHAR(8)
+);
+
+-- 6. Tabela Associativa (Relacionamento N para N entre Estudante e Competição)
+CREATE TABLE Estudante_Competicao (
+  id_estudante INT,
+  id_competicao INT,
+  
+  PRIMARY KEY (id_estudante, id_competicao),
+  
+  FOREIGN KEY (id_estudante) REFERENCES estudante(id) ON DELETE CASCADE,
+  FOREIGN KEY (id_competicao) REFERENCES Competicao(id) ON DELETE CASCADE
+);
