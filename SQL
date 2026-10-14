@@ -33,7 +33,7 @@ CREATE TABLE Turma (
   id INT AUTO_INCREMENT PRIMARY KEY,
   descricao VARCHAR(600),
   nome VARCHAR(60),
-  chave VARCHAR(8)
+  chave VARCHAR(8),
   id_professor INT,
   FOREIGN KEY (id_professor) REFERENCES Professor(id) OND DELETE CASCADE
 );
@@ -46,7 +46,7 @@ CREATE TABLE Competicao (
   nome VARCHAR(60),
   chave VARCHAR(8),
   id_professor INT,
-  FOREIGN KEY (id_professor) REFERENCES Professor(id) OND DELETE CASCADE
+  FOREIGN KEY (id_professor) REFERENCES Professor(id) ON DELETE CASCADE
 );
 
 
@@ -92,12 +92,12 @@ CREATE TABLE Conteudo (
 );
 
 
-CREATE Passo_a_Passo (
+CREATE TABLE Passo_a_Passo (
     id INT AUTO_INCREMENT PRIMARY KEY,
     questao_id INT NOT NULL,
     ordem_passo VARCHAR(10) NOT NULL,
     texto TEXT NOT NULL,
-    resposta_correta VARCHAR(60) NOT NULL
+    resposta_correta VARCHAR(60) NOT NULL,
     FOREIGN KEY (questao_id) REFERENCES questao_introdutoria(id) ON DELETE CASCADE
 )
 
