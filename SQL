@@ -87,7 +87,13 @@ CREATE TABLE Conteudo (
 );
 
 
-CREATE
+CREATE Passo_a_Passo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ordem_passo VARCHAR(10) NOT NULL,
+    texto TEXT NOT NULL,
+    resposta_correta VARCHAR(280) NOT NULL,
+
+)
 
 
 CREATE TABLE Estudante_Competicao (
