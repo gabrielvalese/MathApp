@@ -54,7 +54,9 @@ CREATE TABLE Competicao (
 CREATE TABLE Simulado (
  id INT AUTO_INCREMENT PRIMARY KEY,
  tempo_limite INT,
- numero_questoes INT
+ numero_questoes INT,
+ id_aluno INT,
+ FOREIGN KEY (id_aluno) REFERENCES Aluno(id) ON DELETE CASCADE
  );
 
 CREATE TABLE Questao (
@@ -169,4 +171,37 @@ CREATE TABLE Questao_Conteudo (
   
     FOREIGN KEY (id_questao) REFERENCES Questao(id) ON DELETE CASCADE,
     FOREIGN KEY (id_conteudo) REFERENCES Conteudo(id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE Simulado_Questao (
+    id_questaovest INT,
+    id_simulado INT,
+  
+    PRIMARY KEY (id_questaovest, id_simulado),
+  
+    FOREIGN KEY (id_questaovest) REFERENCES Questao_Vestibular(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_simulado) REFERENCES Simulado(id) ON DELETE CASCADE
+)
+
+CREATE TABLE Competicao_Questao (
+    id_questaovest INT,
+    id_competicao INT,
+  
+    PRIMARY KEY (id_questaovest, id_competicao),
+  
+    FOREIGN KEY (id_questaovest) REFERENCES Questao_Vestibular(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_competicao) REFERENCES Competicao(id) ON DELETE CASCADE
+)
+
+CREATE TABLE Turma_Questao (
+    id_questao INT,
+    id_turma INT,
+  
+    PRIMARY KEY (id_questao, id_turma),
+  
+    FOREIGN KEY (id_questao) REFERENCES Questao(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_turma) REFERENCES Turma(id) ON DELETE CASCADE
+
+
 )
