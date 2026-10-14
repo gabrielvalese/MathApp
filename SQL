@@ -35,7 +35,7 @@ CREATE TABLE Turma (
   nome VARCHAR(60),
   chave VARCHAR(8),
   id_professor INT,
-  FOREIGN KEY (id_professor) REFERENCES Professor(id) OND DELETE CASCADE
+  FOREIGN KEY (id_professor) REFERENCES Professor(id) ON DELETE CASCADE
 );
 
 
@@ -55,8 +55,8 @@ CREATE TABLE Simulado (
  id INT AUTO_INCREMENT PRIMARY KEY,
  tempo_limite INT,
  numero_questoes INT,
- id_aluno INT,
- FOREIGN KEY (id_aluno) REFERENCES Aluno(id) ON DELETE CASCADE
+ id_estudante INT,
+ FOREIGN KEY (id_estudante) REFERENCES Estudante(id) ON DELETE CASCADE
  );
 
 CREATE TABLE Questao (
@@ -101,7 +101,7 @@ CREATE TABLE Passo_a_Passo (
     texto TEXT NOT NULL,
     resposta_correta VARCHAR(60) NOT NULL,
     FOREIGN KEY (questao_id) REFERENCES questao_introdutoria(id) ON DELETE CASCADE
-)
+);
 
 
 CREATE TABLE Estudante_Competicao (
@@ -136,7 +136,7 @@ CREATE TABLE Estudante_Questao (
 
     FOREIGN KEY (id_estudante) REFERENCES Estudante(id) ON DELETE CASCADE,
     FOREIGN KEY (id_questao) REFERENCES Questao(id) ON DELETE CASCADE
-)
+);
 
 
 CREATE TABLE Estudante_Passo (
@@ -150,7 +150,7 @@ CREATE TABLE Estudante_Passo (
 
     FOREIGN KEY (id_estudante) REFERENCES Estudante(id) ON DELETE CASCADE,
     FOREIGN KEY (id_passo) REFERENCES Passo_a_Passo(id) ON DELETE CASCADE
-)
+);
 
 
 CREATE TABLE Questao_Passo (
@@ -161,7 +161,7 @@ CREATE TABLE Questao_Passo (
   
     FOREIGN KEY (id_questao) REFERENCES Questao_Introdutoria(id) ON DELETE CASCADE,
     FOREIGN KEY (id_passo) REFERENCES Passo_a_Passo(id) ON DELETE CASCADE
-)
+);
 
 CREATE TABLE Questao_Conteudo (
     id_questao INT,
@@ -171,7 +171,7 @@ CREATE TABLE Questao_Conteudo (
   
     FOREIGN KEY (id_questao) REFERENCES Questao(id) ON DELETE CASCADE,
     FOREIGN KEY (id_conteudo) REFERENCES Conteudo(id) ON DELETE CASCADE
-)
+);
 
 
 CREATE TABLE Simulado_Questao (
@@ -182,7 +182,7 @@ CREATE TABLE Simulado_Questao (
   
     FOREIGN KEY (id_questaovest) REFERENCES Questao_Vestibular(id) ON DELETE CASCADE,
     FOREIGN KEY (id_simulado) REFERENCES Simulado(id) ON DELETE CASCADE
-)
+);
 
 CREATE TABLE Competicao_Questao (
     id_questaovest INT,
@@ -192,7 +192,7 @@ CREATE TABLE Competicao_Questao (
   
     FOREIGN KEY (id_questaovest) REFERENCES Questao_Vestibular(id) ON DELETE CASCADE,
     FOREIGN KEY (id_competicao) REFERENCES Competicao(id) ON DELETE CASCADE
-)
+);
 
 CREATE TABLE Turma_Questao (
     id_questao INT,
@@ -204,4 +204,4 @@ CREATE TABLE Turma_Questao (
     FOREIGN KEY (id_turma) REFERENCES Turma(id) ON DELETE CASCADE
 
 
-)
+);
