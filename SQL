@@ -1,3 +1,8 @@
+CREATE DATABASE mathapp;
+
+USE mathapp;
+
+
 CREATE TABLE usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
@@ -89,10 +94,11 @@ CREATE TABLE Conteudo (
 
 CREATE Passo_a_Passo (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    questao_id INT NOT NULL,
     ordem_passo VARCHAR(10) NOT NULL,
     texto TEXT NOT NULL,
-    resposta_correta VARCHAR(280) NOT NULL,
-
+    resposta_correta VARCHAR(60) NOT NULL
+    FOREIGN KEY (questao_id) REFERENCES questao_introdutoria(id) ON DELETE CASCADE
 )
 
 
@@ -117,3 +123,29 @@ CREATE TABLE Estudante_Turma (
   FOREIGN KEY (id_turma) REFERENCES Turma(id) ON DELETE CASCADE
 );
 
+
+CREATE TABLE Estudante_Questao (
+    id_estudante INT,
+    id_questao INT,
+    acerto BOOLEAN,
+    resposta VARCHAR(60),
+    data_realizacao DATE,
+    PRIMARY KEY (id_estudante, id_questao),   
+
+    FOREIGN KEY (id_estudante) REFERENCES Estudante(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_questao) REFERENCES Questao(id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE Estudante_Passo (
+    id_estudante INT,
+    id_passo INT,
+    acerto BOOLEAN,
+    resposta VARCHAR(60),
+    data_realizacao DATE,
+    numero_tentativa INT DEFAULT 0,
+    PRIMARY KEY (id_estudante, id_passo),   
+
+    FOREIGN KEY (id_estudante) REFERENCES Estudante(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_passo) REFERENCES Passo_a_Passo(id) ON DELETE CASCADE
+)
