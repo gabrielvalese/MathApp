@@ -149,3 +149,24 @@ CREATE TABLE Estudante_Passo (
     FOREIGN KEY (id_estudante) REFERENCES Estudante(id) ON DELETE CASCADE,
     FOREIGN KEY (id_passo) REFERENCES Passo_a_Passo(id) ON DELETE CASCADE
 )
+
+
+CREATE TABLE Questao_Passo (
+    id_questao INT,
+    id_passo INT,
+  
+    PRIMARY KEY (id_questao, id_passo),
+  
+    FOREIGN KEY (id_questao) REFERENCES Questao_Introdutoria(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_passo) REFERENCES Passo_a_Passo(id) ON DELETE CASCADE
+)
+
+CREATE TABLE Questao_Conteudo (
+    id_questao INT,
+    id_conteudo INT,
+  
+    PRIMARY KEY (id_questao, id_conteudo),
+  
+    FOREIGN KEY (id_questao) REFERENCES Questao(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_conteudo) REFERENCES Conteudo(id) ON DELETE CASCADE
+)
