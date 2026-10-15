@@ -205,3 +205,19 @@ CREATE TABLE Turma_Questao (
 
 
 );
+
+
+--------------------------------------------------------Inserções de dados-----------------------------------------------------------------------------------
+
+
+INSERT INTO Usuario (id, nome, email, senha, nascimento) VALUES 
+(1, 'Murilo Pereira Vendrametto', 'murilo.p.vendrametto@gmail.com', '$2y$10$H9DWn7vHFnc7lGip0HThveDvR1xHdlNnQmkJ0DAsu063NSLEzjgx2', '2009-09-01'),
+(2, 'Gabriel Vinicius MMMV', 'suporte@mathapp.com', 'senha123', '2009-01-01');
+(3, 'Cristhian Renan Santana', 'suporte@mathapp.com', 'senha123', '2008-08-30');
+
+-- 2. Insere esses mesmos IDs na tabela admin
+INSERT INTO Admin (id) VALUES 
+(1),
+(2);
+(3);
+
