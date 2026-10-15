@@ -1,8 +1,11 @@
 import { Stack } from "expo-router";
+import { PaperProvider } from 'react-native-paper';
+import { lightTheme } from './theme';
 
 export default function RootLayout() {
   return (
-    <Stack>
+    <PaperProvider theme={lightTheme}>
+      <Stack>
       <Stack.Screen
         name="(tabs)"
         options={{
@@ -10,6 +13,8 @@ export default function RootLayout() {
         }}
       />
     </Stack>
+    </PaperProvider>
+    
     
   );
 }

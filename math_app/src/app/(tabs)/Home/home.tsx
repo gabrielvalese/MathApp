@@ -1,260 +1,394 @@
 import { Feather, FontAwesome6 } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useTheme } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { styles } from "./style";
+
+
 
 export default function Index() {
+  const theme = useTheme();
+
   return (
     <SafeAreaProvider>
-      <View style={styles.conteiner}>
-       <ScrollView contentContainerStyle={styles.scrollContent}>
-  {/* estiliza o container. Com o "styles" apenas, só muda o comportamento do scrollview */}
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: theme.colors.background,
+          },
+        ]}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.tela_geral}>
-            <View><Text>Logo</Text></View>
-            <View style={styles.msg_saudacao}><Text style={styles.texto_msg}>Olá, [Usuário]</Text></View>
 
-            <View style={styles.ranking}>
-              <View style={styles.icone_ranking}>
-                <FontAwesome6 name="trophy" size={45} color="black"/>
+            {/* SAUDAÇÃO */}
+            <View style={styles.msg_saudacao}>
+              <Text
+                style={[
+                  styles.texto_msg,
+                  { color: theme.colors.onBackground },
+                ]}
+              >
+                Olá, [Usuário]
+              </Text>
+
+              <Text
+                style={[
+                  styles.subtitulo,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
+              >
+                Continue seus estudos de onde parou.
+              </Text>
+            </View>
+
+            {/* RANKING */}
+            <View
+              style={[
+                styles.ranking,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.outlineVariant,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.icone_ranking,
+                  {
+                    backgroundColor: theme.colors.primaryContainer,
+                  },
+                ]}
+              >
+                <FontAwesome6
+                  name="trophy"
+                  size={32}
+                  color={theme.colors.onPrimaryContainer}
+                />
               </View>
+
               <View style={styles.caixa_texto_ranking}>
-                <Text style={styles.texto_ranking}>Ranking</Text>
-                <View style={styles.linha_ranking}/>
+                <Text
+                  style={[
+                    styles.texto_ranking,
+                    { color: theme.colors.onSurface },
+                  ]}
+                >
+                  Ranking
+                </Text>
+
+                <View
+                  style={[
+                    styles.linha_ranking,
+                    { backgroundColor: theme.colors.outlineVariant },
+                  ]}
+                />
+
+                <Text
+                  style={[
+                    styles.posicao,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
+                  Você está em 12º lugar
+                </Text>
               </View>
 
+              {/* PONTUAÇÃO */}
               <View style={styles.pontuacao}>
-                <View style={styles.icone_pontuacao}>
-                  <Feather name="trending-up" size={35} color="black"/>
+                <View
+                  style={[
+                    styles.icone_pontuacao,
+                    {
+                      backgroundColor: theme.colors.secondaryContainer,
+                    },
+                  ]}
+                >
+                  <Feather
+                    name="trending-up"
+                    size={27}
+                    color={theme.colors.onSecondaryContainer}
+                  />
                 </View>
+
                 <View style={styles.texto_pontuacao}>
-                  <Text style={{fontSize: 20, marginLeft: 10}}>Pontução</Text>
-                  <View style={styles.linha_pontuacao}/>
-                  <View style={{flexDirection: 'row'}}>
-                    <Text style={{paddingRight: 5, paddingTop: 10, fontSize: 15}}>267,17</Text>
-                    <Text style={{paddingTop: 10, fontSize: 15}}>Pontos</Text>
+                  <Text
+                    style={[
+                      styles.titulo_pontuacao,
+                      { color: theme.colors.onSurface },
+                    ]}
+                  >
+                    Pontuação
+                  </Text>
+
+                  <View
+                    style={[
+                      styles.linha_pontuacao,
+                      { backgroundColor: theme.colors.outlineVariant },
+                    ]}
+                  />
+
+                  <View style={styles.valor_pontuacao}>
+                    <Text
+                      style={[
+                        styles.numero_pontos,
+                        { color: theme.colors.onSurface },
+                      ]}
+                    >
+                      267,17
+                    </Text>
+
+                    <Text
+                      style={[
+                        styles.pontos,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      Pontos
+                    </Text>
                   </View>
                 </View>
               </View>
             </View>
 
-            <View style={styles.desafio_diario}>
+            {/* DESAFIO DIÁRIO */}
+            <View
+              style={[
+                styles.desafio_diario,
+                {
+                  backgroundColor: theme.colors.primary,
+                },
+              ]}
+            >
               <View style={styles.titulo_desafio_diario}>
-                <Text style={{fontSize: 25}}>Desafio Diário</Text>
-              </View>
-              <View style={styles.texto_desafio_diario}>
-                <Text style={{fontSize: 16}}>(UFPR-2020) Imagine que um macaco digite sequências aleatórias de 3 letras...</Text>
-              </View>
-              <View style={styles.botao_resolver}>
-                <Link href="/" style={styles.botaoPreto}>
-                  <Text style={{fontSize: 18, color: '#ffffff'}}>Resolver agora</Text>
-                </Link>
+                <Text
+                  style={[
+                    styles.titulo_desafio,
+                    { color: theme.colors.onPrimary },
+                  ]}
+                >
+                  Desafio Diário
+                </Text>
 
+                <Text
+                  style={[
+                    styles.label_desafio,
+                    { color: theme.colors.primaryContainer },
+                  ]}
+                >
+                  +10 pontos
+                </Text>
               </View>
+
+              <Text
+                style={[
+                  styles.texto_desafio_diario,
+                  { color: theme.colors.onPrimary },
+                ]}
+              >
+                (UFPR-2020) Imagine que um macaco digite sequências
+                aleatórias de 3 letras...
+              </Text>
+
+              <Link
+                href="/"
+                style={[
+                  styles.botaoResolver,
+                  {
+                    backgroundColor: theme.colors.secondary,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.textoBotao,
+                    { color: theme.colors.onSecondary },
+                  ]}
+                >
+                  Resolver agora
+                </Text>
+              </Link>
             </View>
 
-            <View style={styles.problemas}>
-              <View style={styles.icone_problemas}>
-                <FontAwesome6 name="box-open" size={60} color="#36415c"/>
+            {/* LABORATÓRIO */}
+            <TouchableOpacity
+              style={[
+                styles.problemas,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.outlineVariant,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.icone_problemas,
+                  {
+                    backgroundColor: theme.colors.primaryContainer,
+                  },
+                ]}
+              >
+                <FontAwesome6
+                  name="flask"
+                  size={40}
+                  color={theme.colors.onPrimaryContainer}
+                />
               </View>
-              <TouchableOpacity style={styles.texto_problemas}>
-                <Text style={{fontSize: 30, paddingBottom: 5}}>Problemas</Text>
-                <Text>Polinômios, Matrizes,</Text>
-                <Text>Expressões Numéricas</Text>
-              </TouchableOpacity>
-            </View>
 
-            <View style={styles.simulados}>
-              <View style={styles.icone_simulados}>
-                <FontAwesome6 name="chess-king" size={60} color="#000000"/>
+              <View style={styles.texto_problemas}>
+                <Text
+                  style={[
+                    styles.titulo_card,
+                    { color: theme.colors.onSurface },
+                  ]}
+                >
+                  Laboratório
+                </Text>
+
+                <Text
+                  style={[
+                    styles.descricao_card,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
+                  Polinômios, Matrizes,
+                </Text>
+
+                <Text
+                  style={[
+                    styles.descricao_card,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
+                  Expressões Numéricas
+                </Text>
               </View>
+
+              <Feather
+                name="chevron-right"
+                size={26}
+                color={theme.colors.onSurfaceVariant}
+              />
+            </TouchableOpacity>
+
+            {/* SIMULADOS */}
+            <TouchableOpacity
+              style={[
+                styles.simulados,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.outlineVariant,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.icone_simulados,
+                  {
+                    backgroundColor: theme.colors.secondaryContainer,
+                  },
+                ]}
+              >
+                <FontAwesome6
+                  name="chess-knight"
+                  size={40}
+                  color={theme.colors.onSecondaryContainer}
+                />
+              </View>
+
               <View style={styles.texto_simulados}>
-                  <Text style={{fontSize: 30, paddingBottom: 5}}>Simulados</Text>
-                </View>
-                <TouchableOpacity>
-                  <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#000' }}>Login (test)</Text>
-                </TouchableOpacity>
+                <Text
+                  style={[
+                    styles.titulo_card,
+                    { color: theme.colors.onSurface },
+                  ]}
+                >
+                  Simulados
+                </Text>
+
+                <Text
+                  style={[
+                    styles.descricao_card,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
+                  Teste seus conhecimentos
+                </Text>
               </View>
+
+              <Feather
+                name="chevron-right"
+                size={26}
+                color={theme.colors.onSurfaceVariant}
+              />
+            </TouchableOpacity>
+
+            {/* SALA DE AULA */}
+            <TouchableOpacity
+              style={[
+                styles.sala_aula,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.outlineVariant,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.icone_sala,
+                  {
+                    backgroundColor: theme.colors.tertiaryContainer,
+                  },
+                ]}
+              >
+                <FontAwesome6
+                  name="school"
+                  size={38}
+                  color={theme.colors.onTertiaryContainer}
+                />
+              </View>
+
+              <View style={styles.texto_sala}>
+                <Text
+                  style={[
+                    styles.titulo_card,
+                    { color: theme.colors.onSurface },
+                  ]}
+                >
+                  Sala de Aula
+                </Text>
+
+                <Text
+                  style={[
+                    styles.descricao_card,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
+                  Acesse suas turmas e atividades
+                </Text>
+              </View>
+
+              <Feather
+                name="chevron-right"
+                size={26}
+                color={theme.colors.onSurfaceVariant}
+              />
+            </TouchableOpacity>
+
           </View>
         </ScrollView>
       </View>
     </SafeAreaProvider>
   );
-};
-const styles = StyleSheet.create({
-  scrollContent: {
-    paddingBottom: 30,
-  },
-  tela_geral: {
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    gap: 0,
-  },
-  conteiner: {
-    justifyContent: 'space-between',
-    flex: 1,
-    backgroundColor: '#fff'
-  },
-  logo: {
-    
-  },
-  msg_saudacao: {
-    width: '85%',
-    height: 50,
-    alignItems: 'flex-start',
-    
-  },
-  texto_msg: {
-    fontSize: 35
-  },
-  ranking: {
-    height: 100,
-    width: '90%',
-    borderRadius: 10,
-    flexDirection: 'row',
-    backgroundColor: '#D9D9D9'
-  },
-  icone_ranking: {
-    width: '25%',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  caixa_texto_ranking: {
-    width: '25%',
-    height: '50%',
-    alignItems: 'center',
-    justifyContent: 'center'  
+}
 
-  },
-  texto_ranking: {
-    fontSize: 15,
-    marginTop: 30,
-    marginRight: 25
-  },
-  linha_ranking: {
-    width: '70%', 
-    height: 2, 
-    backgroundColor: '#000000',
-    marginTop: 5,
-    marginRight: 25
-  },
-  pontuacao: {
-    width: '50%',
-    borderLeftWidth: 2,
-    borderLeftColor: '#A8A5A5',
-    flexDirection: 'row'
-    
-  },
-  icone_pontuacao: {
-    width: '30%',
-    alignItems: 'center',
-    marginTop: 20,
-    
-  },
-  texto_pontuacao: {
-    width: '50%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    
-  },
-   linha_pontuacao: {
-    width: '90%', 
-    height: 2, 
-    backgroundColor: '#000000',
-    marginTop: 5,
-    marginLeft: 10
-  },
-  desafio_diario: {
-    height: 260,
-    width: '90%',
-    borderRadius: 10,
-    flexDirection: 'column',
-    backgroundColor: '#D9D9D9',
-    marginTop: 20,
-    alignItems: 'center'
-    
-  },
-  titulo_desafio_diario: {
-    justifyContent: 'center',
-    height: '20%',
-    width: '100%',
-    marginTop: 30,
-    paddingLeft: 25
-  },
-  texto_desafio_diario: {
-    width: '80%',
-    height: '30%',
-  },
-  botao_resolver: {
-    justifyContent: 'center',
-    width: '100%',
-    paddingLeft: 25,
-  },
-  botaoPreto: {
-    backgroundColor: '#000000', 
-    borderRadius: 6,             
-    width: 200,
-    height: 50,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    marginTop: 25
-  },
-  problemas: {
-    height: 130,
-    width: '100%',
-    borderRadius: 10,
-    flexDirection: 'row',
-    backgroundColor: '#D9D9D9',
-    marginTop: 40,
-    alignItems: 'center'
-  },
-  icone_problemas: {
-    width: '30%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  texto_problemas: {
-    width: '70%',
-    height: '100%',
-    justifyContent: 'flex-start',
-    paddingLeft: 20,
-    paddingTop: 10
-  },
-  simulados: {
-    height: 130,
-    width: '100%',
-    borderRadius: 10,
-    flexDirection: 'row',
-    backgroundColor: '#D9D9D9',
-    marginTop: 20,
-    alignItems: 'center'
-  },
-  icone_simulados: {
-    width: '40%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  texto_simulados: {
-    width: '60%',
-    height: '100%',
-    justifyContent: 'center',
-    paddingBottom: 10
-  },
-  rodape: {
-    flexDirection: 'row',
-    height: 100,
-    width: '100%',
-    backgroundColor: '#D9D9D9',
-    alignItems: 'flex-end',
-    justifyContent: 'space-evenly',
-
-  },
-  icones_rodape: {
-    marginBottom: 20
-  }
- 
- 
-  
-
-});
