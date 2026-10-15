@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar</title>
+    <link rel="stylesheet" href="../config/style.css">
+</head>
+<body>
+    <h1>Atualizar Registros</h1>
+    <p>Digite o CPF da pessoa que deseja atualizar</p>
+    <form action="atualizar.php" method="post">
+    <label for="cpf">CPF</label>
+    <input type="text" name="cpf" pattern="[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}" placeholder="123.456.789-99">
+    <button type="submit">Atualizar</button>
+    </form>
+</body>
+</html>

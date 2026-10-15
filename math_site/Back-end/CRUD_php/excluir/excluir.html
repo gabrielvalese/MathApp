@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excluir</title>
+    <link rel="stylesheet" href="../config/style.css">
+</head>
+<body>
+    <h1>Excluir Registros</h1>
+    <p>Digite o cpf da pessoa a ser excluída</p>
+    <form action="excluir.php" method="post">
+    <label for="cpf">CPF</label>
+    <input type="text" name="cpf" id="cpf" pattern="[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}" placeholder="123.456.789-99">
+    <button type="submit">Excluir</button>
+    </form>
+</body>
+</html>

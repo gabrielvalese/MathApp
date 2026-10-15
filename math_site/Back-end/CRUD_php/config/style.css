@@ -1,0 +1,20 @@
+form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border: 5px solid black;
+    border-color: black;
+    width: fit-content;
+    margin: 20px auto;
+    padding: 20px;
+    gap: 15px;
+}
+
+body {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+
+        }
