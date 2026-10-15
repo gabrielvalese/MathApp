@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="../config/style.css">
+</head>
+<body>
+    <h1>Cadastre uma pessoa</h1>
+    <form action="cadastrar.php" method="post">
+        <label for="nome">Nome</label>
+        <input type="text" name="nome" placeholder="Nome">
+        <label for="email">E-mail</label>
+        <input type="email" name="email" id="email" placeholder="seuemail@gmail.com">
+        <label for="cpf">CPF</label>
+        <input type="text" name="cpf" id="cpf"  pattern="[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}" placeholder="123.456.789-99">
+        <label for="nascimento">Nascimento</label>
+        <input type="date" name="nascimento" id="nascimento">
+        <label for="senha">Senha</label>
+        <input type="password" name="senha" id="senha" placeholder="Crie sua senha">
+        <button type="submit">Cadastrar</button>
+    </form>
+</body>
+</html>
