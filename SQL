@@ -3,7 +3,7 @@ CREATE DATABASE mathapp;
 USE mathapp;
 
 
-CREATE TABLE usuario (
+CREATE TABLE Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
@@ -11,21 +11,21 @@ CREATE TABLE usuario (
     nascimento DATE NOT NULL
 );
 
-CREATE TABLE estudante (
+CREATE TABLE Estudante (
     id INT PRIMARY KEY,
-    FOREIGN KEY (id) REFERENCES usuario(id) ON DELETE CASCADE
+    FOREIGN KEY (id) REFERENCES Usuario(id) ON DELETE CASCADE
 );
 
 
-CREATE TABLE professor (
+CREATE TABLE Professor (
     id INT PRIMARY KEY,
-    FOREIGN KEY (id) REFERENCES usuario(id) ON DELETE CASCADE
+    FOREIGN KEY (id) REFERENCES Usuario(id) ON DELETE CASCADE
 );
 
 
-CREATE TABLE admin (
+CREATE TABLE Admin (
     id INT PRIMARY KEY,
-    FOREIGN KEY (id) REFERENCES usuario(id) ON DELETE CASCADE
+    FOREIGN KEY (id) REFERENCES Usuario(id) ON DELETE CASCADE
 );
 
 
@@ -100,7 +100,7 @@ CREATE TABLE Passo_a_Passo (
     ordem_passo VARCHAR(10) NOT NULL,
     texto TEXT NOT NULL,
     resposta_correta VARCHAR(60) NOT NULL,
-    FOREIGN KEY (questao_id) REFERENCES questao_introdutoria(id) ON DELETE CASCADE
+    FOREIGN KEY (questao_id) REFERENCES Questao_Introdutoria(id) ON DELETE CASCADE
 );
 
 
