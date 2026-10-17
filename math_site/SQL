@@ -206,38 +206,6 @@ CREATE TABLE Turma_Questao (
 
 );
 
----------------------------------------------------------------------------------------RBAC-----------------------------------------------------------------------------------------------------------------------------------
-
-
-
-CREATE TABLE Permissao (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(50) UNIQUE NOT NULL,
-    descricao VARCHAR(255)
-);
-
-CREATE TABLE Role (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(50) UNIQUE NOT NULL
-);
-
-CREATE TABLE Usuario_Permissao (
-    usuario_id INT,
-    permissao_id INT,
-    PRIMARY KEY (usuario_id, permissao_id),
-    FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE,
-    FOREIGN KEY (permissao_id) REFERENCES Permissao(id) ON DELETE CASCADE
-);
-
-
-CREATE TABLE Usuario_Role (
-    usuario_id INT,
-    role_id INT,
-    PRIMARY KEY (usuario_id, role_id),
-    FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES Role(id) ON DELETE CASCADE
-);
-
 
 -----------------------------------------------------------------------------------------------Inserções de dados----------------------------------------------------------------------------------------------------------
 
@@ -252,4 +220,5 @@ INSERT INTO Admin (id) VALUES
 (1),
 (2);
 (3);
+
 
