@@ -1,3 +1,5 @@
+//npx expo install @expo/vector-icons
+//npx expo install expo-checkbox react-native-svg
 import { FontAwesome5 } from '@expo/vector-icons';
 import CheckBox from 'expo-checkbox';
 import { useState } from 'react';
