@@ -12,6 +12,34 @@ export default function RootLayout() {
           title: "HomePage",
         }}
       />
+
+        <Stack.Screen
+        name="(tabs)"
+        options={{
+          title: "HomePage",
+        }}
+      />
+
+        <Stack.Screen
+        name="(tabs)"
+        options={{
+          title: "HomePage",
+        }}
+      />
+
+        <Stack.Screen
+        name="(tabs)"
+        options={{
+          title: "HomePage",
+        }}
+      />
+
+        <Stack.Screen
+        name="(tabs)"
+        options={{
+          title: "HomePage",
+        }}
+      />
     </Stack>
     </PaperProvider>
     
