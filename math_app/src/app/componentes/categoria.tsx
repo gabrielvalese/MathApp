@@ -12,8 +12,7 @@ export default function Categoria(props: any) {
   );
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: {        
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2,

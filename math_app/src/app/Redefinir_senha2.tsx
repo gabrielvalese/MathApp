@@ -1,13 +1,14 @@
-import { Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function Index() {
   return (
     <View style={styles.conteiner}>
-      <View style={styles.area_codigo_redefinirsenha}>
-         <Image 
-  source={require("../assets/images/ChatGPT Image 12 de ago. de 2026, 15_54_29.png")} 
-  style={{ width: 100, height: 100, resizeMode: 'contain', borderRadius: 10 }} 
-/>
+      <ScrollView>
+        <View style={styles.area_codigo_redefinirsenha}>
+          <Image 
+            source={require('../../assets/images/logo.png')} 
+            style={{ width: 100, height: 100, marginBottom: 20 }}
+          />
         <Text style={{fontSize: 30, fontWeight: 'bold'}}>Redefinir senha</Text>
         <View style={styles.area_codigo}>
           <Text style={{fontSize: 20}}>Código de verificação</Text>
@@ -23,6 +24,7 @@ export default function Index() {
           <Text style={{fontSize: 15, color: 'white'}}>Verificar</Text>
         </Pressable>
       </View>
+    </ScrollView>
     </View>
 );
 }

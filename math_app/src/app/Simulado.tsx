@@ -1,10 +1,11 @@
 import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function Index() {
   return (
     <View style={styles.conteiner}>
-    <View style={styles.tela_geral}>
+    <ScrollView contentContainerStyle={styles.tela_geral}>
+
     
     <View style={styles.cabecalho}>
       <FontAwesome6 name="chess-king" size={50} color="#000000"/>
@@ -68,20 +69,20 @@ export default function Index() {
           </View>
           
           </View>
-     </View> 
+ 
      
     
     </View>
     
     
-    
+    </ScrollView>
     
     
     {/*rodapé*/}
     <View style={styles.rodape}>
-      <FontAwesome name="graduation-cap" size={60} color="#000000" style={styles.icones_rodape}/>
-      <MaterialCommunityIcons name="podium-gold" size={60} color="#000000" style={styles.icones_rodape}/>
-      <Ionicons name="person" size={60} color="#000000" style={styles.icones_rodape}/>
+      <FontAwesome name="graduation-cap" size={35} color="#000000" style={styles.icones_rodape}/>
+      <MaterialCommunityIcons name="podium-gold" size={35} color="#000000" style={styles.icones_rodape}/>
+      <Ionicons name="person" size={35} color="#000000" style={styles.icones_rodape}/>
       </View> 
     </View>
 );
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 40,
     width: '100%',
-    height: '65%'
+    paddingVertical: 20,
   },
   conteiner: {
     justifyContent: 'space-between',
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
   },
   titulo_assuntos: {
     justifyContent: 'flex-end',
-    height: 80,
+    paddingVertical: 20,
     width: '100%',
     alignItems: 'center'
     
@@ -143,14 +144,14 @@ const styles = StyleSheet.create({
   },*/
   area_selecionar_assunto: {
     width:'100%',
-    height: 40,
+    paddingVertical: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 25
   },
   botao_assuntos: {
     width: '50%',
-    height: 40,
+    paddingVertical: 20,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
@@ -158,14 +159,14 @@ const styles = StyleSheet.create({
   },
  numero_questoes: {
     width: '100%',
-    height: 100,
+    paddingVertical: 30,
     marginTop: 70,
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
   quadrado_num_questoes: {
-    width: 60,
-    height: 40,
+    paddingVertical: 30,
+    paddingHorizontal: 20,
     backgroundColor: '#ADADAD',
     marginVertical: 15,
     alignItems: 'center',
@@ -179,8 +180,8 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   quadrado_tempo: {
-    width: 90,
-    height: 60,
+    paddingVertical: 30,
+    paddingHorizontal: 20,
     backgroundColor: '#ADADAD',
     marginVertical: 25,
     alignItems: 'center',
@@ -189,8 +190,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   botao_iniciar: {
-    width: 120,
-    height: 40,
+    paddingVertical: 30,
+    paddingHorizontal: 20,
     backgroundColor: '#000000',
     borderRadius: 5,
     flexDirection: 'row',
@@ -200,22 +201,21 @@ const styles = StyleSheet.create({
   },
   alinhar_botao_iniciar: {
     width: '100%',
-    height: 60,
+    paddingVertical: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  rodape: {
+ rodape: {
     flexDirection: 'row',
-    height: 100,
+    height: 70,
     width: '100%',
     backgroundColor: '#D9D9D9',
-    alignItems: 'flex-end',
-    justifyContent: 'space-evenly',
-
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
   },
-  icones_rodape: {
-    marginBottom: 20
-  },
+  icones_rodape: {},
   input_texto: {
     fontSize: 18,
     textAlign: 'center',

@@ -1,13 +1,14 @@
-//npx expo install @expo/vector-icons
-//npx expo install expo-checkbox react-native-svg
 import { FontAwesome5 } from '@expo/vector-icons';
 import CheckBox from 'expo-checkbox';
+import { router } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 export function GoogleIcon({ size = 24 }: { size?: number }) {
   return (
+    
+    
     <Svg width={size} height={size} viewBox="0 0 48 48">
       <Path
         fill="#EA4335"
@@ -31,9 +32,18 @@ export function GoogleIcon({ size = 24 }: { size?: number }) {
 
 export default function Index() {
   const [isChecked, setChecked] = useState(false);
-
+  
+  function irParaQuestoes() {
+    console.log("Indo para as questões...");
+    router.push('/'); 
+  }
+  
   return (
     <View style={styles.container}>
+      <Image 
+        source={require('../../assets/images/logo.png')}
+        style={{ width: 100, height: 100, marginBottom: 20 }}
+      />
       <Text style={styles.text}>Login</Text>
       <View style={styles.inputsView}>
         <View style={styles.UserInput}>
@@ -53,7 +63,7 @@ export default function Index() {
         </TouchableOpacity>
       </View>
       <View style={{ width: "60%", height: 60, alignItems: "center", justifyContent: "center", marginTop: 20, backgroundColor: "black", borderRadius: 10 }}>
-        <TouchableOpacity onPress={() => console.log("Login")} style={{ width: "100%", height: "100%", alignItems: "center", justifyContent: "center" }}>
+        <TouchableOpacity onPress={() => irParaQuestoes()} style={{ width: "100%", height: "100%", alignItems: "center", justifyContent: "center" }}>
           <Text style={{ color: "white", fontWeight: "bold", fontSize: 25 }}>Entrar</Text>
         </TouchableOpacity>
       </View>
