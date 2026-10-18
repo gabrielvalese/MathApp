@@ -31,8 +31,8 @@ CREATE TABLE Admin (
 
 CREATE TABLE Turma (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  descricao VARCHAR(600),
   nome VARCHAR(60),
+  descricao VARCHAR(600),
   chave VARCHAR(8),
   id_professor INT,
   FOREIGN KEY (id_professor) REFERENCES Professor(id) ON DELETE CASCADE
@@ -207,7 +207,7 @@ CREATE TABLE Turma_Questao (
 );
 
 
---------------------------------------------------------Inserções de dados-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------Inserções de dados----------------------------------------------------------------------------------------------------------
 
 
 INSERT INTO Usuario (id, nome, email, senha, nascimento) VALUES 
@@ -220,4 +220,6 @@ INSERT INTO Admin (id) VALUES
 (1),
 (2);
 (3);
+
+
 
