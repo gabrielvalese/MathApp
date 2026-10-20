@@ -19,7 +19,7 @@ export default function Index() {
           
           <View style={styles.ranking}>
             <View style={styles.icone_ranking}>
-              <FontAwesome6 name="trophy" size={40} color="black"/>
+              <FontAwesome6 name="trophy" size={40} color="#1E3A8A"/>
             </View>
             <View style={styles.caixa_texto_ranking}>
               <Text style={styles.texto_ranking}>Ranking</Text>
@@ -28,14 +28,14 @@ export default function Index() {
             
             <View style={styles.pontuacao}>
               <View style={styles.icone_pontuacao}>
-                <Feather name="trending-up" size={30} color="black"/>
+                <Feather name="trending-up" size={30} color="#1E3A8A"/>
               </View>
               <View style={styles.texto_pontuacao}>
-                <Text style={{fontSize: 16, fontWeight: 'bold'}}>Pontuação</Text>
+                <Text style={{fontSize: 16, fontWeight: 'bold', color: '#1E3A8A'}}>Pontuação</Text>
                 <View style={styles.linha_pontuacao}/>
                 <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
-                  <Text style={{paddingRight: 4, paddingTop: 6, fontSize: 14, fontWeight: 'bold'}}>267,17</Text>
-                  <Text style={{paddingTop: 6, fontSize: 12}}>Pontos</Text>
+                  <Text style={{paddingRight: 4, paddingTop: 6, fontSize: 14, fontWeight: 'bold', color: '#1E3A8A'}}>267,17</Text>
+                  <Text style={{paddingTop: 6, fontSize: 12, color: '#1E3A8A'}}>Pontos</Text>
                 </View>
               </View>
             </View> 
@@ -43,13 +43,13 @@ export default function Index() {
 
           <View style={styles.desafio_diario}>
             <View style={styles.titulo_desafio_diario}>
-              <Text style={{fontSize: 22, fontWeight: 'bold'}}>Desafio Diário</Text>
+              <Text style={{fontSize: 22, fontWeight: 'bold', color: '#1E3A8A'}}>Desafio Diário</Text>
             </View>
             <View style={styles.texto_desafio_diario}>
-              <Text style={{fontSize: 15, color: '#333'}}>(UFPR-2020) Imagine que um macaco digite sequências aleatórias de 3 letras...</Text>
+              <Text style={{fontSize: 15, color: '#1E3A8A'}}>(UFPR-2020) Imagine que um macaco digite sequências aleatórias de 3 letras...</Text>
             </View>
             <View style={styles.botao_resolver}>
-              <Link href="/tela_questao" style={styles.botaoPreto}>
+              <Link href="/tela_questao" style={styles.botaoLaranja}>
                 <Text style={{fontSize: 16, color: '#ffffff', textAlign: 'center'}}>Resolver agora</Text>
               </Link>
             </View>
@@ -57,24 +57,24 @@ export default function Index() {
 
           <View style={styles.problemas}>
             <View style={styles.icone_problemas}>
-              <FontAwesome6 name="box-open" size={50} color="#36415c"/>
+              <FontAwesome6 name="box-open" size={50} color="#1E3A8A"/>
             </View>
-            <Link href="/tela_categoria">
+            <Link href="/tela_categoria" style={{flex: 1}}>
               <View style={styles.texto_problemas}>
-                <Text style={{fontSize: 22, fontWeight: 'bold', paddingBottom: 4}}>Problemas</Text>
-                <Text style={{fontSize: 14, color: '#444'}}>Polinômios, Matrizes,</Text>
-                <Text style={{fontSize: 14, color: '#444'}}>Expressões Numéricas</Text>
+                <Text style={{fontSize: 22, fontWeight: 'bold', paddingBottom: 4, color: '#1E3A8A'}}>Problemas</Text>
+                <Text style={{fontSize: 14, color: '#1E3A8A'}}>Polinômios, Matrizes,</Text>
+                <Text style={{fontSize: 14, color: '#1E3A8A'}}>Expressões Numéricas</Text>
               </View>
             </Link>
           </View>
 
           <View style={styles.simulados}>
             <View style={styles.icone_simulados}>
-              <FontAwesome6 name="chess-king" size={50} color="#000000"/>
+              <FontAwesome6 name="chess-king" size={50} color="#1E3A8A"/>
             </View>
-            <Link href="/simulado">
+            <Link href="/simulado" style={{flex: 1}}>
               <View style={styles.texto_simulados}>
-                <Text style={{fontSize: 24, fontWeight: 'bold'}}>Simulados</Text>
+                <Text style={{fontSize: 24, fontWeight: 'bold', color: '#1E3A8A'}}>Simulados</Text>
               </View>
             </Link>
           </View>
@@ -84,13 +84,13 @@ export default function Index() {
 
       <View style={styles.rodape}>
         <Link href="/redefinir_senha2">
-          <FontAwesome name="graduation-cap" size={35} color="#000000" style={styles.icones_rodape}/>
+          <FontAwesome name="graduation-cap" size={35} color="#1E3A8A" style={styles.icones_rodape}/>
         </Link>
         <Link href="/redefinir_senha1">
-          <MaterialCommunityIcons name="podium-gold" size={35} color="#000000" style={styles.icones_rodape}/>
+          <MaterialCommunityIcons name="podium-gold" size={35} color="#1E3A8A" style={styles.icones_rodape}/>
         </Link>
         <Link href="/login">
-          <Ionicons name="person" size={35} color="#000000" style={styles.icones_rodape}/>
+          <Ionicons name="person" size={35} color="#1E3A8A" style={styles.icones_rodape}/>
         </Link>
       </View>    
     </View>
@@ -100,7 +100,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   conteiner: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     justifyContent: 'space-between',
   },
   scrollContent: {
@@ -111,9 +111,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: '5%',
     width: '100%',
   },
-  logoContainer: {
-    marginVertical: 15,
-  },
   msg_saudacao: {
     width: '100%',
     marginBottom: 15,
@@ -122,6 +119,7 @@ const styles = StyleSheet.create({
   texto_msg: {
     fontSize: 28,
     fontWeight: 'bold',
+    color: '#1E3A8A',
   },
   ranking: {
     width: '100%',
@@ -145,11 +143,12 @@ const styles = StyleSheet.create({
   texto_ranking: {
     fontSize: 14,
     fontWeight: '600',
+    color: '#1E3A8A',
   },
   linha_ranking: {
     width: '80%', 
     height: 2, 
-    backgroundColor: '#000000',
+    backgroundColor: '#F97316',
     marginTop: 4,
   },
   pontuacao: {
@@ -171,7 +170,7 @@ const styles = StyleSheet.create({
   linha_pontuacao: {
     width: '90%', 
     height: 2, 
-    backgroundColor: '#000000',
+    backgroundColor: '#F97316',
     marginTop: 4,
   },
   desafio_diario: {
@@ -191,9 +190,9 @@ const styles = StyleSheet.create({
   botao_resolver: {
     alignItems: 'center',
   },
-  botaoPreto: {
-    backgroundColor: '#000000', 
-    borderRadius: 6,             
+  botaoLaranja: {
+    backgroundColor: '#F97316', 
+    borderRadius: 6,            
     width: '100%',
     maxWidth: 250,
     paddingVertical: 12,
