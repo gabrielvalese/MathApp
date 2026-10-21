@@ -33,7 +33,7 @@ CREATE TABLE Turma (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(60),
   descricao VARCHAR(600),
-  chave VARCHAR(8),
+  chave VARCHAR(6) UNIQUE,
   id_professor INT,
   FOREIGN KEY (id_professor) REFERENCES Professor(id) ON DELETE CASCADE
 );
