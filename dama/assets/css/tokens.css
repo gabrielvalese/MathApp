@@ -1,0 +1,38 @@
+/* Tokens de design — cores herdadas do protótipo (laranja, off-white, grafite) */
+:root {
+  --paper: #f8f9fa;
+  --paper-2: #f0f1f3;
+  --white: #ffffff;
+
+  --ink: #1a1a1c;
+  --ink-2: #52555c;
+  --ink-3: #868a94;
+
+  --line: #e6e8ec;
+  --line-2: #d2d5db;
+
+  --orange: #ff5a1f;
+  --orange-deep: #c93c07;   /* texto laranja sobre branco (contraste AA) */
+  --orange-mid: #ffc4a8;
+  --orange-wash: #ffede4;
+
+  --ok: #1e8a5a;
+  --ok-wash: #e6f4ec;
+  --bad: #c8312b;
+  --bad-wash: #fbeae8;
+
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-code: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --r-sm: 6px;
+  --r: 10px;
+  --r-lg: 16px;
+
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px;
+  --s6: 32px; --s7: 48px; --s8: 72px; --s9: 112px;
+
+  --wrap: 1180px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --header-h: 64px;
+}
