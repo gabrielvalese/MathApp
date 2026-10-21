@@ -222,4 +222,14 @@ INSERT INTO Admin (id) VALUES
 (3);
 
 
+INSERT INTO Questao (enunciado) 
+VALUES ('Em uma questão clássica de Sistemas Lineares, considere os parâmetros fundamentais aplicados no contexto do exame. Determine o resultado correto da expressão ou situação problema proposta para os dados fornecidos na prova.
+');
 
+SET @q_id = LAST_INSERT_ID();
+
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade) 
+VALUES (@q_id, '(UNESP - 2023)', 'nula'); 
+
+INSERT INTO Alternativa(questao_id, texto, letra, correta) 
+VALUES (@q_id, '12', 'A', FALSE);
