@@ -68,6 +68,7 @@ CREATE TABLE Questao_Vestibular (
     id INT PRIMARY KEY,
     instituicao VARCHAR(100),
     dificuldade ENUM('facil', 'medio', 'dificil') NOT NULL,
+    imagem TEXT,
     FOREIGN KEY (id) REFERENCES Questao(id) ON DELETE CASCADE
 );
 
