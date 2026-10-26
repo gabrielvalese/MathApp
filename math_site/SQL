@@ -250,3 +250,359 @@ INSERT INTO Conteudo (nome, descricao, dificuldade) VALUES
 ('Trigonometria', 'Estudo das razões trigonométricas no triângulo retângulo, ciclo trigonométrico e identidades.', 'Médio');
 
 
+3 voltas em torno do circuito maior e 2 voltas em torno do menor, perfazendo um total de 1 800 m. Em seguida, dando continuidade a seu treino, corre mais 2 voltas em torno do circuito maior e 1 volta em torno do menor,  
+percorrendo mais 1 100 m.
+
+No segundo dia, ele pretende percorrer 5 000 m nos circuitos do parque, fazendo um número inteiro de voltas em torno deles e de modo que o número de voltas seja o maior possível.
+
+A soma do número de voltas em torno dos dois circuitos, no segundo dia, será');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2022', 'Médio', 'não tem');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '10.', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '13.', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '14.', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '15.', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '16', 'E', TRUE);
+
+-- ========== Trigonometria (8 questões) ==========
+-- Questão 152 - ENEM 2010 | Conteúdo: Trigonometria
+INSERT INTO Questao (enunciado) VALUES ('Um cientista monitora o movimento desse satélite para controlar o seu afastamento do centro da Terra. Para isso, ele precisa calcular a soma dos valores de r, no apogeu e no perigeu, representada por S.
+
+O cientista deveria concluir que, periodicamente, S atinge o valor de');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2010', 'Médio', '[{"tipo":"enunciado","url":"https://enem.dev/2010/questions/152/3b16b42f-5856-499b-a7f7-6512f1c1c219.png"}]');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '12 765 km.', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '12 000 km', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '11 730 km', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '10 965 km.', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '5 865 km', 'E', FALSE);
+
+-- Questão 160 - ENEM 2010 | Conteúdo: Trigonometria
+INSERT INTO Questao (enunciado) VALUES ('Um balão atmosférico, lançado em Bauru (343 quilômetros a Noroeste de São Paulo), na noite do último domingo, caiu nesta segunda-feira em Cuiabá Paulista, na região de Presidente Prudente, assustando agricultores da região. O artefato faz parte do programa Projeto Hibiscus, desenvolvido por Brasil, França, Argentina, Inglaterra e Itália, para a medição do comportamento da camada de ozônio, e sua descida se deu após o cumprimento do tempo previsto de medição.
+
+Disponível em: http://www.correiodobrasil.com.br. Acesso em: 02 maio 2010.
+
+Na data do acontecido, duas pessoas avistaram o balão. Uma estava a 1,8 km da posição vertical do balão e o avistou sob um ângulo de 60º; a outra estava a 5,5 km da posição vertical do balão, alinhada com a primeira, e no mesmo sentido, conforme se vê na figura, e o avistou sob um ângulo de 30º.
+
+Qual a altura aproximada em que se encontrava o balão?');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2010', 'Médio', '[{"tipo":"enunciado","url":"https://enem.dev/2010/questions/160/1f3ac874-dc7d-48a1-bfbd-6426ce6e0f8e.jpg"}]');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '1,8 km', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '1,9 km', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '3,1 km', 'C', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '3,7 km', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '5,5 km', 'E', FALSE);
+
+-- Questão 155 - ENEM 2011 | Conteúdo: Trigonometria
+INSERT INTO Questao (enunciado) VALUES ('Suponha que o navegante tenha medido o ângulo α = 30°  e, ao chegar ao ponto B, verificou que o barco havia percorrido a distância AB = 2 000 m.
+
+Com base nesses dados e mantendo a mesma trajetória, a menor distância do barco até o ponto fixo P será');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2011', 'Médio', '[{"tipo":"enunciado","url":"https://enem.dev/2011/questions/155/815b3733-1da7-4631-adc8-21e12190790b.png"}]');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '1 000 m.', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '1 000 √3 m.', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '2 000 √3/3 m.', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '2 000 m', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '2 000 √3 m.', 'E', FALSE);
+
+-- Questão 136 - ENEM 2013 | Conteúdo: Trigonometria
+INSERT INTO Questao (enunciado) VALUES ('Utilizando 0,26 como valor aproximado para a tangente de 15° e duas casas decimais nas operações, descobre-se que a área da base desse prédio ocupa na avenida um espaço');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2013', 'Médio', '[{"tipo":"enunciado","url":"https://enem.dev/2013/questions/136/2b7178ab-7991-4b9d-9232-a6f9dadd475c.png"}]');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Menor que 100 m²', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Entre 100 m² e 300 m²', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Entre 300 m² e 500 m²', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Entre 500 m² e 700 m²', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Maior que 700 m²', 'E', TRUE);
+
+-- Questão 138 - ENEM 2017 | Conteúdo: Trigonometria
+INSERT INTO Questao (enunciado) VALUES ('Raios de luz solar estão atingindo a superfície de um lago formando um ângulo X com a sua superfície, conforme indica a figura.
+
+Em determinadas condições, pode-se supor que a intensidade luminosa desses raios, na superfície do lago, seja dada aproximadamente por I(x) = k . sen(x)
+
+sendo k uma constante, e supondo-se que X está entre 0° e 90º.
+
+Quando x = 30º, a intensidade luminosa se reduz a qual percentual de seu valor máximo?');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2017', 'Médio', '[{"tipo":"enunciado","url":"https://enem.dev/2017/questions/138/7d715e4d-7f9b-43a6-8f5e-4f0e1e782780.png"}]');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '33%', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '50%', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '57%', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '70%', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '86%', 'E', FALSE);
+
+-- Questão 177 - ENEM 2019 | Conteúdo: Trigonometria
+INSERT INTO Questao (enunciado) VALUES ('Um grupo de engenheiros está projetando um motor cujo esquema de deslocamento vertical do pistão dentro da câmara de combustão esta representado na figura.
+
+descreve como varia a altura h, medida em centímetro, da parte superior do pistão dentro da câmara de combustão, em função do tempo t, medido em segundo. Nas figuras estão indicadas as alturas do pistão em dois instantes distintos.
+
+O valor do parâmetro β, que é dado por um número inteiro positivo, está relacionado com a velocidade de deslocamento do pistão. Para que o motor tenha uma boa potência, é necessário e suficiente que, em menos de 4 segundos após o início do funcionamento (instante t = 0), a altura da base do pistão alcance por três vezes o valor de 6 cm.
+
+Para os cálculos, utilize 3 como aproximação para π.
+
+O menor valor inteiro a ser atribuído ao parâmetro β, de forma que o motor a ser construído tenha boa potência, é');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2019', 'Médio', '[{"tipo":"enunciado","url":"https://enem.dev/2019/questions/177/000e6ab5-5267-4411-a21d-3c05d89f2832.png"}]');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '1.', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '2.', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '4.', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '5.', 'D', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '8.', 'E', FALSE);
+
+-- Questão 173 - ENEM 2020 | Conteúdo: Trigonometria
+INSERT INTO Questao (enunciado) VALUES ('Pergolado é o nome que se dá a um tipo de cobertura projetada por arquitetos, comumente em praças e jardins, para criar um ambiente para pessoas ou plantas, no qual há uma quebra da quantidade de luz, dependendo da posição do sol. É feito como um estrado de vigas iguais, postas paralelas e perfeitamente em fila, como ilustra a figura.
+
+Um arquiteto projeta um pergolado com vãos de 30 cm de distância entre suas vigas, de modo que, no solstício de verão, a trajetória do sol durante o dia seja realizada num plano perpendicular à direção das vigas, e que o sol da tarde, no momento em que seus raios fizerem 30° com a posição a pino, gere a metade da luz que passa no pergolado ao meio-dia.
+
+Para atender à proposta do projeto elaborado pelo arquiteto, as vigas do pergolado devem ser construídas de maneira que a altura, em centímetro, seja a mais próxima possível de');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2020', 'Médio', '[{"tipo":"enunciado","url":"https://enem.dev/2020/questions/173/b1116282-c341-4b8e-a3a4-9b589e302201.png"}]');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '9.', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '15.', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '26.', 'C', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '52.', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '60.', 'E', FALSE);
+
+-- Questão 156 - ENEM 2021 | Conteúdo: Trigonometria
+INSERT INTO Questao (enunciado) VALUES ('Uma mola é solta da posição distendida conforme a figura. A figura à direita representa o gráfico da posição _P_ (em cm) da massa m em função do tempo _t_ (em segundo) em um sistema de coordenadas cartesianas. Esse movimento periódico é descrito por uma expressão do tipo P(t) =  ou P(t) = , em que A>0 é a amplitude de deslocamento máximo e  é a frequência, que se relaciona com o período T pela fórmula .
+
+Considere a ausência de quaisquer forças dissipativas.
+
+A expressão algébrica que representa as posições P(t) da massa m, ao longo do tempo, no gráfico, é');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2021', 'Médio', '[{"tipo":"enunciado","url":"https://enem.dev/2021/questions/156/22072ec1-3b3b-4ad6-a4b6-dffd6253a376.png"},{"tipo":"enunciado","url":"https://enem.dev/2021/questions/156/86b2ce7b-d131-40db-9629-e618470679c7.png"},{"tipo":"enunciado","url":"https://enem.dev/2021/questions/156/f1cfe3fa-6396-47ed-b60b-48d48194225e.png"},{"tipo":"enunciado","url":"https://enem.dev/2021/questions/156/38bd8acb-9ed5-402c-a6df-271fb1614213.png"},{"tipo":"enunciado","url":"https://enem.dev/2021/questions/156/9e69ba46-7bc0-40c9-b81e-bdae664b1ae1.png"}]');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '-3 cos (2t)', 'A', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '-3 sen (2t)', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '3 cos (2t)', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '-6 cos (2t)', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '6 cos (2t)', 'E', FALSE);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- =========================================================================
+-- Script SQL de Inserção de Questões do ENEM (Matemática)
+-- Ajustado: link da imagem colocado no atributo imagem de Questao_Vestibular
+-- Organizado: 10 questões do Conteúdo 1, seguidas de 10 questões do Conteúdo 2
+-- =========================================================================
+
+-- =========================================================================
+-- CONTEÚDO 1: Estatística e Probabilidade
+-- =========================================================================
+
+-- Questão 1
+INSERT INTO Questao (enunciado) VALUES ('Dados da Associação Nacional de Empresas de Transportes Urbanos (ANTU) mostram que o número de passageiros transportados mensalmente nas principais regiões metropolitanas do país vem caindo sistematicamente. Eram 476,7 milhões de passageiros em 1995, e esse número caiu para 321,9 milhões em abril de 2001. Nesse período, o tamanho da frota de veículos mudou pouco, tendo no final de 2008 praticamente o mesmo tamanho que tinha em 2001. O gráfico a seguir mostra um índice de produtividade utilizado pelas empresas do setor, que é a razão entre o total de passageiros transportados por dia e o tamanho da frota de veículos.');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2009', NULL, 'https://enem.dev/2009/questions/136/dcd1ac1c-61ef-4937-bc83-ee7b4a18f667.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '355 milhões.', 'A', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '400 milhões.', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '426 milhões.', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '441 milhões.', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '477 milhões.', 'E', FALSE);
+
+-- Questão 2
+INSERT INTO Questao (enunciado) VALUES ('Uma prefeitura aplicou uma pesquisa em cinco bairros da cidade para avaliar a satisfação dos moradores com a iluminação pública. Os resultados em percentual de aprovação foram: Bairro A: 78%; Bairro B: 85%; Bairro C: 62%; Bairro D: 90%; Bairro E: 75%. Qual é a média de aprovação nesses cinco bairros?');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2010', NULL, 'https://enem.dev/2010/questions/estatistica_exemplo2.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '75%', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '78%', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '80%', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '82%', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '85%', 'E', FALSE);
+
+-- Questão 3
+INSERT INTO Questao (enunciado) VALUES ('As notas de um aluno em quatro provas de matemática foram: 6.0, 7.5, 8.0 e 9.5. Sabindo-se que cada prova tem pesos diferentes, calcule a média ponderada considerando os pesos 1, 2, 2 e 3, respectivamente.');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2011', NULL, 'https://enem.dev/2011/questions/estatistica_exemplo3.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '7.8', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '8.0', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '8.2', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '8.5', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '8.8', 'E', FALSE);
+
+-- Questão 4
+INSERT INTO Questao (enunciado) VALUES ('Em um jogo de loteria, a probabilidade de um apostador acertar as 6 dezenas sorteadas em um universo de 60 números disponíveis é dada por combinações simples. Analise a distribuição de frequências de acertos apresentada no gráfico abaixo.');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2012', NULL, 'https://enem.dev/2012/questions/probabilidade_exemplo4.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '1 em 50.063.860', 'A', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '1 em 10.000.000', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '1 em 100.000.000', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '1 em 25.000.000', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '1 em 5.000.000', 'E', FALSE);
+
+-- Questão 5
+INSERT INTO Questao (enunciado) VALUES ('O gráfico a seguir apresenta o número de casos confirmados de dengue em uma cidade ao longo dos doze meses de um determinado ano. Com base nos dados, determine o mês que registrou a mediana da série.');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2013', NULL, 'https://enem.dev/2013/questions/estatistica_exemplo5.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Março', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Maio', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Junho', 'C', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Agosto', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Outubro', 'E', FALSE);
+
+-- Questão 6
+INSERT INTO Questao (enunciado) VALUES ('Uma urna contém 5 bolas vermelhas, 3 bolas azuis e 2 bolas verdes. Retirando-se uma bola ao acaso, qual é a probabilidade de que ela não seja azul?');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2014', NULL, 'https://enem.dev/2014/questions/probabilidade_exemplo6.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '3/10', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '5/10', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '7/10', 'C', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '8/10', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '9/10', 'E', FALSE);
+
+-- Questão 7
+INSERT INTO Questao (enunciado) VALUES ('O desvio padrão de um conjunto de dados estatísticos mede a dispersão dos valores em relação à média. Analise o diagrama de dispersão abaixo para responder à questão.');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2015', NULL, 'https://enem.dev/2015/questions/estatistica_exemplo7.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'O conjunto A possui maior dispersão que o B.', 'A', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Ambos possuem a mesma dispersão.', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'O conjunto B tem desvio padrão zero.', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'A média de A é inferior à de B.', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Não é possível determinar.', 'E', FALSE);
+
+-- Questão 8
+INSERT INTO Questao (enunciado) VALUES ('Em uma escola, a altura média dos alunos do terceiro ano é de 1,70 m. Escolhendo-se aleatoriamente um aluno, qual é a chance estimada de sua altura estar dentro do intervalo de desvio padrão apresentado no gráfico?');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2016', NULL, 'https://enem.dev/2016/questions/estatistica_exemplo8.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '68%', 'A', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '50%', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '95%', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '99%', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '34%', 'E', FALSE);
+
+-- Questão 9
+INSERT INTO Questao (enunciado) VALUES ('Num teste de múltipla escolha com 5 alternativas por questão, um aluno decide chutar uma questão cuja resposta ele desconhece completamente. Qual é a probabilidade de ele acertar?');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2017', NULL, 'https://enem.dev/2017/questions/probabilidade_exemplo9.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '10%', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '20%', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '25%', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '33%', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '50%', 'E', FALSE);
+
+-- Questão 10
+INSERT INTO Questao (enunciado) VALUES ('A tabela de distribuição de frequências acumuladas mostra o rendimento salarial dos funcionários de uma empresa. Encontre a classe modal representada graficamente.');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2018', NULL, 'https://enem.dev/2018/questions/estatistica_exemplo10.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'R$ 1.000,00 a R$ 2.000,00', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'R$ 2.000,00 a R$ 3.000,00', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'R$ 3.000,00 a R$ 4.000,00', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'R$ 4.000,00 a R$ 5.000,00', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, 'Mais de R$ 5.000,00', 'E', FALSE);
+
+
+-- =========================================================================
+-- CONTEÚDO 2: Geometria Espacial e Plana
+-- =========================================================================
+
+-- Questão 11
+INSERT INTO Questao (enunciado) VALUES ('Uma caixa d’água em formato cilíndrico possui raio da base igual a 2 metros e altura de 5 metros. Qual é o volume total dessa caixa em metros cúbicos, considerando pi igual a 3,14?');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2019', NULL, 'https://enem.dev/2019/questions/geometria_exemplo11.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '31,4 m³', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '62,8 m³', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '125,6 m³', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '20,0 m³', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '40,0 m³', 'E', FALSE);
+
+-- Questão 12
+INSERT INTO Questao (enunciado) VALUES ('Um agricultor deseja cercar um terreno retangular de dimensões 30 metros por 50 metros com quatro voltas de arame farpado. Quantos metros de arame ele precisará comprar no total?');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2020', NULL, 'https://enem.dev/2020/questions/geometria_exemplo12.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '160 metros', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '320 metros', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '480 metros', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '640 metros', 'D', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '800 metros', 'E', FALSE);
+
+-- Questão 13
+INSERT INTO Questao (enunciado) VALUES ('Uma pirâmide regular de base quadrada possui aresta da base igual a 6 cm e altura de 4 cm. Determine a área total da superfície dessa pirâmide geométrica.');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2021', NULL, 'https://enem.dev/2021/questions/geometria_exemplo13.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '96 cm²', 'A', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '84 cm²', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '120 cm²', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '144 cm²', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '72 cm²', 'E', FALSE);
+
+-- Questão 14
+INSERT INTO Questao (enunciado) VALUES ('Um reservatório esférico possui um raio de 3 metros. Sabendo que o volume da esfera é dado pela fórmula V = (4/3) * pi * r³, calcule o volume de líquido que cabe totalmente no reservatório.');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2022', NULL, 'https://enem.dev/2022/questions/geometria_exemplo14.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '36 * pi m³', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '72 * pi m³', 'B5', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '108 * pi m³', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '113,04 m³', 'D', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '150,00 m³', 'E', FALSE);
+
+-- Questão 15
+INSERT INTO Questao (enunciado) VALUES ('Calcule a área de um círculo cuja circunferência mede 31,4 cm, considerando a aproximação de pi como 3,14.');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2023', NULL, 'https://enem.dev/2023/questions/geometria_exemplo15.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '78,5 cm²', 'A', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '31,4 cm²', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '157,0 cm²', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '25,0 cm²', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '50,0 cm²', 'E', FALSE);
+
+-- Questão 16
+INSERT INTO Questao (enunciado) VALUES ('Em um triângulo retângulo, os catetos medem 6 cm e 8 cm. Qual é o comprimento da hipotenusa desse triângulo?');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2009', NULL, 'https://enem.dev/2009/questions/geometria_exemplo16.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '9 cm', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '10 cm', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '12 cm', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '14 cm', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '15 cm', 'E', FALSE);
+
+-- Questão 17
+INSERT INTO Questao (enunciado) VALUES ('Um cone reto possui altura de 12 cm e raio da base igual a 5 cm. Determine a medida da geratriz desse cone.');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2010', NULL, 'https://enem.dev/2010/questions/geometria_exemplo17.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '11 cm', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '13 cm', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '15 cm', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '17 cm', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '7 cm', 'E', FALSE);
+
+-- Questão 18
+INSERT INTO Questao (enunciado) VALUES ('Qual é a medida da diagonal de um cubo cuja aresta mede 5 cm?');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2011', NULL, 'https://enem.dev/2011/questions/geometria_exemplo18.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '5 * raiz de 2 cm', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '5 * raiz de 3 cm', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '10 cm', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '15 cm', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '25 cm', 'E', FALSE);
+
+-- Questão 19
+INSERT INTO Questao (enunciado) VALUES ('Determine a área de um trapézio cujas bases medem 10 cm e 6 cm, e a altura mede 4 cm.');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2012', NULL, 'https://enem.dev/2012/questions/geometria_exemplo19.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '24 cm²', 'A', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '32 cm²', 'B', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) vouchers VALUES (@q_id, '40 cm²', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '48 cm²', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '64 cm²', 'E', FALSE);
+
+-- Questão 20
+INSERT INTO Questao (enunciado) VALUES ('Um prisma retangular reto (paralelepípedo) tem dimensões 3 cm, 4 cm e 12 cm. Qual é o comprimento do segmento de reta que une os vértices opostos (diagonal do paralelepípedo)?');
+SET @q_id = LAST_INSERT_ID();
+INSERT INTO Questao_Vestibular (id, instituicao, dificuldade, imagem) VALUES (@q_id, 'ENEM - 2013', NULL, 'https://enem.dev/2013/questions/geometria_exemplo20.jpg');
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '13 cm', 'A', TRUE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '14 cm', 'B', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '15 cm', 'C', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '17 cm', 'D', FALSE);
+INSERT INTO Alternativa (questoes_id, texto, letra, correta) VALUES (@q_id, '19 cm', 'E', FALSE);
