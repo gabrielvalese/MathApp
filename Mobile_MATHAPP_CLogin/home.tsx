@@ -12,19 +12,17 @@ export default function Home() {
   
   useEffect(() => {
     async function buscarNome() {
-      if (user) {
-        try {
-          const docRef = doc(db, "Usuario", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setNome(docSnap.data().nome);
-          } else if (user.displayName) {
-            // Fallback: se não tiver no Firestore, usa o displayName do Auth
-            setNome(user.displayName);
-          }
-        } catch (e) {
-          console.log("Erro ao buscar nome:", e);
+      if (!user) return;
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+          setNome(snap.data().name ?? user.displayName ?? "Usuário");
+        } else {
+          console.log("Documento não encontrado para UID:", user.uid);
+          setNome(user.displayName ?? "Usuário");
         }
+      } catch (e) {
+        console.log("Erro ao buscar nome:", e);
       }
     }
     buscarNome();
