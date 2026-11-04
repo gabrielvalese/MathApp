@@ -10,7 +10,7 @@ export default function Index() {
     <View style={styles.container}>
       
         <View style={styles.box_quest}>
-          <Text style={{fontSize: 20}}>(UFPR) Imagine que um macaco digite sequências aleatórias de 3 letras em um teclado com apenas 5 letras: S, E, R, T, O. Qual é a probabilidade de ele escrever "SER" na primeira tentativa?</Text>
+          <Text style={{fontSize: 20}}>(UFPR) Imagine que um macaco digite sequências aleatórias de 3 letras em um teclado com apenas 5 letras: S, E, R, T, O. Qual é a probabilidade de ele escrever "SER" na primeira tentativa?w</Text>
           <TouchableOpacity onPress={() => setSelecionada(selecionada === 'A' ? '' : 'A')}><Text style={{fontSize: 20, textDecorationLine: selecionada === 'A' ? 'line-through' : 'none', textDecorationColor: 'red'}}>A) 1/5</Text></TouchableOpacity>
           <TouchableOpacity onPress={() => setSelecionada(selecionada === 'B' ? '' : 'B')}><Text style={{fontSize: 20, textDecorationLine: selecionada === 'B' ? 'line-through' : 'none', textDecorationColor: 'red'}}>B) 1/15</Text></TouchableOpacity>
           <TouchableOpacity onPress={() => setSelecionada(selecionada === 'C' ? '' : 'C')}><Text style={{fontSize: 20, textDecorationLine: selecionada === 'C' ? 'line-through' : 'none', textDecorationColor: 'red'}}>C) 1/75</Text></TouchableOpacity>

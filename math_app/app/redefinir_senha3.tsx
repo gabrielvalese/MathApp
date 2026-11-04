@@ -6,7 +6,7 @@ export default function Index() {
       <ScrollView>
       <View style={styles.redefinir_senha}>
          <Image 
-          source={require('../../assets/images/logo.png')} 
+          source={require('../assets/images/logo.png')} 
           style={{ width: 100, height: 100, marginBottom: 20 }}
         />aaa
         <Text style={{fontSize: 30, fontWeight: 'bold'}}>Redefinir senha</Text>

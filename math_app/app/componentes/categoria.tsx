@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     width: '80%',
     minHeight: 100,
     borderRadius: 2,
+    borderColor: '#c7c7c7',
     margin: 15
     
   },
