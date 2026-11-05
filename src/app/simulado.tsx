@@ -1,991 +1,487 @@
-
-import { useEffect, useState } from "react";
-
-import {
-  FontAwesome,
-  FontAwesome6,
-  Ionicons,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
-
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
-
-import {
-  collection,
-  doc,
-  getDocs,
-  serverTimestamp,
-  writeBatch,
-} from "firebase/firestore";
-
-
-import MeusSimulado from "./componentes/MeuSimulado";
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { collection, doc, getDocs, query, serverTimestamp, where, writeBatch, } from "firebase/firestore";
+import { useEffect, useMemo, useState } from "react";
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View, } from "react-native";
 import { auth, db } from "./FirebaseConfig";
+import MeuSimulado from "./componentes/MeuSimulado";
 
 
+const COLECAO_QUESTOES = "Questao";
 
-const COLECAO_ASSUNTOS = "Conteudo";
+const CAMPO_ASSUNTO_QUESTAO = "Conteudo";
 
-type Aba = "criar" | "meus";
-
-type Assunto = {
-  id: string;
-  nome: string;
+const CORES = {
+  azul: "#0B132B",
+  azulHome: "#1E3A8A",
+  laranja: "#F97316",
+  laranjaTexto: "#C2410C",
+  laranjaClaro: "#FFF7ED",
+  laranjaBorda: "#FFEDD5",
+  fundo: "#F1F5F9",
+  cartao: "#F8FAFC",
+  branco: "#FFFFFF",
+  borda: "#E2E8F0",
+  secundario: "#64748B",
 };
 
-export default function Index() {
-  const [abaAtiva, setAbaAtiva] =
-    useState<Aba>("criar");
+const ASSUNTOS = [
+  "Análise Combinatória",
+  "Binômio de Newton",
+  "Cônicas",
+  "Conjuntos",
+  "Determinantes",
+  "Equações Algébricas",
+  "Estatística",
+  "Função Afim",
+  "Função Exponencial",
+  "Função Quadrática",
+  "Funções",
+  "Geometria Analítica",
+  "Geometria de Posição",
+  "Geometria Espacial",
+  "Geometria Plana",
+  "Logaritmo",
+  "Matemática Básica",
+  "Matemática Financeira",
+  "Matrizes",
+  "Módulo",
+  "Números complexos",
+  "Polinômios",
+  "Probabilidade",
+  "Progressões - PA e PG",
+  "Sistemas Lineares",
+  "Trigonometria",
+];
 
-  // ASSUNTOS
-  const [assuntos, setAssuntos] =
-    useState<Assunto[]>([]);
+type Aba = "criar" | "meus";
+type QuestaoSelecionada = { id: string; assunto: string; ordem: number };
 
-  const [assuntosSelecionados, setAssuntosSelecionados] =
-    useState<string[]>([]);
+function textoBusca(valor: string): string {
+  return valor.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
 
-  const [mostrarAssuntos, setMostrarAssuntos] =
-    useState(false);
-
-  const [carregandoAssuntos, setCarregandoAssuntos] =
-    useState(true);
-
-  const [erroAssuntos, setErroAssuntos] =
-    useState("");
-
-  // CONFIGURAÇÕES DO SIMULADO
-  const [numeroQuestoes, setNumeroQuestoes] =
-    useState("20");
-
-  const [tempoLimite, setTempoLimite] =
-    useState("60");
-
-  const [salvando, setSalvando] =
-    useState(false);
-
-  // BUSCAR ASSUNTOS NO FIREBASE
-  async function carregarAssuntos() {
-    setCarregandoAssuntos(true);
-    setErroAssuntos("");
-
-    try {
-      const snapshot = await getDocs(
-        collection(db, COLECAO_ASSUNTOS)
-      );
-
-      const lista: Assunto[] = snapshot.docs.map(
-        (documento) => {
-          const dados = documento.data();
-
-          // Aceita diferentes nomes de campo
-          const campoNome = [
-            dados.nome,
-            dados.titulo,
-            dados.assunto,
-            dados.conteudo,
-          ].find(
-            (valor) =>
-              typeof valor === "string" &&
-              valor.trim().length > 0
-          );
-
-          const nome =
-            typeof campoNome === "string"
-              ? campoNome.trim()
-              : documento.id;
-
-          return {
-            id: documento.id,
-            nome,
-          };
-        }
-      );
-
-      // Organiza alfabeticamente
-      lista.sort((a, b) =>
-        a.nome.localeCompare(b.nome, "pt-BR")
-      );
-
-      setAssuntos(lista);
-
-      // Mantém somente IDs ainda existentes
-      setAssuntosSelecionados((anteriores) =>
-        anteriores.filter((id) =>
-          lista.some((assunto) => assunto.id === id)
-        )
-      );
-    } catch (error) {
-      console.error(
-        "Erro ao buscar assuntos:",
-        error
-      );
-
-      setErroAssuntos(
-        "Não foi possível carregar os assuntos."
-      );
-    } finally {
-      setCarregandoAssuntos(false);
-    }
+function embaralhar<T>(original: T[]): T[] {
+  const itens = [...original];
+  for (let i = itens.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [itens[i], itens[j]] = [itens[j], itens[i]];
   }
+  return itens;
+}
 
-  // CARREGA AO ABRIR A TELA
+export default function Simulado() {
+  const router = useRouter();
+  const params = useLocalSearchParams<{ aba?: string }>();
+  const [aba, setAba] = useState<Aba>(params.aba === "meus" ? "meus" : "criar");
+
   useEffect(() => {
-    carregarAssuntos();
-  }, []);
+    if (params.aba === "meus") setAba("meus");
+  }, [params.aba]);
+  const [painelAberto, setPainelAberto] = useState(false);
+  const [busca, setBusca] = useState("");
+  const [selecionados, setSelecionados] = useState<string[]>([]);
+  const [numeroQuestoes, setNumeroQuestoes] = useState("20");
+  const [tempoLimite, setTempoLimite] = useState("60");
+  const [gerando, setGerando] = useState(false);
 
-  // MARCAR OU DESMARCAR UM ASSUNTO
-  function alternarAssunto(id: string) {
-    setAssuntosSelecionados((anteriores) => {
-      if (anteriores.includes(id)) {
-        return anteriores.filter(
-          (assuntoId) => assuntoId !== id
-        );
-      }
+  const assuntosFiltrados = useMemo(
+    () => ASSUNTOS.filter((nome) => textoBusca(nome).includes(textoBusca(busca))),
+    [busca]
+  );
 
-      return [...anteriores, id];
-    });
-  }
+  const previsao = useMemo(() => {
+    const total = Number(numeroQuestoes);
+    if (!Number.isInteger(total) || total <= 0 || selecionados.length === 0) return [];
+    const porAssunto = Math.floor(total / selecionados.length);
+    const sobra = total % selecionados.length;
+    return selecionados.map((nome, index) => ({
+      nome,
+      quantidade: porAssunto + (index < sobra ? 1 : 0),
+    }));
+  }, [numeroQuestoes, selecionados]);
 
-  // SELECIONAR TODOS
-  function selecionarTodos() {
-    setAssuntosSelecionados(
-      assuntos.map((assunto) => assunto.id)
+  function alternarAssunto(nome: string) {
+    setSelecionados((atual) =>
+      atual.includes(nome) ? atual.filter((item) => item !== nome) : [...atual, nome]
     );
   }
 
-  // LIMPAR SELEÇÃO
-  function limparSelecao() {
-    setAssuntosSelecionados([]);
-  }
-
-  // SALVAR SIMULADO NO FIREBASE
-  async function salvarSimulado() {
-    if (salvando) return;
-
+  async function gerarSimulado() {
+    if (gerando) return;
     const usuario = auth.currentUser;
-
     if (!usuario) {
-      Alert.alert(
-        "Atenção",
-        "Faça login para criar um simulado."
-      );
+      Alert.alert("Login necessário", "Entre na sua conta para gerar um simulado.");
       return;
     }
-
-    if (assuntosSelecionados.length === 0) {
-      Alert.alert(
-        "Selecione assuntos",
-        "Escolha pelo menos um assunto."
-      );
+    if (selecionados.length === 0) {
+      Alert.alert("Selecione assuntos", "Escolha pelo menos um conteúdo.");
       return;
     }
 
     const quantidade = Number(numeroQuestoes);
     const tempo = Number(tempoLimite);
-
-    if (
-      !Number.isSafeInteger(quantidade) ||
-      quantidade <= 0
-    ) {
-      Alert.alert(
-        "Quantidade inválida",
-        "Informe um número válido de questões."
-      );
+    if (!Number.isSafeInteger(quantidade) || quantidade < 1 || quantidade > 100) {
+      Alert.alert("Quantidade inválida", "Escolha de 1 a 100 questões.");
+      return;
+    }
+    if (!Number.isSafeInteger(tempo) || tempo <= 0) {
+      Alert.alert("Tempo inválido", "Informe o tempo em minutos.");
       return;
     }
 
-    if (
-      !Number.isSafeInteger(tempo) ||
-      tempo <= 0
-    ) {
-      Alert.alert(
-        "Tempo inválido",
-        "Informe um tempo válido em minutos."
-      );
-      return;
-    }
-
-    setSalvando(true);
-
+    setGerando(true);
     try {
-      // Nomes dos assuntos selecionados
-      const nomesSelecionados = assuntos
-        .filter((assunto) =>
-          assuntosSelecionados.includes(assunto.id)
-        )
-        .map((assunto) => assunto.nome);
-
-      // Nome gerado automaticamente
-      const nome =
-        nomesSelecionados.length === 1
-          ? `Simulado de ${nomesSelecionados[0]}`
-          : `Simulado de Matemática - ${nomesSelecionados.length} assuntos`;
-
-      // REFERÊNCIAS DOS DOCUMENTOS
-      const simuladoRef = doc(
-        collection(db, "simulados")
+      // O banco pode usar o NOME do assunto em Questao.conteudo,
+      // ou o identificador numérico Questao.id_conteudo -> Conteudo.id_conteudo.
+      const conteudos = await getDocs(collection(db, "Conteudo")).catch(erro => {
+        console.warn("Não foi possível consultar Conteudo (tentando apenas Questao.conteudo):", erro);
+        return null;
+      });
+      const grupos = await Promise.all(
+        selecionados.map(async (assunto) => {
+          const consulta = query(
+            collection(db, COLECAO_QUESTOES),
+            where(CAMPO_ASSUNTO_QUESTAO, "==", assunto)
+          );
+          let documentos = (await getDocs(consulta)).docs;
+          if (documentos.length === 0 && conteudos) {
+            const docConteudo = conteudos.docs.find(d => {
+              const dados = d.data();
+              const nome = dados.nome ?? dados.nome_conteudo ?? dados.titulo ?? dados.conteudo ?? dados.assunto ?? d.id;
+              return textoBusca(String(nome)) === textoBusca(assunto);
+            });
+            if (docConteudo) {
+              const dados = docConteudo.data();
+              const idConteudo = dados.id_conteudo ?? dados.id ?? docConteudo.id;
+              documentos = (await getDocs(query(
+                collection(db, COLECAO_QUESTOES), where("id_conteudo", "==", idConteudo)
+              ))).docs;
+              if (documentos.length === 0 && Number.isFinite(Number(idConteudo))) {
+                documentos = (await getDocs(query(
+                  collection(db, COLECAO_QUESTOES), where("id_conteudo", "==", Number(idConteudo))
+                ))).docs;
+              }
+            }
+          }
+          const validos = documentos.filter(d => {
+            const q = d.data();
+            return typeof q.enunciado === "string" && Array.isArray(q.alternativas) &&
+              typeof q.respostaCorreta === "string";
+          });
+          return {
+            assunto,
+            ids: embaralhar(validos.map(documento => documento.id)),
+            usadas: 0,
+          };
+        })
       );
 
-      const tentativaRef = doc(
-        collection(db, "tentativas_simulado")
-      );
+      // Caso a mesma questão apareça em dois grupos, mantenha apenas uma cópia.
+      const idsUnicos = new Set<string>();
+      for (const grupo of grupos) {
+        grupo.ids = grupo.ids.filter(id => {
+          if (idsUnicos.has(id)) return false;
+          idsUnicos.add(id);
+          return true;
+        });
+      }
+      const totalDisponivel = grupos.reduce((total, grupo) => total + grupo.ids.length, 0);
+      if (totalDisponivel < quantidade) {
+        Alert.alert(
+          "Questões insuficientes",
+          `Você pediu ${quantidade} questões, mas a consulta encontrou ${totalDisponivel}. ` +
+            `Confira se Questao.${CAMPO_ASSUNTO_QUESTAO} contém o nome do conteúdo, ` +
+            "ou se Questao.id_conteudo está ligado à coleção Conteudo."
+        );
+        return;
+      }
 
-      // SALVAR OS DOIS DOCUMENTOS JUNTOS
-      const lote = writeBatch(db);
+      // Distribui igualmente enquanto houver questões em cada assunto.
+      const escolhidas: Array<{ id: string; assunto: string }> = [];
+      while (escolhidas.length < quantidade) {
+        const disponiveis = grupos.filter((grupo) => grupo.ids.length > 0);
+        const menorUso = Math.min(...disponiveis.map((grupo) => grupo.usadas));
+        const candidatos = disponiveis.filter((grupo) => grupo.usadas === menorUso);
+        const grupo = candidatos[Math.floor(Math.random() * candidatos.length)];
+        const id = grupo.ids.pop();
+        if (!id) throw new Error("Não foi possível selecionar uma questão.");
+        grupo.usadas += 1;
+        escolhidas.push({ id, assunto: grupo.assunto });
+      }
 
-      // DOCUMENTO DO SIMULADO
-      lote.set(simuladoRef, {
+      const questoes: QuestaoSelecionada[] = embaralhar(escolhidas).map((q, indice) => ({
+        ...q,
+        ordem: indice + 1,
+      }));
+      const distribuicao = grupos.map(({ assunto, usadas }) => ({
+        assunto,
+        quantidade: usadas,
+      }));
+      const nome = selecionados.length === 1
+        ? `Simulado de ${selecionados[0]}`
+        : selecionados.length === 2
+        ? `Simulado de ${selecionados.join(" e ")}`
+        : `Simulado de Matemática - ${selecionados.length} assuntos`;
+
+      const simuladoRef = doc(collection(db, "simulados"));
+      const tentativaRef = doc(collection(db, "tentativas_simulado"));
+      const batch = writeBatch(db);
+
+      batch.set(simuladoRef, {
         criador_id: usuario.uid,
-        nome: nome,
-
-        assuntos_ids: assuntosSelecionados,
-        assuntos_nomes: nomesSelecionados,
-
+        nome,
+        assuntos_nomes: selecionados,
         quantidade_questoes: quantidade,
         tempo_minutos: tempo,
-
-        // Questões ainda serão sorteadas
-        questoes_ids: [],
-
-        status: "rascunho",
+        questoes_ids: questoes.map((q) => q.id),
+        questoes,
+        distribuicao,
+        status: "pronto",
         criado_em: serverTimestamp(),
       });
-
-      // DOCUMENTO DO HISTÓRICO
-      lote.set(tentativaRef, {
+      batch.set(tentativaRef, {
         usuario_id: usuario.uid,
         simulado_id: simuladoRef.id,
-
         nome_simulado: nome,
-
-        assuntos_ids: assuntosSelecionados,
-
         quantidade_questoes: quantidade,
         tempo_minutos: tempo,
-
         status: "nao_iniciado",
-
         acertos: null,
+        respondidas: 0,
+        ids_respondidos: [],
+        indice_atual: 0,
         iniciado_em: null,
         finalizado_em: null,
-
         criado_em: serverTimestamp(),
       });
+      await batch.commit();
 
-      await lote.commit();
-
-      console.log(
-        "Simulado salvo:",
-        simuladoRef.id
-      );
-
-      Alert.alert(
-        "Sucesso!",
-        "Seu simulado foi salvo no Firebase."
-      );
-
-      // ABRE MEUS SIMULADOS
-      setAbaAtiva("meus");
-      setMostrarAssuntos(false);
+      Alert.alert("Simulado criado!", `${quantidade} questões foram selecionadas. Agora você pode respondê-las.`, [
+        { text: "Meus simulados", onPress: () => { setPainelAberto(false); setAba("meus"); } },
+        { text: "Responder agora", onPress: () => router.push({
+          pathname: "/QuestoesBase/[id]",
+          params: { id: questoes[0].id, tentativaId: tentativaRef.id },
+        }) },
+      ]);
     } catch (error) {
-      console.error(
-        "Erro ao salvar:",
-        error
-      );
-
+      console.error("Erro ao gerar simulado:", error);
       Alert.alert(
-        "Erro ao salvar",
-        "Verifique a conexão e as permissões do Firebase."
+        "Não foi possível gerar",
+        error instanceof Error ? error.message : "Verifique a conexão e as permissões do Firebase."
       );
     } finally {
-      setSalvando(false);
+      setGerando(false);
     }
   }
 
   return (
-    <View style={styles.conteiner}>
+    <View style={styles.tela}>
       <ScrollView
-        contentContainerStyle={styles.tela_geral}
+        contentContainerStyle={styles.conteudo}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* CABEÇALHO */}
         <View style={styles.cabecalho}>
-          <FontAwesome6
-            name="chess-king"
-            size={40}
-            color="#0B132B"
-          />
-
-          <Text style={styles.texto_cabecalho}>
-            Simulado
-          </Text>
+          <Pressable
+            accessibilityLabel="Voltar"
+            style={styles.botaoVoltar}
+            onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}
+          >
+            <Ionicons name="arrow-back" size={22} color={CORES.azul} />
+          </Pressable>
+          <Text style={styles.titulo}>Simulados</Text>
+          <Text style={styles.subtitulo}>Prepare seu simulado de matemática do ENEM</Text>
         </View>
 
-        {/* ABAS SUPERIORES */}
-        <View style={styles.area_abas}>
+        <View style={styles.abas}>
           <Pressable
-            style={[
-              styles.botao_aba,
-              abaAtiva === "criar" &&
-                styles.botao_aba_ativo,
-            ]}
-            onPress={() => setAbaAtiva("criar")}
+            style={[styles.aba, aba === "criar" && styles.abaAtiva]}
+            onPress={() => setAba("criar")}
           >
-            <Ionicons
-              name="add-circle-outline"
-              size={22}
-              color={
-                abaAtiva === "criar"
-                  ? "#FFFFFF"
-                  : "#0B132B"
-              }
-            />
-
-            <Text
-              style={[
-                styles.texto_aba,
-                abaAtiva === "criar" &&
-                  styles.texto_aba_ativo,
-              ]}
-            >
-              Criar simulado
-            </Text>
+            <Ionicons name="add-circle-outline" size={19} color={aba === "criar" ? CORES.laranjaTexto : CORES.secundario} />
+            <Text style={[styles.textoAba, aba === "criar" && styles.textoAbaAtiva]}>Criar simulado</Text>
           </Pressable>
-
           <Pressable
-            style={[
-              styles.botao_aba,
-              abaAtiva === "meus" &&
-                styles.botao_aba_ativo,
-            ]}
-            onPress={() => setAbaAtiva("meus")}
+            style={[styles.aba, aba === "meus" && styles.abaAtiva]}
+            onPress={() => setAba("meus")}
           >
-            <Ionicons
-              name="folder-open-outline"
-              size={22}
-              color={
-                abaAtiva === "meus"
-                  ? "#FFFFFF"
-                  : "#0B132B"
-              }
-            />
-
-            <Text
-              style={[
-                styles.texto_aba,
-                abaAtiva === "meus" &&
-                  styles.texto_aba_ativo,
-              ]}
-            >
-              Meus simulados
-            </Text>
+            <Ionicons name="folder-open-outline" size={19} color={aba === "meus" ? CORES.laranjaTexto : CORES.secundario} />
+            <Text style={[styles.textoAba, aba === "meus" && styles.textoAbaAtiva]}>Meus simulados</Text>
           </Pressable>
         </View>
 
-        {/* ABA DE CRIAÇÃO */}
-        {abaAtiva === "criar" && (
-          <View style={styles.assuntos}>
-            <View style={styles.titulo_assuntos}>
-              <Text style={styles.texto_titulo}>
-                Assuntos
-              </Text>
-            </View>
+        {aba === "criar" ? (
+          <View style={styles.cartao}>
+            <Text style={styles.tituloCartao}>Novo simulado</Text>
+            <Text style={styles.descricaoCartao}>Escolha os assuntos, a quantidade de questões e o tempo.</Text>
 
-            {/* BOTÃO DE SELEÇÃO */}
-            <View style={styles.area_selecionar_assunto}>
-              <Pressable
-                style={styles.botao_assuntos}
-                onPress={() =>
-                  setMostrarAssuntos(
-                    !mostrarAssuntos
-                  )
-                }
-              >
-                <Text style={styles.texto_assuntos}>
-                  Selecionar assuntos
-                </Text>
-
-                <View style={styles.linha_selecao}>
-                  <Text style={styles.contador_assuntos}>
-                    {assuntosSelecionados.length}
-                    {" selecionado(s)"}
+            <Text style={styles.label}>Assuntos</Text>
+            <Pressable style={styles.seletor} onPress={() => setPainelAberto((atual) => !atual)}>
+              <View style={styles.linhaSeletor}>
+                <Ionicons name="library-outline" size={20} color={CORES.laranjaTexto} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textoSeletor}>Selecionar assuntos</Text>
+                  <Text style={styles.textoPequeno}>
+                    {selecionados.length === 0
+                      ? "26 conteúdos disponíveis"
+                      : `${selecionados.length} de 26 selecionados`}
                   </Text>
-
-                  <Ionicons
-                    name={
-                      mostrarAssuntos
-                        ? "chevron-up"
-                        : "chevron-down"
-                    }
-                    size={18}
-                    color="#C2410C"
-                  />
                 </View>
-              </Pressable>
-            </View>
+              </View>
+              <Ionicons name={painelAberto ? "chevron-up" : "chevron-down"} size={20} color={CORES.laranjaTexto} />
+            </Pressable>
 
-            {/* PAINEL DE ASSUNTOS */}
-            {mostrarAssuntos && (
-              <View style={styles.painel_assuntos}>
-                {carregandoAssuntos ? (
-                  <ActivityIndicator
-                    size="large"
-                    color="#F97316"
-                  />
-                ) : erroAssuntos ? (
-                  <View style={styles.area_mensagem}>
-                    <Text style={styles.mensagem}>
-                      {erroAssuntos}
-                    </Text>
-
-                    <Pressable
-                      onPress={carregarAssuntos}
-                      style={styles.botao_recarregar}
-                    >
-                      <Text style={styles.texto_recarregar}>
-                        Tentar novamente
-                      </Text>
-                    </Pressable>
-                  </View>
-                ) : assuntos.length === 0 ? (
-                  <Text style={styles.mensagem}>
-                    Nenhum assunto encontrado na
-                    coleção "{COLECAO_ASSUNTOS}".
-                  </Text>
-                ) : (
-                  <>
-                    <Text style={styles.total_assuntos}>
-                      {assuntos.length}
-                      {" assuntos disponíveis"}
-                    </Text>
-
-                    <View style={styles.acoes_assuntos}>
+            {painelAberto && (
+              <View style={styles.painel}>
+                <TextInput
+                  style={styles.busca}
+                  placeholder="Buscar assunto..."
+                  placeholderTextColor="#94A3B8"
+                  value={busca}
+                  onChangeText={setBusca}
+                />
+                <View style={styles.acoes}>
+                  <Text style={styles.textoPequeno}>{selecionados.length} selecionado(s)</Text>
+                  <Pressable onPress={() => setSelecionados([...ASSUNTOS])}>
+                    <Text style={styles.link}>Selecionar todos</Text>
+                  </Pressable>
+                  <Pressable onPress={() => setSelecionados([])}>
+                    <Text style={styles.link}>Limpar</Text>
+                  </Pressable>
+                </View>
+                <View style={styles.grade}>
+                  {assuntosFiltrados.map((nome) => {
+                    const marcado = selecionados.includes(nome);
+                    return (
                       <Pressable
-                        onPress={selecionarTodos}
+                        key={nome}
+                        style={[styles.itemAssunto, marcado && styles.itemSelecionado]}
+                        onPress={() => alternarAssunto(nome)}
                       >
-                        <Text style={styles.link_acao}>
-                          Selecionar todos
-                        </Text>
+                        <Ionicons
+                          name={marcado ? "checkbox" : "square-outline"}
+                          size={19}
+                          color={marcado ? CORES.laranja : CORES.secundario}
+                        />
+                        <Text style={styles.textoAssunto}>{nome}</Text>
                       </Pressable>
-
-                      <Pressable
-                        onPress={limparSelecao}
-                      >
-                        <Text style={styles.link_acao}>
-                          Limpar
-                        </Text>
-                      </Pressable>
-                    </View>
-
-                    {/* QUADRADINHOS */}
-                    <View style={styles.grade_assuntos}>
-                      {assuntos.map((assunto) => {
-                        const selecionado =
-                          assuntosSelecionados.includes(
-                            assunto.id
-                          );
-
-                        return (
-                          <Pressable
-                            key={assunto.id}
-                            onPress={() =>
-                              alternarAssunto(assunto.id)
-                            }
-                            style={[
-                              styles.quadrado_assunto,
-                              selecionado &&
-                                styles.quadrado_selecionado,
-                            ]}
-                          >
-                            <Ionicons
-                              name={
-                                selecionado
-                                  ? "checkbox"
-                                  : "square-outline"
-                              }
-                              size={19}
-                              color={
-                                selecionado
-                                  ? "#F97316"
-                                  : "#94A3B8"
-                              }
-                            />
-
-                            <Text style={styles.nome_assunto}>
-                              {assunto.nome}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-
-                    <Pressable
-                      style={styles.botao_confirmar}
-                      onPress={() =>
-                        setMostrarAssuntos(false)
-                      }
-                    >
-                      <Text style={styles.texto_confirmar}>
-                        Confirmar seleção
-                      </Text>
-                    </Pressable>
-                  </>
-                )}
+                    );
+                  })}
+                </View>
+                <Pressable style={styles.confirmar} onPress={() => setPainelAberto(false)}>
+                  <Text style={styles.textoConfirmar}>Confirmar seleção</Text>
+                </Pressable>
               </View>
             )}
 
-            {/* NÚMERO DE QUESTÕES */}
-            <View style={styles.numero_questoes}>
-              <Text style={styles.texto_label}>
-                Número de Questões
-              </Text>
-
-              <View style={styles.quadrado_num_questoes}>
+            <View style={styles.campos}>
+              <View style={styles.campo}>
+                <Text style={styles.labelCampo}>Número de questões</Text>
                 <TextInput
-                  style={styles.input_texto}
                   value={numeroQuestoes}
                   onChangeText={setNumeroQuestoes}
                   keyboardType="number-pad"
-                  selectionColor="#F97316"
+                  selectionColor={CORES.laranja}
+                  style={styles.inputNumerico}
                 />
               </View>
-            </View>
-
-            {/* TEMPO LIMITE */}
-            <View style={styles.tempo_questionario}>
-              <Text style={styles.texto_label}>
-                Tempo Limite
-              </Text>
-
-              <Text style={styles.texto_minutos}>
-                (minutos)
-              </Text>
-
-              <View style={styles.quadrado_tempo}>
+              <View style={styles.campo}>
+                <Text style={styles.labelCampo}>Tempo (min)</Text>
                 <TextInput
-                  style={styles.input_texto}
                   value={tempoLimite}
                   onChangeText={setTempoLimite}
                   keyboardType="number-pad"
-                  selectionColor="#F97316"
+                  selectionColor={CORES.laranja}
+                  style={styles.inputNumerico}
                 />
               </View>
-
-              {/* SALVAR SIMULADO */}
-              <View style={styles.alinhar_botao_iniciar}>
-                <Pressable
-                  style={[
-                    styles.botao_iniciar,
-                    salvando && { opacity: 0.6 },
-                  ]}
-                  onPress={salvarSimulado}
-                  disabled={salvando}
-                >
-                  <Text style={styles.texto_iniciar}>
-                    {salvando
-                      ? "Salvando..."
-                      : "Salvar Simulado"}
-                  </Text>
-                </Pressable>
-              </View>
             </View>
+
+            {previsao.length > 0 && (
+              <View style={styles.previa}>
+                <View style={styles.cabecalhoPrevia}>
+                  <Text style={styles.tituloPrevia}>Distribuição prevista</Text>
+                  <Text style={styles.totalPrevia}>{numeroQuestoes} questões</Text>
+                </View>
+                {previsao.slice(0, 5).map((item) => (
+                  <View key={item.nome} style={styles.linhaPrevia}>
+                    <Text style={styles.nomePrevia}>{item.nome}</Text>
+                    <Text style={styles.qtdPrevia}>{item.quantidade}</Text>
+                  </View>
+                ))}
+                {previsao.length > 5 && (
+                  <Text style={styles.textoPequeno}>E mais {previsao.length - 5} assunto(s).</Text>
+                )}
+                <Text style={styles.legendaPrevia}>
+                  A distribuição final depende das questões disponíveis no banco.
+                </Text>
+              </View>
+            )}
+
+            <Pressable
+              style={[styles.botaoGerar, gerando && styles.botaoDesabilitado]}
+              onPress={gerarSimulado}
+              disabled={gerando}
+            >
+              {gerando ? <ActivityIndicator color={CORES.branco} /> : <Ionicons name="create-outline" size={20} color={CORES.branco} />}
+              <Text style={styles.textoGerar}>{gerando ? "Gerando simulado..." : "Gerar simulado"}</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View style={styles.areaHistorico}>
+            <MeuSimulado />
           </View>
         )}
-
-        {/* ABA MEUS SIMULADOS */}
-        {abaAtiva === "meus" && (
-          <MeusSimulado />
-        )}
       </ScrollView>
-
-      {/* RODAPÉ ORIGINAL */}
-      <View style={styles.rodape}>
-        <FontAwesome
-          name="graduation-cap"
-          size={30}
-          color="#0B132B"
-          style={styles.icones_rodape}
-        />
-
-        <MaterialCommunityIcons
-          name="podium-gold"
-          size={30}
-          color="#0B132B"
-          style={styles.icones_rodape}
-        />
-
-        <Ionicons
-          name="person"
-          size={30}
-          color="#0B132B"
-          style={styles.icones_rodape}
-        />
-      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  conteiner: {
-    flex: 1,
-    backgroundColor: "#F1F5F9",
-    justifyContent: "space-between",
-  },
-
-  tela_geral: {
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    width: "100%",
-  },
-
-  cabecalho: {
-    flexDirection: "row",
-    width: "100%",
-    minHeight: 80,
-    alignItems: "center",
-    paddingLeft: 10,
-    paddingHorizontal: 15,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    marginBottom: 10,
-    borderWidth: 1.5,
-    borderColor: "rgba(0,0,0,0.1)",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-
-  texto_cabecalho: {
-    paddingLeft: 16,
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0B132B",
-  },
-
-  area_abas: {
-    flexDirection: "row",
-    width: "100%",
-    maxWidth: 420,
-    gap: 10,
-    marginTop: 10,
-    marginBottom: 10,
-  },
-
-  botao_aba: {
-    flex: 1,
-    minHeight: 75,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: "#E2E8F0",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 10,
-    gap: 5,
-  },
-
-  botao_aba_ativo: {
-    backgroundColor: "#F97316",
-    borderColor: "#F97316",
-    elevation: 3,
-    shadowColor: "#F97316",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-  },
-
-  texto_aba: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#0B132B",
-    textAlign: "center",
-  },
-
-  texto_aba_ativo: {
-    color: "#FFFFFF",
-  },
-
-  assuntos: {
-    width: "100%",
-    maxWidth: 420,
-    borderRadius: 16,
-    backgroundColor: "#FFFFFF",
-    marginTop: 10,
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-    borderWidth: 1.5,
-    borderColor: "rgba(0,0,0,0.15)",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
-    elevation: 5,
-  },
-
-  titulo_assuntos: {
-    justifyContent: "center",
-    paddingVertical: 10,
-    width: "100%",
-    alignItems: "center",
-  },
-
-  texto_titulo: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "#0B132B",
-  },
-
-  area_selecionar_assunto: {
-    width: "100%",
-    paddingVertical: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-  },
-
-  botao_assuntos: {
-    width: "100%",
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FFF7ED",
-    borderWidth: 1,
-    borderColor: "#FFEDD5",
-  },
-
-  texto_assuntos: {
-    color: "#C2410C",
-    fontWeight: "700",
-    fontSize: 15,
-  },
-
-  linha_selecao: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginTop: 6,
-  },
-
-  contador_assuntos: {
-    fontSize: 12,
-    color: "#C2410C",
-  },
-
-  painel_assuntos: {
-    width: "100%",
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#FFEDD5",
-    borderRadius: 12,
-    padding: 12,
-    marginTop: 5,
-  },
-
-  total_assuntos: {
-    fontSize: 13,
-    color: "#64748B",
-    marginBottom: 12,
-  },
-
-  acoes_assuntos: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
-  },
-
-  link_acao: {
-    color: "#C2410C",
-    fontSize: 13,
-    fontWeight: "700",
-  },
-
-  grade_assuntos: {
-    width: "100%",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-
-  quadrado_assunto: {
-    width: "48%",
-    minHeight: 56,
-    marginBottom: 10,
-    paddingHorizontal: 9,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    backgroundColor: "#FFFFFF",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 7,
-  },
-
-  quadrado_selecionado: {
-    borderColor: "#F97316",
-    backgroundColor: "#FFF7ED",
-  },
-
-  nome_assunto: {
-    flex: 1,
-    fontSize: 12,
-    color: "#0B132B",
-    fontWeight: "600",
-  },
-
-  botao_confirmar: {
-    backgroundColor: "#F97316",
-    paddingVertical: 13,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-
-  texto_confirmar: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-
-  area_mensagem: {
-    alignItems: "center",
-    paddingVertical: 12,
-  },
-
-  mensagem: {
-    fontSize: 14,
-    color: "#64748B",
-    textAlign: "center",
-    marginBottom: 12,
-  },
-
-  botao_recarregar: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: "#FFF7ED",
-    borderRadius: 8,
-  },
-
-  texto_recarregar: {
-    color: "#C2410C",
-    fontWeight: "700",
-  },
-
-  numero_questoes: {
-    width: "100%",
-    paddingVertical: 15,
-    marginTop: 15,
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-
-  texto_label: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#0B132B",
-  },
-
-  quadrado_num_questoes: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    backgroundColor: "#FFF7ED",
-    marginVertical: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#FFEDD5",
-  },
-
-  tempo_questionario: {
-    width: "100%",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    marginTop: 5,
-  },
-
-  texto_minutos: {
-    fontSize: 13,
-    color: "#64748B",
-    marginTop: 2,
-  },
-
-  quadrado_tempo: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    backgroundColor: "#FFF7ED",
-    marginVertical: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    width: "100%",
-    flexDirection: "row",
-    borderWidth: 1,
-    borderColor: "#FFEDD5",
-  },
-
-  input_texto: {
-    fontSize: 18,
-    textAlign: "center",
-    color: "#0B132B",
-    fontWeight: "bold",
-    width: "100%",
-    height: 30,
-  },
-
-  botao_iniciar: {
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    backgroundColor: "#F97316",
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    shadowColor: "#F97316",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-
-  texto_iniciar: {
-    fontSize: 16,
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-
-  alinhar_botao_iniciar: {
-    width: "100%",
-    paddingVertical: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  rodape: {
-    flexDirection: "row",
-    height: 65,
-    width: "100%",
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "space-around",
-    borderTopWidth: 1.5,
-    borderTopColor: "rgba(0,0,0,0.1)",
-  },
-
-  icones_rodape: {},
+  tela: { flex: 1, backgroundColor: CORES.fundo },
+  conteudo: { width: "100%", alignItems: "center", paddingHorizontal: 18, paddingTop: 18, paddingBottom: 36 },
+  cabecalho: { width: "100%", maxWidth: 450, alignItems: "center", paddingTop: 8, marginBottom: 17 },
+  botaoVoltar: { position: "absolute", left: 0, top: 0, padding: 8, borderRadius: 9, backgroundColor: CORES.borda, zIndex: 2 },
+  titulo: { fontSize: 26, fontWeight: "bold", color: CORES.azul, textAlign: "center" },
+  subtitulo: { marginTop: 5, fontSize: 13, color: CORES.secundario, textAlign: "center", paddingHorizontal: 30 },
+  abas: { flexDirection: "row", width: "100%", maxWidth: 450, backgroundColor: CORES.branco, borderRadius: 12, padding: 5, marginBottom: 18, borderWidth: 1, borderColor: CORES.borda },
+  aba: { flex: 1, minHeight: 47, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 5, borderRadius: 9, paddingHorizontal: 5 },
+  abaAtiva: { backgroundColor: CORES.laranjaClaro, borderWidth: 1, borderColor: CORES.laranjaBorda },
+  textoAba: { fontSize: 12, fontWeight: "700", color: CORES.secundario, textAlign: "center" },
+  textoAbaAtiva: { color: CORES.laranjaTexto },
+  cartao: { width: "100%", maxWidth: 450, backgroundColor: CORES.cartao, borderRadius: 13, padding: 18, borderWidth: 1.5, borderColor: CORES.borda, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 3 }, shadowRadius: 7, elevation: 2 },
+  tituloCartao: { fontSize: 20, color: CORES.azulHome, fontWeight: "bold", textAlign: "center" },
+  descricaoCartao: { marginTop: 6, fontSize: 13, textAlign: "center", color: CORES.secundario, marginBottom: 24 },
+  label: { fontSize: 17, fontWeight: "700", color: CORES.azul, marginBottom: 10 },
+  seletor: { padding: 13, backgroundColor: CORES.laranjaClaro, borderWidth: 1, borderColor: CORES.laranjaBorda, borderRadius: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  linhaSeletor: { flex: 1, flexDirection: "row", gap: 10, alignItems: "center" },
+  textoSeletor: { fontSize: 14, fontWeight: "700", color: CORES.laranjaTexto },
+  textoPequeno: { fontSize: 11, color: CORES.secundario, marginTop: 3 },
+  painel: { marginTop: 10, borderRadius: 11, padding: 10, backgroundColor: CORES.branco, borderWidth: 1, borderColor: CORES.borda },
+  busca: { backgroundColor: CORES.cartao, borderWidth: 1, borderColor: CORES.borda, borderRadius: 8, padding: 10, fontSize: 14, color: CORES.azul, marginBottom: 11 },
+  acoes: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12 },
+  link: { color: CORES.laranjaTexto, fontSize: 12, fontWeight: "700" },
+  grade: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
+  itemAssunto: { width: "48.5%", minHeight: 65, marginBottom: 9, flexDirection: "row", alignItems: "center", gap: 7, padding: 9, backgroundColor: CORES.cartao, borderColor: CORES.borda, borderWidth: 1, borderRadius: 10 },
+  itemSelecionado: { backgroundColor: "#FFEDD5", borderColor: CORES.laranja },
+  textoAssunto: { flex: 1, fontSize: 12, fontWeight: "600", color: CORES.azul },
+  confirmar: { marginTop: 7, alignItems: "center", justifyContent: "center", paddingVertical: 13, borderRadius: 9, backgroundColor: CORES.laranja },
+  textoConfirmar: { color: CORES.branco, fontWeight: "bold", fontSize: 14 },
+  campos: { flexDirection: "row", marginTop: 24, gap: 12 },
+  campo: { flex: 1 },
+  labelCampo: { textAlign: "center", marginBottom: 9, fontSize: 13, fontWeight: "700", color: CORES.azul },
+  inputNumerico: { height: 52, borderRadius: 9, backgroundColor: CORES.laranjaClaro, borderWidth: 1, borderColor: CORES.laranjaBorda, textAlign: "center", color: CORES.azul, fontSize: 19, fontWeight: "bold" },
+  previa: { backgroundColor: CORES.branco, borderColor: CORES.borda, borderWidth: 1, borderRadius: 11, padding: 12, marginTop: 22 },
+  cabecalhoPrevia: { flexDirection: "row", justifyContent: "space-between", gap: 8, marginBottom: 10, alignItems: "center" },
+  tituloPrevia: { flex: 1, fontSize: 14, color: CORES.azul, fontWeight: "bold" },
+  totalPrevia: { fontSize: 11, color: CORES.laranjaTexto, fontWeight: "bold" },
+  linhaPrevia: { flexDirection: "row", justifyContent: "space-between", gap: 12, borderBottomWidth: 1, borderBottomColor: CORES.borda, paddingVertical: 8 },
+  nomePrevia: { flex: 1, color: CORES.azul, fontSize: 12 },
+  qtdPrevia: { color: CORES.laranjaTexto, fontSize: 12, fontWeight: "bold" },
+  legendaPrevia: { marginTop: 10, fontSize: 11, color: CORES.secundario },
+  botaoGerar: { backgroundColor: CORES.laranja, borderRadius: 9, paddingVertical: 15, marginTop: 22, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 9, shadowColor: CORES.laranja, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 7, elevation: 3 },
+  botaoDesabilitado: { opacity: 0.6 },
+  textoGerar: { color: CORES.branco, fontSize: 15, fontWeight: "bold" },
+  areaHistorico: { width: "100%", maxWidth: 450 },
 });
