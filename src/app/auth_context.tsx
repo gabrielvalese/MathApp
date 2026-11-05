@@ -1,16 +1,22 @@
+// app/auth_context.tsx
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
-  sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
-  User
+  User,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { auth, db } from "./FirebaseConfig";
-
+import { limparLembrar, setLembrar } from "./storage";
 
 type AuthContextType = {
   user: User | null;
@@ -24,8 +30,8 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [nome, setNome] = useState("Usuário");
   const [user, setUser] = useState<User | null>(null);
+  const [nome, setNome] = useState("Usuário");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,29 +58,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return unsub;
 }, []);
 
-  const signIn = async (email: string, pass: string) => {
-    await signInWithEmailAndPassword(auth, email, pass);
+  const signIn = async (email: string, pass: string, lembrar: boolean) => {
+    await setLembrar(lembrar);
+    await signInWithEmailAndPassword(auth, email.trim(), pass);
   };
 
   const signUp = async (name: string, email: string, pass: string) => {
-  const cred = await createUserWithEmailAndPassword(auth, email, pass);
-  if (cred.user) {
-    await updateProfile(cred.user, { displayName: name });
-
-    // Envia o e-mail de verificação
-    await sendEmailVerification(cred.user);
-
-    // Salva no Firestore com flag "não verificado"
-    await setDoc(doc(db, "users", cred.user.uid), {
-      name,
-      email,
-      emailVerified: false,
-      createdAt: new Date(),
-    });
-  }
-};
+    const cred = await createUserWithEmailAndPassword(auth, email.trim(), pass);
+    if (cred.user) {
+      await setDoc(doc(db, "users", cred.user.uid), {
+        name,
+        email: email.trim(),
+        createdAt: new Date(),
+      });
+      await updateProfile(cred.user, { displayName: name });
+    }
+  };
 
   const signOutUser = async () => {
+    await limparLembrar();
     await signOut(auth);
   };
 

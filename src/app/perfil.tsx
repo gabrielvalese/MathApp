@@ -1,13 +1,13 @@
 // app/perfil.tsx
 import { Feather, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "./auth_context";
@@ -18,13 +18,9 @@ const CINZA_BG = "#F5F6FA";
 const CINZA_BORDA = "#E5E7EB";
 
 export default function Perfil() {
-  const { user, nome } = useAuth();
+  const { user, nome, signOutUser } = useAuth();
 
-  const inicial = nome.trim().charAt(0).toUpperCase() || "?";
-
-  function handleAlterarSenha() {
-    router.push("/redefinir_senha1");
-  }
+  const inicial = (nome ?? "Usuário").trim().charAt(0).toUpperCase() || "?";
 
   function handleLogout() {
     Alert.alert(
@@ -78,13 +74,13 @@ export default function Perfil() {
           </View>
         </View>
 
-        {/* Seção de conta */}
+        {/* Seção Conta */}
         <Text style={styles.secaoTitulo}>Conta</Text>
         <View style={styles.cardOpcoes}>
           <TouchableOpacity
             style={styles.opcaoItem}
             activeOpacity={0.7}
-            onPress={handleAlterarSenha}
+            onPress={() => router.push("/redefinir_senha1")}
           >
             <View style={[styles.opcaoIcone, { backgroundColor: "#DBEAFE" }]}>
               <Ionicons name="lock-closed-outline" size={20} color={AZUL} />
@@ -94,7 +90,7 @@ export default function Perfil() {
           </TouchableOpacity>
         </View>
 
-        {/* Sair */}
+        {/* Logout */}
         <TouchableOpacity
           style={styles.btnLogout}
           activeOpacity={0.8}
@@ -107,28 +103,34 @@ export default function Perfil() {
 
       {/* Barra inferior */}
       <View style={styles.barraInferior}>
-        <Link href="/home" asChild>
-          <TouchableOpacity style={styles.barraItem} activeOpacity={0.7}>
-            <Ionicons name="home" size={24} color="#9CA3AF" />
-            <Text style={styles.barraLabel}>Início</Text>
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity
+          style={styles.barraItem}
+          activeOpacity={0.7}
+          onPress={() => router.replace("/home")}
+        >
+          <Ionicons name="home" size={24} color="#9CA3AF" />
+          <Text style={styles.barraLabel}>Início</Text>
+        </TouchableOpacity>
 
-        <Link href="/simulado" asChild>
-          <TouchableOpacity style={styles.barraItem} activeOpacity={0.7}>
-            <MaterialCommunityIcons name="podium-gold" size={26} color="#9CA3AF" />
-            <Text style={styles.barraLabel}>Simulados</Text>
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity
+          style={styles.barraItem}
+          activeOpacity={0.7}
+          onPress={() => router.replace("/simulado")}
+        >
+          <MaterialCommunityIcons name="podium-gold" size={26} color="#9CA3AF" />
+          <Text style={styles.barraLabel}>Simulados</Text>
+        </TouchableOpacity>
 
-        <Link href="/perfil" asChild>
-          <TouchableOpacity style={styles.barraItem} activeOpacity={0.7}>
-            <Ionicons name="person" size={24} color={AZUL} />
-            <Text style={[styles.barraLabel, { color: AZUL, fontWeight: "700" }]}>
-              Perfil
-            </Text>
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity
+          style={styles.barraItem}
+          activeOpacity={0.7}
+          onPress={() => router.replace("/perfil")}
+        >
+          <Ionicons name="person" size={24} color={AZUL} />
+          <Text style={[styles.barraLabel, { color: AZUL, fontWeight: "700" }]}>
+            Perfil
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -157,11 +159,7 @@ const styles = StyleSheet.create({
   nome: { fontSize: 24, fontWeight: "800", color: AZUL },
   email: { fontSize: 14, color: "#6B7280", marginTop: 4 },
 
-  statsRow: {
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 24,
-  },
+  statsRow: { flexDirection: "row", gap: 12, marginBottom: 24 },
   statCard: {
     flex: 1,
     backgroundColor: "#fff",
@@ -174,12 +172,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     elevation: 3,
   },
-  statValor: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: AZUL,
-    marginTop: 6,
-  },
+  statValor: { fontSize: 18, fontWeight: "800", color: AZUL, marginTop: 6 },
   statLabel: { fontSize: 11, color: "#6B7280", marginTop: 2, fontWeight: "600" },
 
   secaoTitulo: {
@@ -202,12 +195,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     overflow: "hidden",
   },
-  opcaoItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 14,
-    gap: 12,
-  },
+  opcaoItem: { flexDirection: "row", alignItems: "center", padding: 14, gap: 12 },
   opcaoIcone: {
     width: 38,
     height: 38,

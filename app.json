@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "teste",
-    "slug": "teste",
+    "name": "MathApp1.0",
+    "slug": "MathApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

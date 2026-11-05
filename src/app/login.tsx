@@ -46,20 +46,24 @@ export default function Login() {
   const { signIn } = useAuth();
 
   async function handleLogin() {
-    if (!email || !password) {
-      return Alert.alert("Erro", "Preencha e-mail e senha.");
-    }
-    try {
-      await signIn(email.trim(), password);
-      router.replace("/home");
-    } catch (e: any) {
-      let msg = "Erro ao entrar.";
-      if (e.code === "auth/user-not-found") msg = "Usuário não encontrado.";
-      if (e.code === "auth/wrong-password" || e.code === "auth/invalid-credential") msg = "Senha incorreta.";
-      if (e.code === "auth/invalid-email") msg = "E-mail inválido.";
-      Alert.alert("Erro", msg);
-    }
+  console.log("🔴 Botão Entrar clicado");
+  if (!email || !password) {
+    return Alert.alert("Erro", "Preencha e-mail e senha.");
   }
+  try {
+    await signIn(email.trim(), password, isChecked);
+    console.log("🟢 Login concluído, redirecionando...");
+    router.replace("/home");   // <-- voltar a chamar manualmente
+  } catch (e: any) {
+    console.log("❌ Erro no login:", e.code, e.message);
+    let msg = "Erro ao entrar.";
+    if (e.code === "auth/user-not-found") msg = "Usuário não encontrado.";
+    if (e.code === "auth/wrong-password" || e.code === "auth/invalid-credential")
+      msg = "Senha incorreta.";
+    if (e.code === "auth/invalid-email") msg = "E-mail inválido.";
+    Alert.alert("Erro", msg);
+  }
+}
 
   return (
     <SafeAreaView style={styles.safe}>

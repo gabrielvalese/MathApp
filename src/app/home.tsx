@@ -1,6 +1,6 @@
 // app/home.tsx
 import { Feather, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import {
   Image,
   ScrollView,
@@ -18,9 +18,9 @@ const CINZA_BG = "#F5F6FA";
 const CINZA_BORDA = "#E5E7EB";
 
 export default function Home() {
+const { user, nome } = useAuth();
 
-  const { user, nome } = useAuth();
-
+  // 🔍 Busca o nome diretamente no Firestore (padrão que funcionava antes)
   return (
     <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
       <ScrollView
@@ -70,66 +70,76 @@ export default function Home() {
           <Text style={styles.desafioTexto}>
             (UFPR-2020) Imagine que um macaco digite sequências aleatórias de 3 letras...
           </Text>
-          <Link
-            href={{ pathname: "/QuestoesBase/[id]", params: { id: "1" } }}
-            asChild
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.btnLaranja}
+            onPress={() =>
+              router.push({ pathname: "/QuestoesBase/[id]", params: { id: "1" } })
+            }
           >
-            <TouchableOpacity activeOpacity={0.85} style={styles.btnLaranja}>
-              <Text style={styles.btnLaranjaTxt}>Resolver agora</Text>
-              <Ionicons name="arrow-forward" size={18} color="#fff" />
-            </TouchableOpacity>
-          </Link>
+            <Text style={styles.btnLaranjaTxt}>Resolver agora</Text>
+            <Ionicons name="arrow-forward" size={18} color="#fff" />
+          </TouchableOpacity>
         </View>
 
         {/* Grid de Ações */}
         <View style={styles.grid}>
-          <Link href="/tela_categoria" asChild>
-            <TouchableOpacity activeOpacity={0.85} style={styles.cardAcao}>
-              <View style={[styles.iconeCirculo, { backgroundColor: "#DBEAFE" }]}>
-                <FontAwesome6 name="box-open" size={22} color={AZUL} />
-              </View>
-              <Text style={styles.acaoTitulo}>Problemas</Text>
-              <Text style={styles.acaoSub}>Polinômios, Matrizes...</Text>
-            </TouchableOpacity>
-          </Link>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.cardAcao}
+            onPress={() => router.push("/tela_categoria")}
+          >
+            <View style={[styles.iconeCirculo, { backgroundColor: "#DBEAFE" }]}>
+              <FontAwesome6 name="box-open" size={22} color={AZUL} />
+            </View>
+            <Text style={styles.acaoTitulo}>Problemas</Text>
+            <Text style={styles.acaoSub}>Polinômios, Matrizes...</Text>
+          </TouchableOpacity>
 
-          <Link href="/simulado" asChild>
-            <TouchableOpacity activeOpacity={0.85} style={styles.cardAcao}>
-              <View style={[styles.iconeCirculo, { backgroundColor: "#DBEAFE" }]}>
-                <FontAwesome6 name="chess-king" size={22} color={AZUL} />
-              </View>
-              <Text style={styles.acaoTitulo}>Simulados</Text>
-              <Text style={styles.acaoSub}>Teste seus conhecimentos</Text>
-            </TouchableOpacity>
-          </Link>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.cardAcao}
+            onPress={() => router.push("/simulado")}
+          >
+            <View style={[styles.iconeCirculo, { backgroundColor: "#DBEAFE" }]}>
+              <FontAwesome6 name="chess-king" size={22} color={AZUL} />
+            </View>
+            <Text style={styles.acaoTitulo}>Simulados</Text>
+            <Text style={styles.acaoSub}>Teste seus conhecimentos</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {/* Barra inferior fixa */}
+      {/* Barra inferior */}
       <View style={styles.barraInferior}>
-        <Link href="/home" asChild>
-          <TouchableOpacity style={styles.barraItem} activeOpacity={0.7}>
-            <Ionicons name="home" size={24} color={AZUL} />
-            <Text style={[styles.barraLabel, { color: AZUL, fontWeight: "700" }]}>
-              Início
-            </Text>
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity
+          style={styles.barraItem}
+          activeOpacity={0.7}
+          onPress={() => router.replace("/home")}
+        >
+          <Ionicons name="home" size={24} color={AZUL} />
+          <Text style={[styles.barraLabel, { color: AZUL, fontWeight: "700" }]}>
+            Início
+          </Text>
+        </TouchableOpacity>
 
-        <Link href="/simulado" asChild>
-          <TouchableOpacity style={styles.barraItem} activeOpacity={0.7}>
-            <MaterialCommunityIcons name="podium-gold" size={26} color="#9CA3AF" />
-            <Text style={styles.barraLabel}>Simulados</Text>
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity
+          style={styles.barraItem}
+          activeOpacity={0.7}
+          onPress={() => router.replace("/simulado")}
+        >
+          <MaterialCommunityIcons name="podium-gold" size={26} color="#9CA3AF" />
+          <Text style={styles.barraLabel}>Simulados</Text>
+        </TouchableOpacity>
 
-        {/* TODO: trocar para /perfil quando a tela existir */}
-        <Link href="/perfil" asChild>
-          <TouchableOpacity style={styles.barraItem} activeOpacity={0.7}>
-            <Ionicons name="person" size={24} color="#9CA3AF" />
-            <Text style={styles.barraLabel}>Perfil</Text>
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity
+          style={styles.barraItem}
+          activeOpacity={0.7}
+          onPress={() => router.replace("/perfil")}
+        >
+          <Ionicons name="person" size={24} color="#9CA3AF" />
+          <Text style={styles.barraLabel}>Perfil</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -190,18 +200,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  desafioTitulo: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: AZUL,
-    marginLeft: 10,
-  },
-  desafioTexto: {
-    fontSize: 14,
-    color: "#4B5563",
-    lineHeight: 20,
-    marginBottom: 14,
-  },
+  desafioTitulo: { fontSize: 18, fontWeight: "800", color: AZUL, marginLeft: 10 },
+  desafioTexto: { fontSize: 14, color: "#4B5563", lineHeight: 20, marginBottom: 14 },
   btnLaranja: {
     flexDirection: "row",
     backgroundColor: LARANJA,
@@ -214,11 +214,7 @@ const styles = StyleSheet.create({
   },
   btnLaranjaTxt: { color: "#fff", fontSize: 15, fontWeight: "800" },
 
-  grid: {
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 8,
-  },
+  grid: { flexDirection: "row", gap: 12, marginBottom: 8 },
   cardAcao: {
     flex: 1,
     backgroundColor: "#fff",
@@ -230,20 +226,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     elevation: 3,
   },
-  acaoTitulo: {
-    fontSize: 16,
-    fontWeight: "800",
-    color: AZUL,
-    marginTop: 6,
-  },
-  acaoSub: {
-    fontSize: 12,
-    color: "#6B7280",
-    marginTop: 4,
-    lineHeight: 16,
-  },
+  acaoTitulo: { fontSize: 16, fontWeight: "800", color: AZUL, marginTop: 6 },
+  acaoSub: { fontSize: 12, color: "#6B7280", marginTop: 4, lineHeight: 16 },
 
-  /* Barra inferior */
   barraInferior: {
     flexDirection: "row",
     backgroundColor: "#fff",
