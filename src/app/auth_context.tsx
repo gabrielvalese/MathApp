@@ -1,4 +1,4 @@
-// app/auth_context.tsx
+// app/auth_context.tsx teste pra ver se essa merda de commit funfou porra
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
