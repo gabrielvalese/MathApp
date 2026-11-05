@@ -41,48 +41,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     unsubscribeAuth = onAuthStateChanged(auth, async (u) => {
       const userValido = u && !u.isAnonymous ? u : null;
 
-      // ⚠️ Lê a flag ATUAL do AsyncStorage a cada disparo do listener
-      const lembrarAtual = await getLembrar();
+      // Cancela listener do Firestore anterior, se existir
+      if (unsubscribeDoc) {
+        unsubscribeDoc();
+        unsubscribeDoc = undefined;
+      }
 
-      // Se existe sessão mas o usuário NÃO marcou "lembrar", desloga
-      if (userValido && !lembrarAtual) {
-        await signOut(auth);
+      // Caso 1: não há usuário → libera loading direto
+      if (!userValido) {
         setUser(null);
         setNome("Usuário");
         setLoading(false);
         return;
       }
 
-      setUser(userValido);
-
-      // Cancela o listener do Firestore anterior, se existir
-      if (unsubscribeDoc) {
-        unsubscribeDoc();
-        unsubscribeDoc = undefined;
-      }
-
-      if (userValido) {
-        const docRef = doc(db, "users", userValido.uid);
-        unsubscribeDoc = onSnapshot(
-          docRef,
-          (snap) => {
-            if (snap.exists()) {
-              setNome(snap.data().name ?? userValido.displayName ?? "Usuário");
-            } else {
-              setNome(userValido.displayName ?? "Usuário");
-            }
-            setLoading(false);
-          },
-          (error) => {
-            console.log("Erro no onSnapshot:", error);
-            setNome(userValido.displayName ?? "Usuário");
-            setLoading(false);
-          }
-        );
-      } else {
+      // Caso 2: há usuário, mas o "Lembrar-me" está desmarcado
+      const lembrarAtual = await getLembrar();
+      if (!lembrarAtual) {
+        // Desloga e SÓ libera o loading depois do signOut
+        await signOut(auth);
+        setUser(null);
         setNome("Usuário");
         setLoading(false);
+        return; // ← importante: não configura o onSnapshot
       }
+
+      // Caso 3: há usuário e "Lembrar-me" marcado → busca o nome
+      setUser(userValido);
+
+      const docRef = doc(db, "users", userValido.uid);
+      unsubscribeDoc = onSnapshot(
+        docRef,
+        (snap) => {
+          if (snap.exists() && snap.data().name) {
+            setNome(snap.data().name);
+          } else if (!snap.metadata.fromCache) {
+            // Se veio do servidor e não tem nome, usa o fallback
+            setNome(userValido.displayName ?? "Usuário");
+          }
+          setLoading(false);
+        },
+        (error) => {
+          console.log("Erro no onSnapshot:", error);
+          setNome(userValido.displayName ?? "Usuário");
+          setLoading(false);
+        }
+      );
     });
 
     return () => {
