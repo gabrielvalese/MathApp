@@ -19,7 +19,6 @@ import {
 import Svg, { Path } from "react-native-svg";
 import { useAuth } from './auth_context';
 
-
 const AZUL = "#1E3A8A";
 const LARANJA = "#F97316";
 const CINZA_BG = "#F5F6FA";
@@ -46,24 +45,21 @@ export default function Login() {
   const { signIn } = useAuth();
 
   async function handleLogin() {
-  console.log("🔴 Botão Entrar clicado");
-  if (!email || !password) {
-    return Alert.alert("Erro", "Preencha e-mail e senha.");
+    if (!email || !password) {
+      return Alert.alert("Erro", "Preencha e-mail e senha.");
+    }
+    try {
+      await signIn(email.trim(), password, isChecked);
+      router.replace("/home");
+    } catch (e: any) {
+      let msg = "Erro ao entrar.";
+      if (e.code === "auth/user-not-found") msg = "Usuário não encontrado.";
+      if (e.code === "auth/wrong-password" || e.code === "auth/invalid-credential")
+        msg = "Senha incorreta.";
+      if (e.code === "auth/invalid-email") msg = "E-mail inválido.";
+      Alert.alert("Erro", msg);
+    }
   }
-  try {
-    await signIn(email.trim(), password, isChecked);
-    console.log("🟢 Login concluído, redirecionando...");
-    router.replace("/home");   // <-- voltar a chamar manualmente
-  } catch (e: any) {
-    console.log("❌ Erro no login:", e.code, e.message);
-    let msg = "Erro ao entrar.";
-    if (e.code === "auth/user-not-found") msg = "Usuário não encontrado.";
-    if (e.code === "auth/wrong-password" || e.code === "auth/invalid-credential")
-      msg = "Senha incorreta.";
-    if (e.code === "auth/invalid-email") msg = "E-mail inválido.";
-    Alert.alert("Erro", msg);
-  }
-}
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -76,7 +72,6 @@ export default function Login() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Cabeçalho */}
           <View style={styles.header}>
             <Image
               source={require('../../assets/images/logo.png')}
@@ -87,9 +82,7 @@ export default function Login() {
             <Text style={styles.subtitulo}>Entre para continuar seus estudos</Text>
           </View>
 
-          {/* Card do formulário */}
           <View style={styles.card}>
-            {/* E-mail */}
             <Text style={styles.label}>E-mail</Text>
             <View style={[styles.inputWrap, emailFocado && styles.inputWrapFocado]}>
               <Ionicons name="mail-outline" size={20} color={AZUL} style={styles.inputIcone} />
@@ -106,7 +99,6 @@ export default function Login() {
               />
             </View>
 
-            {/* Senha */}
             <Text style={[styles.label, { marginTop: 16 }]}>Senha</Text>
             <View style={[styles.inputWrap, senhaFocada && styles.inputWrapFocado]}>
               <Ionicons name="lock-closed-outline" size={20} color={AZUL} style={styles.inputIcone} />
@@ -133,7 +125,6 @@ export default function Login() {
               </TouchableOpacity>
             </View>
 
-            {/* Lembrar + Esqueci a senha */}
             <View style={styles.linhaOpcoes}>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <CheckBox
@@ -149,7 +140,6 @@ export default function Login() {
               </TouchableOpacity>
             </View>
 
-            {/* Botão Entrar */}
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleLogin}
@@ -159,7 +149,6 @@ export default function Login() {
             </TouchableOpacity>
           </View>
 
-          {/* Cadastro */}
           <View style={styles.rodapeCadastro}>
             <Text style={styles.txtRodape}>Não tem uma conta?</Text>
             <TouchableOpacity onPress={() => router.push("/register")}>
@@ -167,14 +156,12 @@ export default function Login() {
             </TouchableOpacity>
           </View>
 
-          {/* Divisor */}
           <View style={styles.divisor}>
             <View style={styles.linha} />
             <Text style={styles.txtDivisor}>ou entre com</Text>
             <View style={styles.linha} />
           </View>
 
-          {/* Sociais */}
           <View style={styles.containerSocial}>
             <TouchableOpacity style={styles.btnSocial} activeOpacity={0.8}>
               <GoogleIcon size={22} />

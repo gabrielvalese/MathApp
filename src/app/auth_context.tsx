@@ -16,7 +16,7 @@ import {
   useState,
 } from "react";
 import { auth, db } from "./FirebaseConfig";
-import { getLembrar, limparLembrar, setLembrar } from "./storage";
+import { limparLembrar, setLembrar } from "./storage";
 
 type AuthContextType = {
   user: User | null;
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         unsubscribeDoc = undefined;
       }
 
-      // Caso 1: não há usuário → libera loading direto
+      // Sem usuário → libera loading e vai para login
       if (!userValido) {
         setUser(null);
         setNome("Usuário");
@@ -55,18 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Caso 2: há usuário, mas o "Lembrar-me" está desmarcado
-      const lembrarAtual = await getLembrar();
-      if (!lembrarAtual) {
-        // Desloga e SÓ libera o loading depois do signOut
-        await signOut(auth);
-        setUser(null);
-        setNome("Usuário");
-        setLoading(false);
-        return; // ← importante: não configura o onSnapshot
-      }
-
-      // Caso 3: há usuário e "Lembrar-me" marcado → busca o nome
+      // Usuário logado → busca o nome normalmente
       setUser(userValido);
 
       const docRef = doc(db, "users", userValido.uid);
@@ -76,7 +65,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (snap.exists() && snap.data().name) {
             setNome(snap.data().name);
           } else if (!snap.metadata.fromCache) {
-            // Se veio do servidor e não tem nome, usa o fallback
             setNome(userValido.displayName ?? "Usuário");
           }
           setLoading(false);
