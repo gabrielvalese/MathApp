@@ -1,4 +1,4 @@
-// app/auth_context.tsx teste pra ver se essa merda de commit funfou porra
+// app/auth_context.tsx
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -7,7 +7,7 @@ import {
   updateProfile,
   User,
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import {
   createContext,
   ReactNode,
@@ -16,13 +16,13 @@ import {
   useState,
 } from "react";
 import { auth, db } from "./FirebaseConfig";
-import { limparLembrar, setLembrar } from "./storage";
+import { getLembrar, limparLembrar, setLembrar } from "./storage";
 
 type AuthContextType = {
   user: User | null;
-  nome: string;          // <-- novo
+  nome: string;
   loading: boolean;
-  signIn: (email: string, pass: string) => Promise<void>;
+  signIn: (email: string, pass: string, lembrar: boolean) => Promise<void>;
   signUp: (name: string, email: string, pass: string) => Promise<void>;
   signOutUser: () => Promise<void>;
 };
@@ -35,28 +35,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  const unsub = onAuthStateChanged(auth, async (u) => {
-    const userValido = u && !u.isAnonymous ? u : null;
-    setUser(userValido);
+    let unsubscribeAuth: (() => void) | undefined;
+    let unsubscribeDoc: (() => void) | undefined;
 
-    if (userValido) {
-      try {
-        const snap = await getDoc(doc(db, "users", userValido.uid));
-        if (snap.exists()) {
-          setNome(snap.data().name ?? userValido.displayName ?? "Usuário");
-        } else {
-          setNome(userValido.displayName ?? "Usuário");
-        }
-      } catch {
-        setNome(userValido.displayName ?? "Usuário");
+    unsubscribeAuth = onAuthStateChanged(auth, async (u) => {
+      const userValido = u && !u.isAnonymous ? u : null;
+
+      // ⚠️ Lê a flag ATUAL do AsyncStorage a cada disparo do listener
+      const lembrarAtual = await getLembrar();
+
+      // Se existe sessão mas o usuário NÃO marcou "lembrar", desloga
+      if (userValido && !lembrarAtual) {
+        await signOut(auth);
+        setUser(null);
+        setNome("Usuário");
+        setLoading(false);
+        return;
       }
-    } else {
-      setNome("Usuário");
-    }
-    setLoading(false);
-  });
-  return unsub;
-}, []);
+
+      setUser(userValido);
+
+      // Cancela o listener do Firestore anterior, se existir
+      if (unsubscribeDoc) {
+        unsubscribeDoc();
+        unsubscribeDoc = undefined;
+      }
+
+      if (userValido) {
+        const docRef = doc(db, "users", userValido.uid);
+        unsubscribeDoc = onSnapshot(
+          docRef,
+          (snap) => {
+            if (snap.exists()) {
+              setNome(snap.data().name ?? userValido.displayName ?? "Usuário");
+            } else {
+              setNome(userValido.displayName ?? "Usuário");
+            }
+            setLoading(false);
+          },
+          (error) => {
+            console.log("Erro no onSnapshot:", error);
+            setNome(userValido.displayName ?? "Usuário");
+            setLoading(false);
+          }
+        );
+      } else {
+        setNome("Usuário");
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      unsubscribeAuth?.();
+      unsubscribeDoc?.();
+    };
+  }, []);
 
   const signIn = async (email: string, pass: string, lembrar: boolean) => {
     await setLembrar(lembrar);
@@ -72,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         createdAt: new Date(),
       });
       await updateProfile(cred.user, { displayName: name });
+      setNome(name);
     }
   };
 
@@ -81,7 +115,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, nome, loading, signIn, signUp, signOutUser }}>
+    <AuthContext.Provider
+      value={{ user, nome, loading, signIn, signUp, signOutUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -18,9 +18,8 @@ const CINZA_BG = "#F5F6FA";
 const CINZA_BORDA = "#E5E7EB";
 
 export default function Home() {
-const { user, nome } = useAuth();
+  const { user, nome } = useAuth();
 
-  // 🔍 Busca o nome diretamente no Firestore (padrão que funcionava antes)
   return (
     <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
       <ScrollView
