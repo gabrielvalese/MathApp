@@ -2,7 +2,7 @@ import { Feather, FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } 
 import { Link } from "expo-router";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
-export default function Index() {
+export default function Home() {
   return (
     <View style={styles.conteiner}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -10,7 +10,7 @@ export default function Index() {
           
           <Image 
             source={require('../../assets/images/logo.png')}
-            style={{ width: 100, height: 100, marginBottom: 20 }}
+            style={{ marginVertical : 20,marginHorizontal: 20, marginBottom: 20 }}
           />
           
           <View style={styles.msg_saudacao}>
