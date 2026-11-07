@@ -1,14 +1,17 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { collection, doc, getDocs, query, serverTimestamp, where, writeBatch, } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View, } from "react-native";
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
 import { auth, db } from "./FirebaseConfig";
 import MeuSimulado from "./componentes/MeuSimulado";
 
 
 const COLECAO_QUESTOES = "Questao";
-
+const AZUL = "#1E3A8A";
+const LARANJA = "#F97316";
+const CINZA_BG = "#F5F6FA";
+const CINZA_BORDA = "#E5E7EB";
 const CAMPO_ASSUNTO_QUESTAO = "Conteudo";
 
 const CORES = {
@@ -434,6 +437,36 @@ export default function Simulado() {
           </View>
         )}
       </ScrollView>
+     <View style={styles.barraInferior}>
+        <TouchableOpacity
+          style={styles.barraItem}
+          activeOpacity={0.7}
+          onPress={() => router.replace("/home")}
+        >
+          <Ionicons name="home" size={24} color={AZUL} />
+          <Text style={[styles.barraLabel, { color: AZUL, fontWeight: "700" }]}>
+            Início
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.barraItem}
+          activeOpacity={0.7}
+          onPress={() => router.replace("/simulado")}
+        >
+          <MaterialCommunityIcons name="podium-gold" size={26} color="#9CA3AF" />
+          <Text style={styles.barraLabel}>Simulados</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.barraItem}
+          activeOpacity={0.7}
+          onPress={() => router.replace("/perfil")}
+        >
+          <Ionicons name="person" size={24} color="#9CA3AF" />
+          <Text style={styles.barraLabel}>Perfil</Text>
+        </TouchableOpacity>
+      </View>   
     </View>
   );
 }
@@ -484,4 +517,29 @@ const styles = StyleSheet.create({
   botaoDesabilitado: { opacity: 0.6 },
   textoGerar: { color: CORES.branco, fontSize: 15, fontWeight: "bold" },
   areaHistorico: { width: "100%", maxWidth: 450 },
+   barraInferior: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderTopColor: CINZA_BORDA,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: -2 },
+    elevation: 8,
+  },
+  barraItem: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 4,
+  },
+  barraLabel: {
+    fontSize: 11,
+    color: "#9CA3AF",
+    marginTop: 3,
+    fontWeight: "600",
+  },
 });
