@@ -8,10 +8,6 @@ import MeuSimulado from "./componentes/MeuSimulado";
 
 
 const COLECAO_QUESTOES = "Questao";
-const AZUL = "#1E3A8A";
-const LARANJA = "#F97316";
-const CINZA_BG = "#F5F6FA";
-const CINZA_BORDA = "#E5E7EB";
 const CAMPO_ASSUNTO_QUESTAO = "Conteudo";
 
 const CORES = {
@@ -26,6 +22,9 @@ const CORES = {
   branco: "#FFFFFF",
   borda: "#E2E8F0",
   secundario: "#64748B",
+  inativo: "#9CA3AF",
+  placeholder: "#94A3B8",
+  sombra: "#000000",
 };
 
 const ASSUNTOS = [
@@ -190,19 +189,20 @@ export default function Simulado() {
         });
       }
       const totalDisponivel = grupos.reduce((total, grupo) => total + grupo.ids.length, 0);
-      if (totalDisponivel < quantidade) {
+      if (totalDisponivel === 0) {
         Alert.alert(
-          "Questões insuficientes",
-          `Você pediu ${quantidade} questões, mas a consulta encontrou ${totalDisponivel}. ` +
-            `Confira se Questao.${CAMPO_ASSUNTO_QUESTAO} contém o nome do conteúdo, ` +
-            "ou se Questao.id_conteudo está ligado à coleção Conteudo."
+          "Nenhuma questão disponível",
+          "Não foram encontradas questões válidas para os assuntos selecionados. Confira a ligação entre Questao e Conteudo."
         );
         return;
       }
 
+      // Se pediu 20, mas existem apenas 10, gera com as 10 disponíveis.
+      const quantidadeFinal = Math.min(quantidade, totalDisponivel);
+
       // Distribui igualmente enquanto houver questões em cada assunto.
       const escolhidas: Array<{ id: string; assunto: string }> = [];
-      while (escolhidas.length < quantidade) {
+      while (escolhidas.length < quantidadeFinal) {
         const disponiveis = grupos.filter((grupo) => grupo.ids.length > 0);
         const menorUso = Math.min(...disponiveis.map((grupo) => grupo.usadas));
         const candidatos = disponiveis.filter((grupo) => grupo.usadas === menorUso);
@@ -235,7 +235,7 @@ export default function Simulado() {
         criador_id: usuario.uid,
         nome,
         assuntos_nomes: selecionados,
-        quantidade_questoes: quantidade,
+        quantidade_questoes: quantidadeFinal,
         tempo_minutos: tempo,
         questoes_ids: questoes.map((q) => q.id),
         questoes,
@@ -247,7 +247,7 @@ export default function Simulado() {
         usuario_id: usuario.uid,
         simulado_id: simuladoRef.id,
         nome_simulado: nome,
-        quantidade_questoes: quantidade,
+        quantidade_questoes: quantidadeFinal,
         tempo_minutos: tempo,
         status: "nao_iniciado",
         acertos: null,
@@ -260,7 +260,11 @@ export default function Simulado() {
       });
       await batch.commit();
 
-      Alert.alert("Simulado criado!", `${quantidade} questões foram selecionadas. Agora você pode respondê-las.`, [
+      const mensagemCriacao = quantidadeFinal < quantidade
+        ? `Você pediu ${quantidade}, mas encontramos ${quantidadeFinal}. O simulado foi criado com todas as questões disponíveis.`
+        : `${quantidadeFinal} questões foram selecionadas. Agora você pode respondê-las.`;
+
+      Alert.alert("Simulado criado!", mensagemCriacao, [
         { text: "Meus simulados", onPress: () => { setPainelAberto(false); setAba("meus"); } },
         { text: "Responder agora", onPress: () => router.push({
           pathname: "/QuestoesBase/[id]",
@@ -340,7 +344,7 @@ export default function Simulado() {
                 <TextInput
                   style={styles.busca}
                   placeholder="Buscar assunto..."
-                  placeholderTextColor="#94A3B8"
+                  placeholderTextColor={CORES.placeholder}
                   value={busca}
                   onChangeText={setBusca}
                 />
@@ -437,14 +441,14 @@ export default function Simulado() {
           </View>
         )}
       </ScrollView>
-     <View style={styles.barraInferior}>
+      <View style={styles.barraInferior}>
         <TouchableOpacity
           style={styles.barraItem}
           activeOpacity={0.7}
           onPress={() => router.replace("/home")}
         >
-          <Ionicons name="home" size={24} color={AZUL} />
-          <Text style={[styles.barraLabel, { color: AZUL, fontWeight: "700" }]}>
+          <Ionicons name="home" size={24} color={CORES.inativo} />
+          <Text style={styles.barraLabel}>
             Início
           </Text>
         </TouchableOpacity>
@@ -454,8 +458,8 @@ export default function Simulado() {
           activeOpacity={0.7}
           onPress={() => router.replace("/simulado")}
         >
-          <MaterialCommunityIcons name="podium-gold" size={26} color="#9CA3AF" />
-          <Text style={styles.barraLabel}>Simulados</Text>
+          <MaterialCommunityIcons name="podium-gold" size={26} color={CORES.laranja} />
+          <Text style={[styles.barraLabel, { color: CORES.laranja, fontWeight: "700" }]}>Simulados</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -463,10 +467,10 @@ export default function Simulado() {
           activeOpacity={0.7}
           onPress={() => router.replace("/perfil")}
         >
-          <Ionicons name="person" size={24} color="#9CA3AF" />
+          <Ionicons name="person" size={24} color={CORES.inativo} />
           <Text style={styles.barraLabel}>Perfil</Text>
         </TouchableOpacity>
-      </View>   
+      </View>
     </View>
   );
 }
@@ -483,7 +487,7 @@ const styles = StyleSheet.create({
   abaAtiva: { backgroundColor: CORES.laranjaClaro, borderWidth: 1, borderColor: CORES.laranjaBorda },
   textoAba: { fontSize: 12, fontWeight: "700", color: CORES.secundario, textAlign: "center" },
   textoAbaAtiva: { color: CORES.laranjaTexto },
-  cartao: { width: "100%", maxWidth: 450, backgroundColor: CORES.cartao, borderRadius: 13, padding: 18, borderWidth: 1.5, borderColor: CORES.borda, shadowColor: "#000", shadowOpacity: 0.04, shadowOffset: { width: 0, height: 3 }, shadowRadius: 7, elevation: 2 },
+  cartao: { width: "100%", maxWidth: 450, backgroundColor: CORES.cartao, borderRadius: 13, padding: 18, borderWidth: 1.5, borderColor: CORES.borda, shadowColor: CORES.sombra, shadowOpacity: 0.04, shadowOffset: { width: 0, height: 3 }, shadowRadius: 7, elevation: 2 },
   tituloCartao: { fontSize: 20, color: CORES.azulHome, fontWeight: "bold", textAlign: "center" },
   descricaoCartao: { marginTop: 6, fontSize: 13, textAlign: "center", color: CORES.secundario, marginBottom: 24 },
   label: { fontSize: 17, fontWeight: "700", color: CORES.azul, marginBottom: 10 },
@@ -497,7 +501,7 @@ const styles = StyleSheet.create({
   link: { color: CORES.laranjaTexto, fontSize: 12, fontWeight: "700" },
   grade: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
   itemAssunto: { width: "48.5%", minHeight: 65, marginBottom: 9, flexDirection: "row", alignItems: "center", gap: 7, padding: 9, backgroundColor: CORES.cartao, borderColor: CORES.borda, borderWidth: 1, borderRadius: 10 },
-  itemSelecionado: { backgroundColor: "#FFEDD5", borderColor: CORES.laranja },
+  itemSelecionado: { backgroundColor: CORES.laranjaBorda, borderColor: CORES.laranja },
   textoAssunto: { flex: 1, fontSize: 12, fontWeight: "600", color: CORES.azul },
   confirmar: { marginTop: 7, alignItems: "center", justifyContent: "center", paddingVertical: 13, borderRadius: 9, backgroundColor: CORES.laranja },
   textoConfirmar: { color: CORES.branco, fontWeight: "bold", fontSize: 14 },
@@ -517,14 +521,14 @@ const styles = StyleSheet.create({
   botaoDesabilitado: { opacity: 0.6 },
   textoGerar: { color: CORES.branco, fontSize: 15, fontWeight: "bold" },
   areaHistorico: { width: "100%", maxWidth: 450 },
-   barraInferior: {
+  barraInferior: {
     flexDirection: "row",
-    backgroundColor: "#fff",
+    backgroundColor: CORES.branco,
     borderTopWidth: 1,
-    borderTopColor: CINZA_BORDA,
+    borderTopColor: CORES.borda,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    shadowColor: "#000",
+    shadowColor: CORES.sombra,
     shadowOpacity: 0.05,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: -2 },
@@ -538,7 +542,7 @@ const styles = StyleSheet.create({
   },
   barraLabel: {
     fontSize: 11,
-    color: "#9CA3AF",
+    color: CORES.inativo,
     marginTop: 3,
     fontWeight: "600",
   },

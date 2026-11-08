@@ -123,40 +123,32 @@ export default function QuestaoMath() {
       return;
     }
 
-    if (questao.id_questao === null) {
-      Alert.alert(
-        "ID da questão ausente",
-        "Para gravar id_questao como número, adicione o campo id_questao ao documento da coleção Questao."
-      );
-      return;
-    }
-
     salvamentoEmCurso.current = true;
     setSalvando(true);
 
     try {
-      // Hipótese explícita: users/{UID} possui o campo numérico id_estudante.
-      const perfilSnap = await getDoc(doc(db, "users", usuario.uid));
-      const perfil = perfilSnap.exists() ? perfilSnap.data() : null;
-      const idEstudante = inteiroPositivo(perfil?.id_estudante);
-
-      if (idEstudante === null) {
-        throw new Error(
-          "Não encontrei users/{UID}.id_estudante (número). Confira como seu cadastro relaciona o UID ao ID numérico do estudante."
-        );
+      // Procura ID numérico do estudante apenas se existir no cadastro.
+      // Não impede o aluno de responder quando esse campo não está preenchido.
+      let idEstudante: number | null = null;
+      try {
+        const perfilSnap = await getDoc(doc(db, "users", usuario.uid));
+        idEstudante = inteiroPositivo(perfilSnap.data()?.id_estudante);
+      } catch (erroPerfil) {
+        console.warn("Perfil numérico indisponível:", erroPerfil);
       }
 
       const resposta = selecionada.trim().toUpperCase();
       const acertou = resposta === questao.respostaCorreta;
 
-      await addDoc(collection(db, "Executa_Questao"), {
-        id_estudante: idEstudante,
-        id_questao: questao.id_questao,
+      // INSERT somente em faz_questao (campos numéricos são opcionais).
+      await addDoc(collection(db, "faz_questao"), {
+        usuario_uid: usuario.uid,
+        questao_documento_id: questao.id,
         resposta,
         acerto: acertou,
         data_realizacao: serverTimestamp(),
-        usuario_uid: usuario.uid,
-        questao_documento_id: questao.id,
+        ...(idEstudante !== null ? { id_estudante: idEstudante } : {}),
+        ...(questao.id_questao !== null ? { id_questao: questao.id_questao } : {}),
         ...(tentativaId ? { tentativa_id: tentativaId } : {}),
       });
 
