@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "./auth_context";
 
 const AZUL = "#1E3A8A";
@@ -19,6 +19,7 @@ const CINZA_BORDA = "#E5E7EB";
 
 export default function Perfil() {
   const { user, nome, signOutUser } = useAuth();
+  const insets  = useSafeAreaInsets();
 
   const inicial = (nome ?? "Usuário").trim().charAt(0).toUpperCase() || "?";
 
@@ -102,7 +103,7 @@ export default function Perfil() {
       </ScrollView>
 
       {/* Barra inferior */}
-      <View style={styles.barraInferior}>
+        <View style={[styles.barraInferior, { paddingBottom: insets.bottom + 10}]}>
         <TouchableOpacity
           style={styles.barraItem}
           activeOpacity={0.7}
