@@ -141,7 +141,7 @@ export default function QuestaoMath() {
       const acertou = resposta === questao.respostaCorreta;
 
       // INSERT somente em faz_questao (campos numéricos são opcionais).
-      await addDoc(collection(db, "faz_questao"), {
+      await addDoc(collection(db, "Executa_Questao"), {
         usuario_uid: usuario.uid,
         questao_documento_id: questao.id,
         resposta,
