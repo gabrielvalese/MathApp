@@ -4,19 +4,19 @@ import CheckBox from 'expo-checkbox';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Alert,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
-import { useAuth } from './auth_context';
+import { useAuth } from '../contexts/auth_context';
 
 const AZUL = "#1E3A8A";
 const LARANJA = "#F97316";

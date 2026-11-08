@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "./auth_context";
+import { useAuth } from "../contexts/auth_context";
 
 const AZUL = "#1E3A8A";
 const LARANJA = "#F97316";

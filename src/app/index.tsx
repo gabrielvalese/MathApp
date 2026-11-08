@@ -3,9 +3,9 @@ import { Redirect } from "expo-router";
 import { signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
-import { useAuth } from "./auth_context";
-import { auth } from "./FirebaseConfig";
-import { getLembrar, limparLembrar } from "./storage";
+import { useAuth } from "../contexts/auth_context";
+import { auth } from "../utils/FirebaseConfig";
+import { getLembrar, limparLembrar } from "../utils/storage";
 
 export default function Index() {
   const { user, loading } = useAuth();

@@ -15,8 +15,8 @@ import {
   useEffect,
   useState,
 } from "react";
-import { auth, db } from "./FirebaseConfig";
-import { limparLembrar, setLembrar } from "./storage";
+import { auth, db } from "../utils/FirebaseConfig";
+import { limparLembrar, setLembrar } from "../utils/storage";
 
 type AuthContextType = {
   user: User | null;

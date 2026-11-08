@@ -1,6 +1,6 @@
 // app/_layout.tsx
 import { Stack } from "expo-router";
-import { AuthProvider } from "./auth_context";
+import { AuthProvider } from "../contexts/auth_context";
 
 export default function RootLayout() {
   return (

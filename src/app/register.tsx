@@ -16,7 +16,7 @@ import {
   View,
 } from "react-native";
 import Animated from "react-native-reanimated";
-import { useAuth } from './auth_context';
+import { useAuth } from '../contexts/auth_context';
 
 const AZUL = "#1E3A8A";
 const LARANJA = "#F97316";

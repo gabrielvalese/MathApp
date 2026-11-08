@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { db } from '../FirebaseConfig.tsx';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { db } from '../../utils/FirebaseConfig';
 
 const COR = '#F97316';
 const LETRAS = ['A', 'B', 'C', 'D', 'E'];
