@@ -18,6 +18,7 @@ export default function RootLayout() {
         <Stack.Screen name="redefinir_senha1" />
         <Stack.Screen name="redefinir_senha2" />
         <Stack.Screen name="redefinir_senha3" />
+        <Stack.Screen name="verificar_email" />
       </Stack>
     </AuthProvider>
   );

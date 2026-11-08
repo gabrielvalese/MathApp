@@ -1,6 +1,7 @@
 // app/register.tsx
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { sendEmailVerification } from "firebase/auth";
 import { useState } from 'react';
 import {
   Alert,
@@ -15,15 +16,15 @@ import {
   View,
 } from "react-native";
 import Animated from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/auth_context';
+import { auth } from '../utils/FirebaseConfig';
 
 const AZUL = "#1E3A8A";
 const LARANJA = "#F97316";
 const CINZA_BG = "#F5F6FA";
 const CINZA_BORDA = "#E5E7EB";
 
-// Wrapper animado: a borda muda suavemente ao focar
 function InputAnimado({ icone, children }: { icone: keyof typeof Ionicons.glyphMap; children: React.ReactNode }) {
   return (
     <Animated.View
@@ -33,10 +34,7 @@ function InputAnimado({ icone, children }: { icone: keyof typeof Ionicons.glyphM
         backgroundColor: CINZA_BG,
         borderRadius: 12,
         borderWidth: 1.5,
-        borderColor: {
-          default: CINZA_BORDA,
-          ':focus-within': LARANJA,
-        },
+        borderColor: { default: CINZA_BORDA, ':focus-within': LARANJA },
         paddingHorizontal: 12,
         height: 52,
         transitionDuration: 200,
@@ -67,7 +65,22 @@ export default function Register() {
 
     try {
       await signUp(name.trim(), email.trim(), password);
-      router.replace("/home");
+
+      // Envia o e-mail de verificação para o usuário recém-criado
+      if (auth.currentUser) {
+        try {
+          await sendEmailVerification(auth.currentUser);
+          console.log("📧 E-mail de verificação enviado (sem erro na chamada).");
+        } catch (e) {
+          console.error("❌ Erro ao enviar e-mail de verificação:", e);
+        }
+      }
+
+      // Navega para a tela de aviso, passando o e-mail
+      router.replace({
+        pathname: "/verificar_email",
+        params: { email: email.trim() },
+      });
     } catch (e: any) {
       let msg = "Erro ao cadastrar.";
       if (e.code === "auth/email-already-in-use") msg = "E-mail já em uso.";
@@ -79,21 +92,10 @@ export default function Register() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
-            <Image
-              source={require('../../assets/images/logo.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
+            <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
             <Text style={styles.titulo}>Criar conta</Text>
             <Text style={styles.subtitulo}>Comece sua jornada na matemática</Text>
           </View>
@@ -101,38 +103,17 @@ export default function Register() {
           <View style={styles.card}>
             <Text style={styles.label}>Nome</Text>
             <InputAnimado icone="person-outline">
-              <TextInput
-                placeholder="Seu nome"
-                placeholderTextColor="#9CA3AF"
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-              />
+              <TextInput placeholder="Seu nome" placeholderTextColor="#9CA3AF" style={styles.input} value={name} onChangeText={setName} />
             </InputAnimado>
 
             <Text style={[styles.label, { marginTop: 16 }]}>E-mail</Text>
             <InputAnimado icone="mail-outline">
-              <TextInput
-                placeholder="seu@email.com"
-                placeholderTextColor="#9CA3AF"
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
+              <TextInput placeholder="seu@email.com" placeholderTextColor="#9CA3AF" style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
             </InputAnimado>
 
             <Text style={[styles.label, { marginTop: 16 }]}>Senha</Text>
             <InputAnimado icone="lock-closed-outline">
-              <TextInput
-                placeholder="Mínimo 6 caracteres"
-                placeholderTextColor="#9CA3AF"
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!mostrarSenha}
-              />
+              <TextInput placeholder="Mínimo 6 caracteres" placeholderTextColor="#9CA3AF" style={styles.input} value={password} onChangeText={setPassword} secureTextEntry={!mostrarSenha} />
               <TouchableOpacity onPress={() => setMostrarSenha(v => !v)} hitSlop={10} style={{ padding: 4 }}>
                 <Ionicons name={mostrarSenha ? "eye-off" : "eye"} size={22} color={AZUL} />
               </TouchableOpacity>
@@ -140,14 +121,7 @@ export default function Register() {
 
             <Text style={[styles.label, { marginTop: 16 }]}>Confirmar senha</Text>
             <InputAnimado icone="lock-closed-outline">
-              <TextInput
-                placeholder="Repita a senha"
-                placeholderTextColor="#9CA3AF"
-                style={styles.input}
-                value={confirm}
-                onChangeText={setConfirm}
-                secureTextEntry={!mostrarConfirm}
-              />
+              <TextInput placeholder="Repita a senha" placeholderTextColor="#9CA3AF" style={styles.input} value={confirm} onChangeText={setConfirm} secureTextEntry={!mostrarConfirm} />
               <TouchableOpacity onPress={() => setMostrarConfirm(v => !v)} hitSlop={10} style={{ padding: 4 }}>
                 <Ionicons name={mostrarConfirm ? "eye-off" : "eye"} size={22} color={AZUL} />
               </TouchableOpacity>
@@ -173,47 +147,16 @@ export default function Register() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: CINZA_BG },
   scroll: { padding: 24, paddingBottom: 40, flexGrow: 1, justifyContent: "center" },
-
   header: { alignItems: "center", marginBottom: 28 },
   logo: { width: 110, height: 110, marginBottom: 12 },
   titulo: { fontSize: 30, fontWeight: "800", color: AZUL },
   subtitulo: { fontSize: 15, color: "#6B7280", marginTop: 4 },
-
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 22,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
-  },
-
+  card: { backgroundColor: "#fff", borderRadius: 20, padding: 22, shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 4 },
   label: { fontSize: 14, fontWeight: "700", color: AZUL, marginBottom: 6 },
   input: { flex: 1, fontSize: 16, color: "#111827", paddingVertical: 0 },
-
-  btnCadastrar: {
-    backgroundColor: AZUL,
-    height: 54,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 24,
-    shadowColor: AZUL,
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
-  },
+  btnCadastrar: { backgroundColor: AZUL, height: 54, borderRadius: 14, alignItems: "center", justifyContent: "center", marginTop: 24, shadowColor: AZUL, shadowOpacity: 0.3, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 3 },
   btnCadastrarTxt: { color: "#fff", fontSize: 18, fontWeight: "800", letterSpacing: 0.5 },
-
-  rodape: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22,
-  },
+  rodape: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 22 },
   txtRodape: { fontSize: 15, color: "#6B7280" },
   txtLink: { fontSize: 15, color: AZUL, fontWeight: "800" },
 });
