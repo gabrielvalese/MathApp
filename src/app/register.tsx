@@ -7,7 +7,6 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,6 +15,7 @@ import {
   View,
 } from "react-native";
 import Animated from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from '../contexts/auth_context';
 
 const AZUL = "#1E3A8A";

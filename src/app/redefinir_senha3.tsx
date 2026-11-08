@@ -1,82 +1,144 @@
-    import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function Index() {
   return (
     <View style={styles.conteiner}>
-      <ScrollView>
-      <View style={styles.redefinir_senha}>
-         <Image 
-          source={require('../../assets/images/logo.png')} 
-          style={{ width: 100, height: 100, marginBottom: 20 }}
-        />aaa
-        <Text style={{fontSize: 30, fontWeight: 'bold'}}>Redefinir senha</Text>
-        <View style={styles.area_input}>
-          <Text style={{fontSize: 20}}>Nova senha</Text>
-          <TextInput 
-            style={styles.caixa_input} 
-            placeholder="Digite sua senha" 
-            placeholderTextColor="#424242"
-            selectionColor="#000000"/>
-          <View style={styles.confirmar_senha}>
-          <Text style={{fontSize: 20}}>Confirmar nova senha</Text>
-          <TextInput 
-            style={styles.caixa_input} 
-            placeholder="Confirme sua senha" 
-            placeholderTextColor="#424242"
-            selectionColor="#000000"/>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.redefinir_senha}>
+          <Image 
+            source={require('../../assets/images/logo.png')} 
+            style={{ width: 90, height: 90, marginBottom: 16, resizeMode: 'contain' }}
+          />
+          <Text style={styles.titulo}>Nova senha</Text>
+          <Text style={styles.subtitulo}>Digite e confirme sua nova senha de acesso</Text>
+          
+          <View style={styles.area_input}>
+            <Text style={styles.labelInput}>Nova senha</Text>
+            <TextInput 
+              style={styles.caixa_input} 
+              placeholder="Digite sua senha" 
+              placeholderTextColor="#94A3B8"
+              secureTextEntry
+              selectionColor="#F97316"
+            />
+            
+            <View style={styles.confirmar_senha}>
+              <Text style={styles.labelInput}>Confirmar nova senha</Text>
+              <TextInput 
+                style={styles.caixa_input} 
+                placeholder="Confirme sua senha" 
+                placeholderTextColor="#94A3B8"
+                secureTextEntry
+                selectionColor="#F97316"
+              />
             </View>
+          </View>
+
+          <Pressable style={styles.botao_redefinir}>
+            <Text style={styles.textoBotao}>Alterar senha</Text>
+          </Pressable>
         </View>
-      <Pressable style={styles.botao_redefinir}>
-          <Text style={{fontSize: 15, color: 'white'}}>Alterar senha</Text>
-        </Pressable>
-      </View>
-    </ScrollView>
+      </ScrollView>
     </View>
-);
+  );
 }
+
 const styles = StyleSheet.create({
   conteiner: {
     flex: 1,
-    backgroundColor: '#494848',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  redefinir_senha: {
-    width: '90%',
-    alignItems: 'center',
-    paddingTop: 30,
-    backgroundColor: '#fafffe',
-    borderRadius: 10,
-    paddingVertical: 80
-  },
-  area_input: {
-    backgroundColor: '#D7D7D7',
-    width: '80%',
-    marginTop: 30,
-    borderRadius: 6,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-  },
-  caixa_input: {
-    backgroundColor: '#ffffff',
-    marginTop: 6,
-    borderRadius: 6,
-    height: 38,
-    color: '#000000',
-    paddingHorizontal: 10,
-  },
-  botao_redefinir: {
-    backgroundColor: '#000000', 
-    width: '50%',               
-    height: 45,
-    borderRadius: 6,
+    backgroundColor: '#F1F5F9', // Fundo claro e moderno do app
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 30,  
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    width: '100%',
+  },
+  redefinir_senha: {
+    width: '100%',
+    maxWidth: 420, // Garante responsividade perfeita em tablets e web
+    alignItems: 'center',
+    paddingTop: 30,
+    backgroundColor: '#FFFFFF', // Card branco limpo
+    borderRadius: 16,
+    paddingVertical: 45,
+    paddingHorizontal: 24,
+    // Borda preta com transparência
+    borderWidth: 1.5,
+    borderColor: 'rgba(0, 0, 0, 0.15)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 5,
+  },
+  titulo: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#0B132B', // Azul escuro MathVerse
+    textAlign: 'center',
+  },
+  subtitulo: {
+    fontSize: 13,
+    color: '#64748B',
+    marginTop: 4,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  area_input: {
+    backgroundColor: '#FFF7ED', // Fundo em tom pastel suave de laranja
+    width: '100%',
+    marginTop: 24,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+    borderWidth: 1,
+    borderColor: '#FFEDD5',
+  },
+  labelInput: {
+    fontSize: 14,
+    color: '#C2410C', // Laranja queimado para destacar os labels
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  caixa_input: {
+    backgroundColor: '#FFFFFF',
+    marginTop: 4,
+    borderRadius: 8,
+    height: 44,
+    color: '#0B132B',
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    fontSize: 15,
   },
   confirmar_senha: {
-    marginTop: 30
+    marginTop: 18,
   },
-
-
+  botao_redefinir: {
+    backgroundColor: '#F97316', // Laranja vibrante principal do MathVerse
+    width: '100%',              
+    height: 48,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 28,  
+    shadowColor: '#F97316',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  textoBotao: {
+    fontSize: 16, 
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+  }
 });
