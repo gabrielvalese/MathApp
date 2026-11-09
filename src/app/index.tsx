@@ -1,14 +1,15 @@
-// app/index.tsx
 import { Redirect } from "expo-router";
 import { signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { useAuth } from "../contexts/auth_context";
+import { useTheme } from "../contexts/theme_context";
 import { auth } from "../utils/FirebaseConfig";
 import { getLembrar, limparLembrar } from "../utils/storage";
 
 export default function Index() {
   const { user, loading } = useAuth();
+  const { cores } = useTheme();
   const [limpando, setLimpando] = useState(false);
 
   useEffect(() => {
@@ -16,7 +17,6 @@ export default function Index() {
       if (!user) return;
       const lembrar = await getLembrar();
       if (!lembrar) {
-        // Sessão antiga sem "lembrar-me": desloga ao abrir o app
         setLimpando(true);
         await signOut(auth);
         await limparLembrar();
@@ -28,9 +28,9 @@ export default function Index() {
 
   if (loading || limpando) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#1E3A8A" />
-        <Text style={{ marginTop: 10, color: "#1E3A8A" }}>Carregando...</Text>
+      <View style={{ flex: 1, backgroundColor: cores.fundo, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color={cores.laranja} />
+        <Text style={{ marginTop: 10, color: cores.texto }}>Carregando...</Text>
       </View>
     );
   }

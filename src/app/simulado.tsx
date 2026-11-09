@@ -1,4 +1,3 @@
-// app/simulado.tsx
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
@@ -23,16 +22,12 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "../contexts/theme_context";
 import { auth, db } from "../utils/FirebaseConfig";
 import MeuSimulado from "./componentes/MeuSimulado";
 
 const COLECAO_QUESTOES = "Questao";
 const COLECAO_CONTEUDOS = "Conteudo";
-
-const AZUL = "#1E3A8A";
-const LARANJA = "#F97316";
-const CINZA_BG = "#F5F6FA";
-const CINZA_BORDA = "#E5E7EB";
 
 const ASSUNTOS = [
   "Análise Combinatória",
@@ -81,6 +76,7 @@ function embaralhar<T>(original: T[]): T[] {
 
 export default function Simulado() {
   const router = useRouter();
+  const { cores } = useTheme();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ aba?: string }>();
   const [aba, setAba] = useState<Aba>(params.aba === "meus" ? "meus" : "criar");
@@ -118,12 +114,6 @@ export default function Simulado() {
     );
   }
 
-  /**
-   * Busca as questões de um assunto.
-   * - Conteudo tem Document ID = id_conteudo usado nas questões.
-   * - O campo "nome" em Conteudo é o nome do assunto.
-   * - Questao tem o campo "id_conteudo" com esse mesmo valor.
-   */
   async function buscarQuestoesDoAssunto(assunto: string) {
     const conteudosSnap = await getDocs(collection(db, COLECAO_CONTEUDOS));
     const docConteudo = conteudosSnap.docs.find((d) => {
@@ -131,15 +121,10 @@ export default function Simulado() {
       return textoBusca(nome) === textoBusca(assunto);
     });
 
-    if (!docConteudo) {
-      console.log(`[SIMULADO] Conteúdo "${assunto}" não encontrado.`);
-      return [];
-    }
+    if (!docConteudo) return [];
 
     const idConteudo = docConteudo.id;
-    console.log(`[SIMULADO] Assunto "${assunto}" → id_conteudo = "${idConteudo}"`);
 
-    // Tenta string primeiro
     let docs = (
       await getDocs(
         query(
@@ -149,7 +134,6 @@ export default function Simulado() {
       )
     ).docs;
 
-    // Se não encontrou, tenta número
     if (docs.length === 0 && Number.isFinite(Number(idConteudo))) {
       docs = (
         await getDocs(
@@ -161,9 +145,6 @@ export default function Simulado() {
       ).docs;
     }
 
-    console.log(
-      `[SIMULADO] Assunto "${assunto}" → ${docs.length} questões encontradas.`
-    );
     return docs;
   }
 
@@ -215,7 +196,6 @@ export default function Simulado() {
         })
       );
 
-      // Remove IDs duplicados entre grupos
       const idsUnicos = new Set<string>();
       for (const grupo of grupos) {
         grupo.ids = grupo.ids.filter((id) => {
@@ -234,7 +214,6 @@ export default function Simulado() {
         return;
       }
 
-      // Seleciona de forma balanceada
       const quantidadeFinal = Math.min(quantidade, totalDisponivel);
       const escolhidas: Array<{ id: string; assunto: string }> = [];
       while (escolhidas.length < quantidadeFinal) {
@@ -319,7 +298,6 @@ export default function Simulado() {
         },
       ]);
     } catch (error) {
-      console.error("Erro ao gerar simulado:", error);
       Alert.alert(
         "Não foi possível gerar",
         error instanceof Error ? error.message : "Verifique a conexão."
@@ -330,7 +308,7 @@ export default function Simulado() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: cores.fundo }]} edges={["top", "left", "right"]}>
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -339,63 +317,68 @@ export default function Simulado() {
         <View style={styles.header}>
           <View style={styles.headerTop}>
             <Pressable
-              style={styles.botaoVoltar}
+              style={[styles.botaoVoltar, { backgroundColor: cores.card }]}
               onPress={() =>
                 router.canGoBack() ? router.back() : router.replace("/home")
               }
             >
-              <Ionicons name="arrow-back" size={22} color={AZUL} />
+              <Ionicons name="arrow-back" size={22} color={cores.azul} />
             </Pressable>
-            <Text style={styles.titulo}>Simulados</Text>
+            <Text style={[styles.titulo, { color: cores.texto }]}>Simulados</Text>
           </View>
-          <Text style={styles.subtitulo}>Prepare seu simulado de matemática</Text>
+          <Text style={[styles.subtitulo, { color: cores.textoSuave }]}>
+            Prepare seu simulado de matemática
+          </Text>
         </View>
 
-        <View style={styles.abas}>
+        <View style={[styles.abas, { backgroundColor: cores.card }]}>
           <Pressable
-            style={[styles.aba, aba === "criar" && styles.abaAtiva]}
+            style={[styles.aba, aba === "criar" && { backgroundColor: cores.cardSecundario }]}
             onPress={() => setAba("criar")}
           >
             <Ionicons
               name="add-circle-outline"
               size={19}
-              color={aba === "criar" ? LARANJA : "#6B7280"}
+              color={aba === "criar" ? cores.laranja : cores.textoSuave}
             />
-            <Text style={[styles.textoAba, aba === "criar" && styles.textoAbaAtiva]}>
+            <Text style={[styles.textoAba, { color: aba === "criar" ? cores.laranja : cores.textoSuave }]}>
               Criar simulado
             </Text>
           </Pressable>
           <Pressable
-            style={[styles.aba, aba === "meus" && styles.abaAtiva]}
+            style={[styles.aba, aba === "meus" && { backgroundColor: cores.cardSecundario }]}
             onPress={() => setAba("meus")}
           >
             <Ionicons
               name="folder-open-outline"
               size={19}
-              color={aba === "meus" ? LARANJA : "#6B7280"}
+              color={aba === "meus" ? cores.laranja : cores.textoSuave}
             />
-            <Text style={[styles.textoAba, aba === "meus" && styles.textoAbaAtiva]}>
+            <Text style={[styles.textoAba, { color: aba === "meus" ? cores.laranja : cores.textoSuave }]}>
               Meus simulados
             </Text>
           </Pressable>
         </View>
 
         {aba === "criar" ? (
-          <View style={styles.card}>
-            <Text style={styles.tituloCartao}>Novo simulado</Text>
-            <Text style={styles.descricaoCartao}>
+          <View style={[styles.card, { backgroundColor: cores.card }]}>
+            <Text style={[styles.tituloCartao, { color: cores.texto }]}>Novo simulado</Text>
+            <Text style={[styles.descricaoCartao, { color: cores.textoSuave }]}>
               Escolha os assuntos, a quantidade e o tempo.
             </Text>
 
-            <Text style={styles.label}>Assuntos</Text>
-            <Pressable style={styles.seletor} onPress={() => setPainelAberto((v) => !v)}>
+            <Text style={[styles.label, { color: cores.texto }]}>Assuntos</Text>
+            <Pressable
+              style={[styles.seletor, { backgroundColor: cores.cardSecundario, borderColor: cores.laranja }]}
+              onPress={() => setPainelAberto((v) => !v)}
+            >
               <View style={styles.linhaSeletor}>
-                <View style={styles.iconeCirculo}>
-                  <Ionicons name="library-outline" size={20} color={AZUL} />
+                <View style={[styles.iconeCirculo, { backgroundColor: cores.cardSecundario }]}>
+                  <Ionicons name="library-outline" size={20} color={cores.azul} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.textoSeletor}>Selecionar assuntos</Text>
-                  <Text style={styles.textoPequeno}>
+                  <Text style={[styles.textoSeletor, { color: cores.laranja }]}>Selecionar assuntos</Text>
+                  <Text style={[styles.textoPequeno, { color: cores.textoSuave }]}>
                     {selecionados.length === 0
                       ? `${ASSUNTOS.length} conteúdos disponíveis`
                       : `${selecionados.length} de ${ASSUNTOS.length} selecionados`}
@@ -405,28 +388,28 @@ export default function Simulado() {
               <Ionicons
                 name={painelAberto ? "chevron-up" : "chevron-down"}
                 size={20}
-                color={AZUL}
+                color={cores.azul}
               />
             </Pressable>
 
             {painelAberto && (
-              <View style={styles.painel}>
+              <View style={[styles.painel, { backgroundColor: cores.card, borderColor: cores.borda }]}>
                 <TextInput
-                  style={styles.busca}
+                  style={[styles.busca, { backgroundColor: cores.fundo, borderColor: cores.borda, color: cores.texto }]}
                   placeholder="Buscar assunto..."
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor={cores.textoSuave}
                   value={busca}
                   onChangeText={setBusca}
                 />
                 <View style={styles.acoes}>
-                  <Text style={styles.textoPequeno}>
+                  <Text style={[styles.textoPequeno, { color: cores.textoSuave }]}>
                     {selecionados.length} selecionado(s)
                   </Text>
                   <Pressable onPress={() => setSelecionados([...ASSUNTOS])}>
-                    <Text style={styles.link}>Selecionar todos</Text>
+                    <Text style={[styles.link, { color: cores.laranja }]}>Selecionar todos</Text>
                   </Pressable>
                   <Pressable onPress={() => setSelecionados([])}>
-                    <Text style={styles.link}>Limpar</Text>
+                    <Text style={[styles.link, { color: cores.laranja }]}>Limpar</Text>
                   </Pressable>
                 </View>
                 <View style={styles.grade}>
@@ -435,20 +418,24 @@ export default function Simulado() {
                     return (
                       <Pressable
                         key={nome}
-                        style={[styles.itemAssunto, marcado && styles.itemSelecionado]}
+                        style={[
+                          styles.itemAssunto,
+                          { backgroundColor: cores.fundo, borderColor: cores.borda },
+                          marcado && { backgroundColor: cores.cardSecundario, borderColor: cores.laranja },
+                        ]}
                         onPress={() => alternarAssunto(nome)}
                       >
                         <Ionicons
                           name={marcado ? "checkbox" : "square-outline"}
                           size={19}
-                          color={marcado ? LARANJA : "#6B7280"}
+                          color={marcado ? cores.laranja : cores.textoSuave}
                         />
-                        <Text style={styles.textoAssunto}>{nome}</Text>
+                        <Text style={[styles.textoAssunto, { color: cores.texto }]}>{nome}</Text>
                       </Pressable>
                     );
                   })}
                 </View>
-                <Pressable style={styles.confirmar} onPress={() => setPainelAberto(false)}>
+                <Pressable style={[styles.confirmar, { backgroundColor: cores.laranja }]} onPress={() => setPainelAberto(false)}>
                   <Text style={styles.textoConfirmar}>Confirmar seleção</Text>
                 </Pressable>
               </View>
@@ -456,41 +443,47 @@ export default function Simulado() {
 
             <View style={styles.campos}>
               <View style={styles.campo}>
-                <Text style={styles.labelCampo}>Número de questões</Text>
+                <Text style={[styles.labelCampo, { color: cores.texto }]}>Número de questões</Text>
                 <TextInput
                   value={numeroQuestoes}
                   onChangeText={setNumeroQuestoes}
                   keyboardType="number-pad"
-                  selectionColor={LARANJA}
-                  style={styles.inputNumerico}
+                  selectionColor={cores.laranja}
+                  style={[
+                    styles.inputNumerico,
+                    { backgroundColor: cores.cardSecundario, borderColor: cores.laranja, color: cores.texto },
+                  ]}
                 />
               </View>
               <View style={styles.campo}>
-                <Text style={styles.labelCampo}>Tempo (min)</Text>
+                <Text style={[styles.labelCampo, { color: cores.texto }]}>Tempo (min)</Text>
                 <TextInput
                   value={tempoLimite}
                   onChangeText={setTempoLimite}
                   keyboardType="number-pad"
-                  selectionColor={LARANJA}
-                  style={styles.inputNumerico}
+                  selectionColor={cores.laranja}
+                  style={[
+                    styles.inputNumerico,
+                    { backgroundColor: cores.cardSecundario, borderColor: cores.laranja, color: cores.texto },
+                  ]}
                 />
               </View>
             </View>
 
             {previsao.length > 0 && (
-              <View style={styles.previa}>
+              <View style={[styles.previa, { backgroundColor: cores.card, borderColor: cores.borda }]}>
                 <View style={styles.cabecalhoPrevia}>
-                  <Text style={styles.tituloPrevia}>Distribuição prevista</Text>
-                  <Text style={styles.totalPrevia}>{numeroQuestoes} questões</Text>
+                  <Text style={[styles.tituloPrevia, { color: cores.texto }]}>Distribuição prevista</Text>
+                  <Text style={[styles.totalPrevia, { color: cores.laranja }]}>{numeroQuestoes} questões</Text>
                 </View>
                 {previsao.slice(0, 5).map((item) => (
-                  <View key={item.nome} style={styles.linhaPrevia}>
-                    <Text style={styles.nomePrevia}>{item.nome}</Text>
-                    <Text style={styles.qtdPrevia}>{item.quantidade}</Text>
+                  <View key={item.nome} style={[styles.linhaPrevia, { borderBottomColor: cores.borda }]}>
+                    <Text style={[styles.nomePrevia, { color: cores.texto }]}>{item.nome}</Text>
+                    <Text style={[styles.qtdPrevia, { color: cores.laranja }]}>{item.quantidade}</Text>
                   </View>
                 ))}
                 {previsao.length > 5 && (
-                  <Text style={styles.textoPequeno}>
+                  <Text style={[styles.textoPequeno, { color: cores.textoSuave }]}>
                     E mais {previsao.length - 5} assunto(s).
                   </Text>
                 )}
@@ -498,7 +491,7 @@ export default function Simulado() {
             )}
 
             <Pressable
-              style={[styles.botaoGerar, gerando && styles.botaoDesabilitado]}
+              style={[styles.botaoGerar, { backgroundColor: cores.laranja }, gerando && styles.botaoDesabilitado]}
               onPress={gerarSimulado}
               disabled={gerando}
             >
@@ -519,20 +512,29 @@ export default function Simulado() {
         )}
       </ScrollView>
 
-      <View style={[styles.barraInferior, { paddingBottom: insets.bottom + 10 }]}>
+      <View
+        style={[
+          styles.barraInferior,
+          {
+            backgroundColor: cores.card,
+            borderTopColor: cores.borda,
+            paddingBottom: insets.bottom + 10,
+          },
+        ]}
+      >
         <TouchableOpacity
           style={styles.barraItem}
           onPress={() => router.replace("/home")}
         >
-          <Ionicons name="home" size={24} color="#9CA3AF" />
-          <Text style={styles.barraLabel}>Início</Text>
+          <Ionicons name="home" size={24} color={cores.textoSuave} />
+          <Text style={[styles.barraLabel, { color: cores.textoSuave }]}>Início</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.barraItem}
           onPress={() => router.replace("/simulado")}
         >
-          <MaterialCommunityIcons name="podium-gold" size={26} color={LARANJA} />
-          <Text style={[styles.barraLabel, { color: LARANJA, fontWeight: "700" }]}>
+          <MaterialCommunityIcons name="podium-gold" size={26} color={cores.laranja} />
+          <Text style={[styles.barraLabel, { color: cores.laranja, fontWeight: "700" }]}>
             Simulados
           </Text>
         </TouchableOpacity>
@@ -540,8 +542,8 @@ export default function Simulado() {
           style={styles.barraItem}
           onPress={() => router.replace("/perfil")}
         >
-          <Ionicons name="person" size={24} color="#9CA3AF" />
-          <Text style={styles.barraLabel}>Perfil</Text>
+          <Ionicons name="person" size={24} color={cores.textoSuave} />
+          <Text style={[styles.barraLabel, { color: cores.textoSuave }]}>Perfil</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -549,238 +551,63 @@ export default function Simulado() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: CINZA_BG },
+  safe: { flex: 1 },
   scroll: { padding: 20, paddingBottom: 24 },
-
   header: { marginBottom: 18 },
   headerTop: { flexDirection: "row", alignItems: "center", marginBottom: 6 },
   botaoVoltar: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    width: 38, height: 38, borderRadius: 12,
+    alignItems: "center", justifyContent: "center", marginRight: 10,
+    shadowColor: "#000", shadowOpacity: 0.06, shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 }, elevation: 2,
   },
-  titulo: { fontSize: 26, fontWeight: "800", color: AZUL },
-  subtitulo: { fontSize: 13, color: "#6B7280", paddingLeft: 48 },
-
+  titulo: { fontSize: 26, fontWeight: "800" },
+  subtitulo: { fontSize: 13, paddingLeft: 48 },
   abas: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    padding: 5,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    flexDirection: "row", borderRadius: 14, padding: 5, marginBottom: 16,
+    shadowColor: "#000", shadowOpacity: 0.06, shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 }, elevation: 3,
   },
-  aba: {
-    flex: 1,
-    minHeight: 46,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    borderRadius: 10,
-  },
-  abaAtiva: { backgroundColor: "#FFEDD5" },
-  textoAba: { fontSize: 12, fontWeight: "700", color: "#6B7280" },
-  textoAbaAtiva: { color: "#C2410C" },
-
+  aba: { flex: 1, minHeight: 46, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, borderRadius: 10 },
+  textoAba: { fontSize: 12, fontWeight: "700" },
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 18,
-    padding: 18,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    borderRadius: 18, padding: 18, marginBottom: 16,
+    shadowColor: "#000", shadowOpacity: 0.06, shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 }, elevation: 3,
   },
-  tituloCartao: { fontSize: 20, color: AZUL, fontWeight: "800", textAlign: "center" },
-  descricaoCartao: {
-    marginTop: 6,
-    fontSize: 13,
-    textAlign: "center",
-    color: "#6B7280",
-    marginBottom: 22,
-  },
-
-  label: { fontSize: 16, fontWeight: "800", color: AZUL, marginBottom: 10 },
-
-  seletor: {
-    padding: 13,
-    backgroundColor: "#FFF7ED",
-    borderWidth: 1.5,
-    borderColor: "#FFEDD5",
-    borderRadius: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
+  tituloCartao: { fontSize: 20, fontWeight: "800", textAlign: "center" },
+  descricaoCartao: { marginTop: 6, fontSize: 13, textAlign: "center", marginBottom: 22 },
+  label: { fontSize: 16, fontWeight: "800", marginBottom: 10 },
+  seletor: { padding: 13, borderWidth: 1.5, borderRadius: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   linhaSeletor: { flex: 1, flexDirection: "row", gap: 10, alignItems: "center" },
-  iconeCirculo: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: "#FFEDD5",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textoSeletor: { fontSize: 14, fontWeight: "800", color: "#C2410C" },
-  textoPequeno: { fontSize: 11, color: "#6B7280", marginTop: 3 },
-
-  painel: {
-    marginTop: 10,
-    borderRadius: 12,
-    padding: 10,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: CINZA_BORDA,
-  },
-  busca: {
-    backgroundColor: CINZA_BG,
-    borderWidth: 1,
-    borderColor: CINZA_BORDA,
-    borderRadius: 10,
-    padding: 10,
-    fontSize: 14,
-    color: AZUL,
-    marginBottom: 11,
-  },
-  acoes: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 12,
-  },
-  link: { color: LARANJA, fontSize: 12, fontWeight: "800" },
+  iconeCirculo: { width: 38, height: 38, borderRadius: 19, alignItems: "center", justifyContent: "center" },
+  textoSeletor: { fontSize: 14, fontWeight: "800" },
+  textoPequeno: { fontSize: 11, marginTop: 3 },
+  painel: { marginTop: 10, borderRadius: 12, padding: 10, borderWidth: 1 },
+  busca: { borderWidth: 1, borderRadius: 10, padding: 10, fontSize: 14, marginBottom: 11 },
+  acoes: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12 },
+  link: { fontSize: 12, fontWeight: "800" },
   grade: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
-  itemAssunto: {
-    width: "48.5%",
-    minHeight: 58,
-    marginBottom: 9,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 7,
-    padding: 9,
-    backgroundColor: CINZA_BG,
-    borderColor: CINZA_BORDA,
-    borderWidth: 1,
-    borderRadius: 10,
-  },
-  itemSelecionado: { backgroundColor: "#FFEDD5", borderColor: LARANJA },
-  textoAssunto: { flex: 1, fontSize: 12, fontWeight: "600", color: AZUL },
-
-  confirmar: {
-    marginTop: 7,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 13,
-    borderRadius: 10,
-    backgroundColor: LARANJA,
-  },
+  itemAssunto: { width: "48.5%", minHeight: 58, marginBottom: 9, flexDirection: "row", alignItems: "center", gap: 7, padding: 9, borderWidth: 1, borderRadius: 10 },
+  textoAssunto: { flex: 1, fontSize: 12, fontWeight: "600" },
+  confirmar: { marginTop: 7, alignItems: "center", justifyContent: "center", paddingVertical: 13, borderRadius: 10 },
   textoConfirmar: { color: "#fff", fontWeight: "800", fontSize: 14 },
-
   campos: { flexDirection: "row", marginTop: 22, gap: 12 },
   campo: { flex: 1 },
-  labelCampo: {
-    textAlign: "center",
-    marginBottom: 9,
-    fontSize: 13,
-    fontWeight: "800",
-    color: AZUL,
-  },
-  inputNumerico: {
-    height: 52,
-    borderRadius: 10,
-    backgroundColor: "#FFF7ED",
-    borderWidth: 1.5,
-    borderColor: "#FFEDD5",
-    textAlign: "center",
-    color: AZUL,
-    fontSize: 19,
-    fontWeight: "800",
-  },
-
-  previa: {
-    backgroundColor: "#fff",
-    borderColor: CINZA_BORDA,
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 12,
-    marginTop: 20,
-  },
-  cabecalhoPrevia: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 8,
-    marginBottom: 10,
-    alignItems: "center",
-  },
-  tituloPrevia: { flex: 1, fontSize: 14, color: AZUL, fontWeight: "800" },
-  totalPrevia: { fontSize: 11, color: LARANJA, fontWeight: "800" },
-  linhaPrevia: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: CINZA_BORDA,
-    paddingVertical: 8,
-  },
-  nomePrevia: { flex: 1, color: AZUL, fontSize: 12 },
-  qtdPrevia: { color: LARANJA, fontSize: 12, fontWeight: "800" },
-
-  botaoGerar: {
-    backgroundColor: LARANJA,
-    borderRadius: 12,
-    paddingVertical: 15,
-    marginTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 9,
-    shadowColor: LARANJA,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 3,
-  },
+  labelCampo: { textAlign: "center", marginBottom: 9, fontSize: 13, fontWeight: "800" },
+  inputNumerico: { height: 52, borderRadius: 10, borderWidth: 1.5, textAlign: "center", fontSize: 19, fontWeight: "800" },
+  previa: { borderWidth: 1, borderRadius: 12, padding: 12, marginTop: 20 },
+  cabecalhoPrevia: { flexDirection: "row", justifyContent: "space-between", gap: 8, marginBottom: 10, alignItems: "center" },
+  tituloPrevia: { flex: 1, fontSize: 14, fontWeight: "800" },
+  totalPrevia: { fontSize: 11, fontWeight: "800" },
+  linhaPrevia: { flexDirection: "row", justifyContent: "space-between", gap: 12, borderBottomWidth: 1, paddingVertical: 8 },
+  nomePrevia: { flex: 1, fontSize: 12 },
+  qtdPrevia: { fontSize: 12, fontWeight: "800" },
+  botaoGerar: { borderRadius: 12, paddingVertical: 15, marginTop: 20, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 9, shadowColor: "#F97316", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 7, elevation: 3 },
   botaoDesabilitado: { opacity: 0.6 },
   textoGerar: { color: "#fff", fontSize: 15, fontWeight: "800" },
-
   areaHistorico: { width: "100%" },
-
-  barraInferior: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: CINZA_BORDA,
-    paddingTop: 10,
-    paddingHorizontal: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: -2 },
-    elevation: 8,
-  },
-  barraItem: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 4,
-  },
-  barraLabel: { fontSize: 11, color: "#9CA3AF", marginTop: 3, fontWeight: "600" },
+  barraInferior: { flexDirection: "row", borderTopWidth: 1, paddingTop: 10, paddingHorizontal: 12, shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 8, shadowOffset: { width: 0, height: -2 }, elevation: 8 },
+  barraItem: { flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: 4 },
+  barraLabel: { fontSize: 11, marginTop: 3, fontWeight: "600" },
 });

@@ -1,4 +1,3 @@
-// app/categoria_questoes.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
@@ -13,13 +12,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "../contexts/theme_context";
 import { auth, db } from "../utils/FirebaseConfig";
-
-const AZUL = "#1E3A8A";
-const LARANJA = "#F97316";
-const CINZA_BG = "#F5F6FA";
-const CINZA_BORDA = "#E5E7EB";
-const VERDE = "#16A34A";
 
 type ItemQuestao = {
   id: string;
@@ -39,6 +33,7 @@ function normalizar(texto: string) {
 
 export default function CategoriaQuestoes() {
   const router = useRouter();
+  const { cores } = useTheme();
   const params = useLocalSearchParams<{ nome?: string }>();
   const nome = Array.isArray(params.nome) ? params.nome[0] : params.nome ?? "";
 
@@ -48,7 +43,6 @@ export default function CategoriaQuestoes() {
   const [respondidas, setRespondidas] = useState<Set<string>>(new Set());
   const [consultandoHistorico, setConsultandoHistorico] = useState(true);
 
-  // Busca os IDs das questões respondidas do usuário (subcoleção)
   useFocusEffect(
     useCallback(() => {
       let ativo = true;
@@ -71,7 +65,6 @@ export default function CategoriaQuestoes() {
           snap.forEach((docSnap) => ids.add(docSnap.id));
           if (ativo) setRespondidas(ids);
         } catch (e) {
-          console.error("Erro ao consultar questões respondidas:", e);
           if (ativo) setRespondidas(new Set());
         } finally {
           if (ativo) setConsultandoHistorico(false);
@@ -85,7 +78,6 @@ export default function CategoriaQuestoes() {
     }, [])
   );
 
-  // Busca as questões do assunto
   useEffect(() => {
     let ativo = true;
 
@@ -159,7 +151,6 @@ export default function CategoriaQuestoes() {
 
         if (ativo) setQuestoes(lista);
       } catch (e) {
-        console.error("Erro ao buscar questões da categoria:", e);
         if (ativo) {
           setErro(e instanceof Error ? e.message : "Falha ao carregar questões.");
         }
@@ -180,12 +171,8 @@ export default function CategoriaQuestoes() {
   );
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scroll}
-      >
-        {/* Cabeçalho */}
+    <SafeAreaView style={[styles.safe, { backgroundColor: cores.fundo }]} edges={["top", "left", "right"]}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         <View style={styles.header}>
           <View style={styles.headerLinha}>
             <Pressable
@@ -193,7 +180,8 @@ export default function CategoriaQuestoes() {
               accessibilityLabel="Voltar para categorias"
               style={({ pressed }) => [
                 styles.botaoVoltar,
-                pressed && { backgroundColor: CINZA_BG },
+                { backgroundColor: cores.card, borderColor: cores.borda },
+                pressed && { opacity: 0.8 },
               ]}
               onPress={() =>
                 router.canGoBack()
@@ -201,24 +189,25 @@ export default function CategoriaQuestoes() {
                   : router.replace("/tela_categoria")
               }
             >
-              <Ionicons name="arrow-back" size={22} color={AZUL} />
+              <Ionicons name="arrow-back" size={22} color={cores.azul} />
             </Pressable>
-            <Text style={styles.titulo} numberOfLines={2}>
+            <Text style={[styles.titulo, { color: cores.texto }]} numberOfLines={2}>
               {nome || "Questões"}
             </Text>
             <View style={{ width: 40 }} />
           </View>
-          <Text style={styles.subtitulo}>Escolha uma questão para praticar</Text>
+          <Text style={[styles.subtitulo, { color: cores.textoSuave }]}>
+            Escolha uma questão para praticar
+          </Text>
         </View>
 
-        {/* Card resumo com progresso */}
-        <View style={styles.resumo}>
-          <View style={styles.resumoIcone}>
-            <Ionicons name="book-outline" size={24} color={AZUL} />
+        <View style={[styles.resumo, { backgroundColor: cores.card }]}>
+          <View style={[styles.resumoIcone, { backgroundColor: cores.cardSecundario }]}>
+            <Ionicons name="book-outline" size={24} color={cores.azul} />
           </View>
           <View style={styles.resumoConteudo}>
-            <Text style={styles.resumoTitulo}>Seu progresso</Text>
-            <Text style={styles.resumoDetalhe}>
+            <Text style={[styles.resumoTitulo, { color: cores.texto }]}>Seu progresso</Text>
+            <Text style={[styles.resumoDetalhe, { color: cores.textoSuave }]}>
               {carregando
                 ? "Carregando questões..."
                 : consultandoHistorico
@@ -227,8 +216,8 @@ export default function CategoriaQuestoes() {
             </Text>
           </View>
           {!carregando && !consultandoHistorico && (
-            <View style={styles.contadorBox}>
-              <Text style={styles.contador}>
+            <View style={[styles.contadorBox, { backgroundColor: cores.cardSecundario }]}>
+              <Text style={[styles.contador, { color: cores.laranja }]}>
                 {totalConcluidas}/{questoes.length}
               </Text>
             </View>
@@ -236,22 +225,22 @@ export default function CategoriaQuestoes() {
         </View>
 
         {carregando ? (
-          <ActivityIndicator color={LARANJA} size="large" style={styles.carregador} />
+          <ActivityIndicator color={cores.laranja} size="large" style={styles.carregador} />
         ) : erro ? (
-          <View style={styles.cardVazio}>
-            <Ionicons name="alert-circle-outline" size={28} color="#DC2626" />
-            <Text style={styles.avisoTexto}>{erro}</Text>
+          <View style={[styles.cardVazio, { backgroundColor: cores.card }]}>
+            <Ionicons name="alert-circle-outline" size={28} color={cores.perigo} />
+            <Text style={[styles.avisoTexto, { color: cores.textoSuave }]}>{erro}</Text>
           </View>
         ) : questoes.length === 0 ? (
-          <View style={styles.cardVazio}>
-            <Ionicons name="search-outline" size={28} color="#9CA3AF" />
-            <Text style={styles.avisoTexto}>
+          <View style={[styles.cardVazio, { backgroundColor: cores.card }]}>
+            <Ionicons name="search-outline" size={28} color={cores.textoSuave} />
+            <Text style={[styles.avisoTexto, { color: cores.textoSuave }]}>
               Nenhuma questão encontrada para este assunto.
             </Text>
           </View>
         ) : (
           <>
-            <Text style={styles.secaoTitulo}>Questões do assunto</Text>
+            <Text style={[styles.secaoTitulo, { color: cores.texto }]}>Questões do assunto</Text>
             {questoes.map((questao) => {
               const concluida = respondidas.has(questao.id);
 
@@ -264,6 +253,7 @@ export default function CategoriaQuestoes() {
                   }`}
                   style={({ pressed }) => [
                     styles.cardQuestao,
+                    { backgroundColor: cores.card },
                     pressed && { opacity: 0.85 },
                   ]}
                   onPress={() =>
@@ -274,8 +264,8 @@ export default function CategoriaQuestoes() {
                   }
                 >
                   <View style={styles.cabecalhoQuestao}>
-                    <View style={styles.numeroBox}>
-                      <Text style={styles.numeroQuestao}>
+                    <View style={[styles.numeroBox, { backgroundColor: cores.cardSecundario }]}>
+                      <Text style={[styles.numeroQuestao, { color: cores.laranja }]}>
                         Questão {questao.numero}
                       </Text>
                     </View>
@@ -288,13 +278,13 @@ export default function CategoriaQuestoes() {
                             ? "checkmark-circle"
                             : "ellipse-outline"
                         }
-                        color={concluida ? VERDE : "#94A3B8"}
+                        color={concluida ? cores.verde : cores.textoSuave}
                         size={16}
                       />
                       <Text
                         style={[
                           styles.statusTexto,
-                          concluida && styles.statusConcluido,
+                          { color: concluida ? cores.verde : cores.textoSuave },
                         ]}
                       >
                         {consultandoHistorico
@@ -306,34 +296,26 @@ export default function CategoriaQuestoes() {
                     </View>
                   </View>
 
-                  <Text
-                    style={styles.enunciado}
-                    numberOfLines={2}
-                    ellipsizeMode="tail"
-                  >
+                  <Text style={[styles.enunciado, { color: cores.texto }]} numberOfLines={2} ellipsizeMode="tail">
                     {questao.enunciado}
                   </Text>
 
                   <View style={styles.rodapeCard}>
                     <View style={styles.metadados}>
                       {questao.ano != null && (
-                        <Text style={styles.metaTexto}>{questao.ano}</Text>
+                        <Text style={[styles.metaTexto, { color: cores.textoSuave }]}>{questao.ano}</Text>
                       )}
                       {questao.origem ? (
-                        <Text style={styles.metaTexto} numberOfLines={1}>
+                        <Text style={[styles.metaTexto, { color: cores.textoSuave }]} numberOfLines={1}>
                           {questao.origem}
                         </Text>
                       ) : null}
                     </View>
                     <View style={styles.acao}>
-                      <Text style={styles.acaoTexto}>
+                      <Text style={[styles.acaoTexto, { color: cores.laranja }]}>
                         {concluida ? "Ver questão" : "Resolver"}
                       </Text>
-                      <Ionicons
-                        name="chevron-forward"
-                        size={16}
-                        color={LARANJA}
-                      />
+                      <Ionicons name="chevron-forward" size={16} color={cores.laranja} />
                     </View>
                   </View>
                 </Pressable>
@@ -347,151 +329,57 @@ export default function CategoriaQuestoes() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: CINZA_BG },
+  safe: { flex: 1 },
   scroll: { padding: 20, paddingBottom: 32 },
-
   header: { marginBottom: 18, paddingTop: 4 },
-  headerLinha: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
+  headerLinha: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   botaoVoltar: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: CINZA_BORDA,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
+    width: 40, height: 40, borderRadius: 12,
+    alignItems: "center", justifyContent: "center",
+    borderWidth: 1, shadowColor: "#000", shadowOpacity: 0.08,
+    shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 3,
   },
-  titulo: {
-    flex: 1,
-    color: AZUL,
-    fontSize: 20,
-    fontWeight: "800",
-    textAlign: "center",
-    paddingHorizontal: 8,
-  },
-  subtitulo: {
-    color: "#6B7280",
-    fontSize: 13,
-    marginTop: 8,
-    textAlign: "center",
-  },
-
+  titulo: { flex: 1, fontSize: 20, fontWeight: "800", textAlign: "center", paddingHorizontal: 8 },
+  subtitulo: { fontSize: 13, marginTop: 8, textAlign: "center" },
   resumo: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    flexDirection: "row", alignItems: "center", gap: 12,
+    borderRadius: 16, padding: 16, marginBottom: 20,
+    shadowColor: "#000", shadowOpacity: 0.06, shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 }, elevation: 3,
   },
-  resumoIcone: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    backgroundColor: "#FFEDD5",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  resumoIcone: { width: 48, height: 48, borderRadius: 14, alignItems: "center", justifyContent: "center" },
   resumoConteudo: { flex: 1, gap: 3 },
-  resumoTitulo: { color: AZUL, fontWeight: "800", fontSize: 15 },
-  resumoDetalhe: { color: "#6B7280", fontSize: 12 },
-  contadorBox: {
-    backgroundColor: "#FFEDD5",
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  contador: { color: LARANJA, fontSize: 15, fontWeight: "800" },
-
-  secaoTitulo: {
-    color: AZUL,
-    fontSize: 16,
-    fontWeight: "800",
-    marginBottom: 12,
-    paddingHorizontal: 2,
-  },
-
+  resumoTitulo: { fontWeight: "800", fontSize: 15 },
+  resumoDetalhe: { fontSize: 12 },
+  contadorBox: { borderRadius: 10, paddingHorizontal: 10, paddingVertical: 6 },
+  contador: { fontSize: 15, fontWeight: "800" },
+  secaoTitulo: { fontSize: 16, fontWeight: "800", marginBottom: 12, paddingHorizontal: 2 },
   cardQuestao: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    borderRadius: 16, padding: 16, marginBottom: 12,
+    shadowColor: "#000", shadowOpacity: 0.06, shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 }, elevation: 3,
   },
   cabecalhoQuestao: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
-    marginBottom: 12,
+    flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+    gap: 8, marginBottom: 12,
   },
-  numeroBox: {
-    backgroundColor: "#FFEDD5",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  numeroQuestao: { color: "#C2410C", fontSize: 11, fontWeight: "800" },
+  numeroBox: { borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
+  numeroQuestao: { fontSize: 11, fontWeight: "800" },
   status: { flexDirection: "row", alignItems: "center", gap: 4 },
-  statusTexto: { fontSize: 11, color: "#6B7280", fontWeight: "600" },
-  statusConcluido: { color: "#166534" },
-
-  enunciado: {
-    color: AZUL,
-    fontSize: 14,
-    lineHeight: 21,
-    marginBottom: 14,
-  },
-
+  statusTexto: { fontSize: 11, fontWeight: "600" },
+  enunciado: { fontSize: 14, lineHeight: 21, marginBottom: 14 },
   rodapeCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 10,
+    flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10,
   },
   metadados: { flexDirection: "row", gap: 8, flex: 1, alignItems: "center" },
-  metaTexto: { color: "#6B7280", fontSize: 11, flexShrink: 1 },
+  metaTexto: { fontSize: 11, flexShrink: 1 },
   acao: { flexDirection: "row", alignItems: "center", gap: 2 },
-  acaoTexto: { color: LARANJA, fontWeight: "800", fontSize: 12 },
-
+  acaoTexto: { fontWeight: "800", fontSize: 12 },
   cardVazio: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 28,
-    alignItems: "center",
-    gap: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    borderRadius: 16, padding: 28, alignItems: "center", gap: 10,
+    shadowColor: "#000", shadowOpacity: 0.06, shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 }, elevation: 3,
   },
-  avisoTexto: {
-    color: "#6B7280",
-    fontSize: 14,
-    textAlign: "center",
-    lineHeight: 20,
-  },
-
+  avisoTexto: { fontSize: 14, textAlign: "center", lineHeight: 20 },
   carregador: { marginTop: 36 },
 });

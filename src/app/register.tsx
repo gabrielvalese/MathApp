@@ -1,4 +1,3 @@
-// app/register.tsx
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { sendEmailVerification } from "firebase/auth";
@@ -18,35 +17,32 @@ import {
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/auth_context';
+import { useTheme } from '../contexts/theme_context';
 import { auth } from '../utils/FirebaseConfig';
 
-const AZUL = "#1E3A8A";
-const LARANJA = "#F97316";
-const CINZA_BG = "#F5F6FA";
-const CINZA_BORDA = "#E5E7EB";
-
-function InputAnimado({ icone, children }: { icone: keyof typeof Ionicons.glyphMap; children: React.ReactNode }) {
+function InputAnimado({ icone, children, cores }: { icone: keyof typeof Ionicons.glyphMap; children: React.ReactNode; cores: any }) {
   return (
     <Animated.View
       style={{
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: CINZA_BG,
+        backgroundColor: cores.fundo,
         borderRadius: 12,
         borderWidth: 1.5,
-        borderColor: { default: CINZA_BORDA, ':focus-within': LARANJA },
+        borderColor: { default: cores.borda, ':focus-within': cores.laranja },
         paddingHorizontal: 12,
         height: 52,
         transitionDuration: 200,
       }}
     >
-      <Ionicons name={icone} size={20} color={AZUL} style={{ marginRight: 8 }} />
+      <Ionicons name={icone} size={20} color={cores.azul} style={{ marginRight: 8 }} />
       {children}
     </Animated.View>
   );
 }
 
 export default function Register() {
+  const { cores } = useTheme();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -69,9 +65,8 @@ export default function Register() {
       if (auth.currentUser) {
         try {
           await sendEmailVerification(auth.currentUser);
-          console.log("📧 E-mail de verificação enviado (sem erro na chamada).");
         } catch (e) {
-          console.error("❌ Erro ao enviar e-mail de verificação:", e);
+          console.error(e);
         }
       }
 
@@ -89,51 +84,51 @@ export default function Register() {
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: cores.fundo }]}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
             <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
-            <Text style={styles.titulo}>Criar conta</Text>
-            <Text style={styles.subtitulo}>Comece sua jornada na matemática</Text>
+            <Text style={[styles.titulo, { color: cores.texto }]}>Criar conta</Text>
+            <Text style={[styles.subtitulo, { color: cores.textoSuave }]}>Comece sua jornada na matemática</Text>
           </View>
 
-          <View style={styles.card}>
-            <Text style={styles.label}>Nome</Text>
-            <InputAnimado icone="person-outline">
-              <TextInput placeholder="Seu nome" placeholderTextColor="#9CA3AF" style={styles.input} value={name} onChangeText={setName} />
+          <View style={[styles.card, { backgroundColor: cores.card }]}>
+            <Text style={[styles.label, { color: cores.texto }]}>Nome</Text>
+            <InputAnimado icone="person-outline" cores={cores}>
+              <TextInput placeholder="Seu nome" placeholderTextColor={cores.textoSuave} style={[styles.input, { color: cores.texto }]} value={name} onChangeText={setName} />
             </InputAnimado>
 
-            <Text style={[styles.label, { marginTop: 16 }]}>E-mail</Text>
-            <InputAnimado icone="mail-outline">
-              <TextInput placeholder="seu@email.com" placeholderTextColor="#9CA3AF" style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+            <Text style={[styles.label, { color: cores.texto, marginTop: 16 }]}>E-mail</Text>
+            <InputAnimado icone="mail-outline" cores={cores}>
+              <TextInput placeholder="seu@email.com" placeholderTextColor={cores.textoSuave} style={[styles.input, { color: cores.texto }]} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
             </InputAnimado>
 
-            <Text style={[styles.label, { marginTop: 16 }]}>Senha</Text>
-            <InputAnimado icone="lock-closed-outline">
-              <TextInput placeholder="Mínimo 6 caracteres" placeholderTextColor="#9CA3AF" style={styles.input} value={password} onChangeText={setPassword} secureTextEntry={!mostrarSenha} />
+            <Text style={[styles.label, { color: cores.texto, marginTop: 16 }]}>Senha</Text>
+            <InputAnimado icone="lock-closed-outline" cores={cores}>
+              <TextInput placeholder="Mínimo 6 caracteres" placeholderTextColor={cores.textoSuave} style={[styles.input, { color: cores.texto }]} value={password} onChangeText={setPassword} secureTextEntry={!mostrarSenha} />
               <TouchableOpacity onPress={() => setMostrarSenha(v => !v)} hitSlop={10} style={{ padding: 4 }}>
-                <Ionicons name={mostrarSenha ? "eye-off" : "eye"} size={22} color={AZUL} />
+                <Ionicons name={mostrarSenha ? "eye-off" : "eye"} size={22} color={cores.azul} />
               </TouchableOpacity>
             </InputAnimado>
 
-            <Text style={[styles.label, { marginTop: 16 }]}>Confirmar senha</Text>
-            <InputAnimado icone="lock-closed-outline">
-              <TextInput placeholder="Repita a senha" placeholderTextColor="#9CA3AF" style={styles.input} value={confirm} onChangeText={setConfirm} secureTextEntry={!mostrarConfirm} />
+            <Text style={[styles.label, { color: cores.texto, marginTop: 16 }]}>Confirmar senha</Text>
+            <InputAnimado icone="lock-closed-outline" cores={cores}>
+              <TextInput placeholder="Repita a senha" placeholderTextColor={cores.textoSuave} style={[styles.input, { color: cores.texto }]} value={confirm} onChangeText={setConfirm} secureTextEntry={!mostrarConfirm} />
               <TouchableOpacity onPress={() => setMostrarConfirm(v => !v)} hitSlop={10} style={{ padding: 4 }}>
-                <Ionicons name={mostrarConfirm ? "eye-off" : "eye"} size={22} color={AZUL} />
+                <Ionicons name={mostrarConfirm ? "eye-off" : "eye"} size={22} color={cores.azul} />
               </TouchableOpacity>
             </InputAnimado>
 
-            <TouchableOpacity activeOpacity={0.85} onPress={handleRegister} style={styles.btnCadastrar}>
+            <TouchableOpacity activeOpacity={0.85} onPress={handleRegister} style={[styles.btnCadastrar, { backgroundColor: cores.azul }]}>
               <Text style={styles.btnCadastrarTxt}>Cadastrar</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.rodape}>
-            <Text style={styles.txtRodape}>Já tem uma conta?</Text>
+            <Text style={[styles.txtRodape, { color: cores.textoSuave }]}>Já tem uma conta?</Text>
             <TouchableOpacity onPress={() => router.back()}>
-              <Text style={styles.txtLink}> Entrar</Text>
+              <Text style={[styles.txtLink, { color: cores.azul }]}> Entrar</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -143,18 +138,26 @@ export default function Register() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: CINZA_BG },
+  safe: { flex: 1 },
   scroll: { padding: 24, paddingBottom: 40, flexGrow: 1, justifyContent: "center" },
   header: { alignItems: "center", marginBottom: 28 },
   logo: { width: 110, height: 110, marginBottom: 12 },
-  titulo: { fontSize: 30, fontWeight: "800", color: AZUL },
-  subtitulo: { fontSize: 15, color: "#6B7280", marginTop: 4 },
-  card: { backgroundColor: "#fff", borderRadius: 20, padding: 22, shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 4 },
-  label: { fontSize: 14, fontWeight: "700", color: AZUL, marginBottom: 6 },
-  input: { flex: 1, fontSize: 16, color: "#111827", paddingVertical: 0 },
-  btnCadastrar: { backgroundColor: AZUL, height: 54, borderRadius: 14, alignItems: "center", justifyContent: "center", marginTop: 24, shadowColor: AZUL, shadowOpacity: 0.3, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 3 },
+  titulo: { fontSize: 30, fontWeight: "800" },
+  subtitulo: { fontSize: 15, marginTop: 4 },
+  card: {
+    borderRadius: 20, padding: 22,
+    shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 }, elevation: 4,
+  },
+  label: { fontSize: 14, fontWeight: "700", marginBottom: 6 },
+  input: { flex: 1, fontSize: 16, paddingVertical: 0 },
+  btnCadastrar: {
+    height: 54, borderRadius: 14, alignItems: "center", justifyContent: "center", marginTop: 24,
+    shadowColor: "#1E3A8A", shadowOpacity: 0.3, shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 }, elevation: 3,
+  },
   btnCadastrarTxt: { color: "#fff", fontSize: 18, fontWeight: "800", letterSpacing: 0.5 },
   rodape: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 22 },
-  txtRodape: { fontSize: 15, color: "#6B7280" },
-  txtLink: { fontSize: 15, color: AZUL, fontWeight: "800" },
+  txtRodape: { fontSize: 15 },
+  txtLink: { fontSize: 15, fontWeight: "800" },
 });

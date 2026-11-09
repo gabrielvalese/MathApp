@@ -1,4 +1,3 @@
-// app/componentes/MeuSimulado.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
@@ -20,6 +19,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "../../contexts/theme_context";
 import { auth, db } from "../../utils/FirebaseConfig";
 
 type Tentativa = {
@@ -36,6 +36,7 @@ type Tentativa = {
 
 export default function MeuSimulado() {
   const router = useRouter();
+  const { cores } = useTheme();
   const [uid, setUid] = useState<string | null>(null);
   const [tentativas, setTentativas] = useState<Tentativa[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -86,7 +87,6 @@ export default function MeuSimulado() {
             try {
               await deleteDoc(doc(db, "tentativas_simulado", id));
             } catch (e) {
-              console.error("Erro ao excluir:", e);
               Alert.alert("Erro", "Não foi possível excluir o simulado.");
             }
           },
@@ -97,7 +97,6 @@ export default function MeuSimulado() {
 
   async function abrirTentativa(t: Tentativa) {
     try {
-      // Ao abrir, marca como "em_andamento" se ainda não iniciou
       if (t.status === "nao_iniciado") {
         const { updateDoc, serverTimestamp } = await import("firebase/firestore");
         await updateDoc(doc(db, "tentativas_simulado", t.id), {
@@ -106,7 +105,6 @@ export default function MeuSimulado() {
         });
       }
 
-      // Busca a tentativa para descobrir qual questão abrir
       const { getDoc } = await import("firebase/firestore");
       const tentSnap = await getDoc(doc(db, "tentativas_simulado", t.id));
       if (!tentSnap.exists()) return;
@@ -125,7 +123,6 @@ export default function MeuSimulado() {
         ? tentativa.ids_respondidos
         : [];
 
-      // Encontra a próxima não respondida
       const encerrado = ["concluido", "tempo_esgotado"].includes(tentativa.status);
       let indice = 0;
       if (!encerrado) {
@@ -138,16 +135,15 @@ export default function MeuSimulado() {
         params: { id: ids[indice], tentativaId: t.id },
       });
     } catch (e) {
-      console.error("Erro ao abrir tentativa:", e);
       Alert.alert("Erro", "Não foi possível abrir o simulado.");
     }
   }
 
   function statusInfo(t: Tentativa): { label: string; cor: string } {
-    if (t.status === "concluido") return { label: "Concluído", cor: "#16A34A" };
-    if (t.status === "tempo_esgotado") return { label: "Tempo esgotado", cor: "#DC2626" };
-    if (t.status === "em_andamento") return { label: "Em andamento", cor: "#F97316" };
-    return { label: "Não iniciado", cor: "#9CA3AF" };
+    if (t.status === "concluido") return { label: "Concluído", cor: cores.verde };
+    if (t.status === "tempo_esgotado") return { label: "Tempo esgotado", cor: cores.perigo };
+    if (t.status === "em_andamento") return { label: "Em andamento", cor: cores.laranja };
+    return { label: "Não iniciado", cor: cores.textoSuave };
   }
 
   function tempoRestante(t: Tentativa): string | null {
@@ -164,25 +160,25 @@ export default function MeuSimulado() {
   if (carregando) {
     return (
       <ActivityIndicator
-        color="#F97316"
+        color={cores.laranja}
         style={{ marginTop: 35 }}
         size="large"
       />
     );
   }
-  if (!uid) return <Text style={styles.aviso}>Entre na sua conta.</Text>;
+  if (!uid) return <Text style={[styles.aviso, { color: cores.textoSuave }]}>Entre na sua conta.</Text>;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Meus simulados</Text>
-      <Text style={styles.descricao}>
+      <Text style={[styles.titulo, { color: cores.texto }]}>Meus simulados</Text>
+      <Text style={[styles.descricao, { color: cores.textoSuave }]}>
         Continue de onde parou ou confira seus resultados.
       </Text>
 
       {tentativas.length === 0 ? (
         <View style={styles.vazio}>
-          <Ionicons name="documents-outline" size={32} color="#64748B" />
-          <Text style={styles.aviso}>Nenhum simulado criado.</Text>
+          <Ionicons name="documents-outline" size={32} color={cores.textoSuave} />
+          <Text style={[styles.aviso, { color: cores.textoSuave }]}>Nenhum simulado criado.</Text>
         </View>
       ) : (
         tentativas.map((t) => {
@@ -193,12 +189,16 @@ export default function MeuSimulado() {
           return (
             <Pressable
               key={t.id}
-              style={({ pressed }) => [styles.card, pressed && { opacity: 0.85 }]}
+              style={({ pressed }) => [
+                styles.card,
+                { backgroundColor: cores.card, borderColor: cores.borda },
+                pressed && { opacity: 0.85 },
+              ]}
               onPress={() => abrirTentativa(t)}
             >
               <View style={styles.cabecalho}>
-                <Ionicons name="reader-outline" size={22} color="#1E3A8A" />
-                <Text style={styles.nome} numberOfLines={2}>
+                <Ionicons name="reader-outline" size={22} color={cores.azul} />
+                <Text style={[styles.nome, { color: cores.texto }]} numberOfLines={2}>
                   {t.nome}
                 </Text>
                 <TouchableOpacity
@@ -208,11 +208,11 @@ export default function MeuSimulado() {
                   }}
                   hitSlop={10}
                 >
-                  <Ionicons name="trash-outline" size={20} color="#DC2626" />
+                  <Ionicons name="trash-outline" size={20} color={cores.perigo} />
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.detalhes}>
+              <Text style={[styles.detalhes, { color: cores.textoSuave }]}>
                 {t.quantidade} questões · {t.tempo} min
               </Text>
 
@@ -225,10 +225,10 @@ export default function MeuSimulado() {
                 </View>
 
                 {restante && (
-                  <Text style={styles.tempo}>⏱ {restante}</Text>
+                  <Text style={[styles.tempo, { color: cores.laranja }]}>⏱ {restante}</Text>
                 )}
 
-                <Text style={styles.progresso}>
+                <Text style={[styles.progresso, { color: cores.laranja }]}>
                   {encerrado
                     ? `${t.acertos ?? 0} acertos`
                     : `${t.respondidas}/${t.quantidade}`}
@@ -244,36 +244,21 @@ export default function MeuSimulado() {
 
 const styles = StyleSheet.create({
   container: { padding: 16 },
-  titulo: { fontSize: 20, fontWeight: "bold", color: "#1E3A8A", marginBottom: 4 },
-  descricao: { color: "#64748B", fontSize: 13, marginBottom: 18 },
+  titulo: { fontSize: 20, fontWeight: "bold", marginBottom: 4 },
+  descricao: { fontSize: 13, marginBottom: 18 },
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    elevation: 1,
+    borderRadius: 12, padding: 14, marginBottom: 12,
+    borderWidth: 1, elevation: 1,
   },
-  cabecalho: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  nome: { flex: 1, fontWeight: "700", color: "#1E3A8A", fontSize: 15 },
-  detalhes: { color: "#64748B", fontSize: 12, marginTop: 8 },
-  rodape: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 10,
-    gap: 8,
-  },
+  cabecalho: { flexDirection: "row", alignItems: "center", gap: 10 },
+  nome: { flex: 1, fontWeight: "700", fontSize: 15 },
+  detalhes: { fontSize: 12, marginTop: 8 },
+  rodape: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 10, gap: 8 },
   situacao: { flexDirection: "row", alignItems: "center", gap: 6 },
   dot: { width: 8, height: 8, borderRadius: 4 },
   situacaoTxt: { fontSize: 12, fontWeight: "600" },
-  tempo: { fontSize: 12, color: "#F97316", fontWeight: "700" },
-  progresso: { fontSize: 12, color: "#C2410C", fontWeight: "700" },
-  aviso: { textAlign: "center", color: "#64748B", marginTop: 12 },
+  tempo: { fontSize: 12, fontWeight: "700" },
+  progresso: { fontSize: 12, fontWeight: "700" },
+  aviso: { textAlign: "center", marginTop: 12 },
   vazio: { padding: 25, alignItems: "center" },
 });

@@ -1,4 +1,3 @@
-// app/redefinir_senha1.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { sendPasswordResetEmail } from "firebase/auth";
@@ -14,14 +13,11 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "../contexts/theme_context";
 import { auth } from "../utils/FirebaseConfig";
 
-const AZUL = "#1E3A8A";
-const LARANJA = "#F97316";
-const CINZA_BG = "#F5F6FA";
-const CINZA_BORDA = "#E5E7EB";
-
 export default function RedefinirSenha1() {
+  const { cores } = useTheme();
   const [email, setEmail] = useState("");
   const [focado, setFocado] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -49,22 +45,28 @@ export default function RedefinirSenha1() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: cores.fundo }]} edges={["top", "left", "right"]}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
           <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
-          <Text style={styles.titulo}>Redefinir senha</Text>
-          <Text style={styles.subtitulo}>Enviaremos um link para o seu e-mail</Text>
+          <Text style={[styles.titulo, { color: cores.texto }]}>Redefinir senha</Text>
+          <Text style={[styles.subtitulo, { color: cores.textoSuave }]}>Enviaremos um link para o seu e-mail</Text>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.label}>E-mail</Text>
-          <View style={[styles.inputWrap, focado && styles.inputWrapFocado]}>
-            <Ionicons name="mail-outline" size={20} color={AZUL} style={{ marginRight: 8 }} />
+        <View style={[styles.card, { backgroundColor: cores.card }]}>
+          <Text style={[styles.label, { color: cores.texto }]}>E-mail</Text>
+          <View
+            style={[
+              styles.inputWrap,
+              { backgroundColor: cores.fundo, borderColor: cores.borda },
+              focado && { borderColor: cores.laranja, backgroundColor: cores.cardSecundario },
+            ]}
+          >
+            <Ionicons name="mail-outline" size={20} color={cores.azul} style={{ marginRight: 8 }} />
             <TextInput
               placeholder="seu@email.com"
-              placeholderTextColor="#9CA3AF"
-              style={styles.input}
+              placeholderTextColor={cores.textoSuave}
+              style={[styles.input, { color: cores.texto }]}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -75,7 +77,11 @@ export default function RedefinirSenha1() {
           </View>
 
           <Pressable
-            style={({ pressed }) => [styles.botao, (enviando || pressed) && { opacity: 0.8 }]}
+            style={({ pressed }) => [
+              styles.botao,
+              { backgroundColor: cores.laranja },
+              (enviando || pressed) && { opacity: 0.8 },
+            ]}
             onPress={handleRedefinir}
             disabled={enviando}
           >
@@ -88,47 +94,24 @@ export default function RedefinirSenha1() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: CINZA_BG },
+  safe: { flex: 1 },
   scroll: { padding: 24, flexGrow: 1, justifyContent: "center" },
   header: { alignItems: "center", marginBottom: 28 },
   logo: { width: 100, height: 100, marginBottom: 12 },
-  titulo: { fontSize: 28, fontWeight: "800", color: AZUL },
-  subtitulo: { fontSize: 14, color: "#6B7280", marginTop: 4, textAlign: "center" },
+  titulo: { fontSize: 28, fontWeight: "800" },
+  subtitulo: { fontSize: 14, marginTop: 4, textAlign: "center" },
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 22,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
+    borderRadius: 20, padding: 22,
+    shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 }, elevation: 4,
   },
-  label: { fontSize: 14, fontWeight: "700", color: AZUL, marginBottom: 6 },
-  inputWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: CINZA_BG,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: CINZA_BORDA,
-    paddingHorizontal: 12,
-    height: 52,
-  },
-  inputWrapFocado: { borderColor: LARANJA, backgroundColor: "#FFF7ED" },
-  input: { flex: 1, fontSize: 16, color: "#111827" },
+  label: { fontSize: 14, fontWeight: "700", marginBottom: 6 },
+  inputWrap: { flexDirection: "row", alignItems: "center", borderRadius: 12, borderWidth: 1.5, paddingHorizontal: 12, height: 52 },
+  input: { flex: 1, fontSize: 16 },
   botao: {
-    backgroundColor: LARANJA,
-    height: 54,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 24,
-    shadowColor: LARANJA,
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+    height: 54, borderRadius: 14, alignItems: "center", justifyContent: "center", marginTop: 24,
+    shadowColor: "#F97316", shadowOpacity: 0.3, shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 }, elevation: 3,
   },
   botaoTxt: { color: "#fff", fontSize: 17, fontWeight: "800" },
 });
