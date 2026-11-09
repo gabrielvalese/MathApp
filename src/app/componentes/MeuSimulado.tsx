@@ -1,9 +1,25 @@
+// app/componentes/MeuSimulado.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDoc, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { auth, db } from "../../utils/FirebaseConfig";
 
 type Tentativa = {
@@ -15,151 +31,249 @@ type Tentativa = {
   acertos: number | null;
   respondidas: number;
   criadoEm: number;
+  iniciadoEm: number | null;
 };
 
 export default function MeuSimulado() {
   const router = useRouter();
   const [uid, setUid] = useState<string | null>(null);
-  const [authPronto, setAuthPronto] = useState(false);
   const [tentativas, setTentativas] = useState<Tentativa[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState("");
-  const [abrindo, setAbrindo] = useState<string | null>(null);
 
-  useEffect(() => onAuthStateChanged(auth, usuario => {
-    setUid(usuario?.uid ?? null);
-    setAuthPronto(true);
-  }), []);
+  useEffect(() => onAuthStateChanged(auth, (u) => setUid(u?.uid ?? null)), []);
 
   useEffect(() => {
-    if (!authPronto) return;
     if (!uid) {
-      setTentativas([]);
       setCarregando(false);
       return;
     }
     setCarregando(true);
-    setErro("");
-    const consulta = query(
+    const q = query(
       collection(db, "tentativas_simulado"),
       where("usuario_id", "==", uid)
     );
-    return onSnapshot(consulta, resultado => {
-      const lista: Tentativa[] = resultado.docs.map(docSnap => {
-        const dados = docSnap.data();
+    return onSnapshot(q, (snap) => {
+      const lista: Tentativa[] = snap.docs.map((d) => {
+        const data = d.data();
         return {
-          id: docSnap.id,
-          nome: typeof dados.nome_simulado === "string" ? dados.nome_simulado : "Simulado de matemática",
-          quantidade: Number(dados.quantidade_questoes) || 0,
-          tempo: Number(dados.tempo_minutos) || 0,
-          status: typeof dados.status === "string" ? dados.status : "nao_iniciado",
-          acertos: typeof dados.acertos === "number" ? dados.acertos : null,
-          respondidas: Number(dados.respondidas) || 0,
-          criadoEm: dados.criado_em?.toMillis?.() ?? dados.iniciado_em?.toMillis?.() ?? 0,
+          id: d.id,
+          nome: data.nome_simulado ?? "Simulado",
+          quantidade: data.quantidade_questoes ?? 0,
+          tempo: data.tempo_minutos ?? 0,
+          status: data.status ?? "nao_iniciado",
+          acertos: data.acertos ?? null,
+          respondidas: data.respondidas ?? 0,
+          criadoEm: data.criado_em?.toMillis?.() ?? 0,
+          iniciadoEm: data.iniciado_em?.toMillis?.() ?? null,
         };
       });
       lista.sort((a, b) => b.criadoEm - a.criadoEm);
       setTentativas(lista);
       setCarregando(false);
-    }, erroFirebase => {
-      console.error("Erro no histórico dos simulados:", erroFirebase);
-      setErro("Não foi possível buscar seus simulados. Confira as regras do Firestore.");
-      setCarregando(false);
     });
-  }, [uid, authPronto]);
+  }, [uid]);
 
-  async function abrirTentativa(tentativaId: string) {
-    if (abrindo) return;
-    setAbrindo(tentativaId);
+  async function excluir(id: string) {
+    Alert.alert(
+      "Excluir simulado",
+      "Tem certeza que deseja excluir este simulado? Esta ação não pode ser desfeita.",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteDoc(doc(db, "tentativas_simulado", id));
+            } catch (e) {
+              console.error("Erro ao excluir:", e);
+              Alert.alert("Erro", "Não foi possível excluir o simulado.");
+            }
+          },
+        },
+      ]
+    );
+  }
+
+  async function abrirTentativa(t: Tentativa) {
     try {
-      const usuario = auth.currentUser;
-      if (!usuario) throw new Error("Entre na sua conta antes de abrir o simulado.");
-      const tentativaSnap = await getDoc(doc(db, "tentativas_simulado", tentativaId));
-      if (!tentativaSnap.exists()) throw new Error("Tentativa não encontrada.");
-      const tentativa = tentativaSnap.data();
-      if (tentativa.usuario_id !== usuario.uid) throw new Error("Esse simulado pertence a outra conta.");
-      if (typeof tentativa.simulado_id !== "string") throw new Error("Tentativa sem simulado associado.");
-      const simuladoSnap = await getDoc(doc(db, "simulados", tentativa.simulado_id));
-      if (!simuladoSnap.exists()) throw new Error("Simulado não encontrado.");
-      const ids = (simuladoSnap.data().questoes_ids as unknown[] | undefined)?.filter(
-        (id): id is string => typeof id === "string" && id.length > 0
-      ) ?? [];
-      if (ids.length === 0) throw new Error("Esse simulado ainda não possui questões sorteadas.");
-      const encerrado = ["concluido", "tempo_esgotado"].includes(tentativa.status);
+      // Ao abrir, marca como "em_andamento" se ainda não iniciou
+      if (t.status === "nao_iniciado") {
+        const { updateDoc, serverTimestamp } = await import("firebase/firestore");
+        await updateDoc(doc(db, "tentativas_simulado", t.id), {
+          status: "em_andamento",
+          iniciado_em: serverTimestamp(),
+        });
+      }
+
+      // Busca a tentativa para descobrir qual questão abrir
+      const { getDoc } = await import("firebase/firestore");
+      const tentSnap = await getDoc(doc(db, "tentativas_simulado", t.id));
+      if (!tentSnap.exists()) return;
+
+      const tentativa = tentSnap.data();
+      const simSnap = await getDoc(
+        doc(db, "simulados", tentativa.simulado_id)
+      );
+      if (!simSnap.exists()) return;
+
+      const ids: string[] =
+        (simSnap.data().questoes_ids as string[] | undefined) ?? [];
+      if (ids.length === 0) return;
+
       const respondidos: string[] = Array.isArray(tentativa.ids_respondidos)
-        ? tentativa.ids_respondidos.filter((id: unknown): id is string => typeof id === "string")
+        ? tentativa.ids_respondidos
         : [];
-      const pendente = ids.findIndex(id => !respondidos.includes(id));
-      const indice = encerrado ? 0 : (pendente === -1 ? 0 : pendente);
+
+      // Encontra a próxima não respondida
+      const encerrado = ["concluido", "tempo_esgotado"].includes(tentativa.status);
+      let indice = 0;
+      if (!encerrado) {
+        const pendente = ids.findIndex((qId) => !respondidos.includes(qId));
+        indice = pendente === -1 ? 0 : pendente;
+      }
+
       router.push({
         pathname: "/QuestoesBase/[id]",
-        params: { id: ids[indice], tentativaId },
+        params: { id: ids[indice], tentativaId: t.id },
       });
     } catch (e) {
-      Alert.alert("Não foi possível abrir", e instanceof Error ? e.message : "Tente novamente.");
-    } finally {
-      setAbrindo(null);
+      console.error("Erro ao abrir tentativa:", e);
+      Alert.alert("Erro", "Não foi possível abrir o simulado.");
     }
   }
 
-  if (!authPronto || carregando) return <ActivityIndicator color="#F97316" style={{ marginTop: 35 }} size="large" />;
-  if (!uid) return <Text style={styles.aviso}>Entre na sua conta para ver seus simulados.</Text>;
-  if (erro) return <Text style={styles.aviso}>{erro}</Text>;
+  function statusInfo(t: Tentativa): { label: string; cor: string } {
+    if (t.status === "concluido") return { label: "Concluído", cor: "#16A34A" };
+    if (t.status === "tempo_esgotado") return { label: "Tempo esgotado", cor: "#DC2626" };
+    if (t.status === "em_andamento") return { label: "Em andamento", cor: "#F97316" };
+    return { label: "Não iniciado", cor: "#9CA3AF" };
+  }
+
+  function tempoRestante(t: Tentativa): string | null {
+    if (!t.iniciadoEm || t.tempo <= 0) return null;
+    if (["concluido", "tempo_esgotado"].includes(t.status)) return null;
+    const fim = t.iniciadoEm + t.tempo * 60 * 1000;
+    const restante = fim - Date.now();
+    if (restante <= 0) return "Tempo esgotado";
+    const min = Math.floor(restante / 60000);
+    const seg = Math.floor((restante % 60000) / 1000);
+    return `${min}:${String(seg).padStart(2, "0")}`;
+  }
+
+  if (carregando) {
+    return (
+      <ActivityIndicator
+        color="#F97316"
+        style={{ marginTop: 35 }}
+        size="large"
+      />
+    );
+  }
+  if (!uid) return <Text style={styles.aviso}>Entre na sua conta.</Text>;
 
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Meus simulados</Text>
-      <Text style={styles.descricao}>Continue de onde parou ou confira seus resultados.</Text>
+      <Text style={styles.descricao}>
+        Continue de onde parou ou confira seus resultados.
+      </Text>
+
       {tentativas.length === 0 ? (
         <View style={styles.vazio}>
           <Ionicons name="documents-outline" size={32} color="#64748B" />
-          <Text style={styles.aviso}>Você ainda não criou nenhum simulado.</Text>
+          <Text style={styles.aviso}>Nenhum simulado criado.</Text>
         </View>
-      ) : tentativas.map(tentativa => {
-        const encerrado = ["concluido", "tempo_esgotado"].includes(tentativa.status);
-        return (
-          <Pressable
-            key={tentativa.id}
-            style={styles.card}
-            onPress={() => abrirTentativa(tentativa.id)}
-            disabled={abrindo === tentativa.id}
-          >
-            <View style={styles.cabecalho}>
-              <Ionicons name="reader-outline" color="#1E3A8A" size={23} />
-              <Text style={styles.nome} numberOfLines={2}>{tentativa.nome}</Text>
-              <Ionicons name="chevron-forward" color="#F97316" size={21} />
-            </View>
-            <Text style={styles.detalhes}>{tentativa.quantidade} questões · {tentativa.tempo} minutos</Text>
-            <View style={styles.rodape}>
-              <View style={styles.situacao}>
-                <Ionicons name={encerrado ? "checkmark-circle-outline" : "time-outline"} color={encerrado ? "#166534" : "#C2410C"} size={16} />
-                <Text style={styles.situacaoTexto}>
-                  {tentativa.status === "concluido" ? "Concluído" : tentativa.status === "tempo_esgotado" ? "Tempo esgotado" : tentativa.status === "em_andamento" ? "Em andamento" : "Não iniciado"}
+      ) : (
+        tentativas.map((t) => {
+          const st = statusInfo(t);
+          const restante = tempoRestante(t);
+          const encerrado = ["concluido", "tempo_esgotado"].includes(t.status);
+
+          return (
+            <Pressable
+              key={t.id}
+              style={({ pressed }) => [styles.card, pressed && { opacity: 0.85 }]}
+              onPress={() => abrirTentativa(t)}
+            >
+              <View style={styles.cabecalho}>
+                <Ionicons name="reader-outline" size={22} color="#1E3A8A" />
+                <Text style={styles.nome} numberOfLines={2}>
+                  {t.nome}
+                </Text>
+                <TouchableOpacity
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    excluir(t.id);
+                  }}
+                  hitSlop={10}
+                >
+                  <Ionicons name="trash-outline" size={20} color="#DC2626" />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.detalhes}>
+                {t.quantidade} questões · {t.tempo} min
+              </Text>
+
+              <View style={styles.rodape}>
+                <View style={styles.situacao}>
+                  <View style={[styles.dot, { backgroundColor: st.cor }]} />
+                  <Text style={[styles.situacaoTxt, { color: st.cor }]}>
+                    {st.label}
+                  </Text>
+                </View>
+
+                {restante && (
+                  <Text style={styles.tempo}>⏱ {restante}</Text>
+                )}
+
+                <Text style={styles.progresso}>
+                  {encerrado
+                    ? `${t.acertos ?? 0} acertos`
+                    : `${t.respondidas}/${t.quantidade}`}
                 </Text>
               </View>
-              <Text style={styles.resultado}>
-                {encerrado ? `${tentativa.acertos ?? 0} acertos` : `${tentativa.respondidas}/${tentativa.quantidade} respondidas`}
-              </Text>
-            </View>
-          </Pressable>
-        );
-      })}
+            </Pressable>
+          );
+        })
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { width: "100%", backgroundColor: "#F8FAFC", borderColor: "#E2E8F0", borderWidth: 1.5, borderRadius: 13, padding: 16 },
-  titulo: { color: "#1E3A8A", fontSize: 20, fontWeight: "bold", marginBottom: 4 },
+  container: { padding: 16 },
+  titulo: { fontSize: 20, fontWeight: "bold", color: "#1E3A8A", marginBottom: 4 },
   descricao: { color: "#64748B", fontSize: 13, marginBottom: 18 },
-  card: { backgroundColor: "#FFFFFF", borderColor: "#E2E8F0", borderWidth: 1, borderRadius: 12, padding: 14, marginBottom: 12, elevation: 1 },
-  cabecalho: { flexDirection: "row", alignItems: "center", gap: 10 },
-  nome: { flex: 1, color: "#0B132B", fontWeight: "700", fontSize: 15 },
-  detalhes: { color: "#64748B", marginTop: 10, fontSize: 12 },
-  rodape: { marginTop: 12, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },
-  situacao: { flexDirection: "row", alignItems: "center", gap: 5 },
-  situacaoTexto: { color: "#64748B", fontSize: 12 },
-  resultado: { color: "#C2410C", fontSize: 12, fontWeight: "700" },
-  aviso: { fontSize: 14, color: "#64748B", textAlign: "center", marginTop: 12 },
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    elevation: 1,
+  },
+  cabecalho: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  nome: { flex: 1, fontWeight: "700", color: "#1E3A8A", fontSize: 15 },
+  detalhes: { color: "#64748B", fontSize: 12, marginTop: 8 },
+  rodape: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 10,
+    gap: 8,
+  },
+  situacao: { flexDirection: "row", alignItems: "center", gap: 6 },
+  dot: { width: 8, height: 8, borderRadius: 4 },
+  situacaoTxt: { fontSize: 12, fontWeight: "600" },
+  tempo: { fontSize: 12, color: "#F97316", fontWeight: "700" },
+  progresso: { fontSize: 12, color: "#C2410C", fontWeight: "700" },
+  aviso: { textAlign: "center", color: "#64748B", marginTop: 12 },
   vazio: { padding: 25, alignItems: "center" },
 });

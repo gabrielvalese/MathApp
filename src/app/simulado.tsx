@@ -27,7 +27,7 @@ import { auth, db } from "../utils/FirebaseConfig";
 import MeuSimulado from "./componentes/MeuSimulado";
 
 const COLECAO_QUESTOES = "Questao";
-const CAMPO_ASSUNTO_QUESTAO = "Conteudo";
+const COLECAO_CONTEUDOS = "Conteudo";
 
 const AZUL = "#1E3A8A";
 const LARANJA = "#F97316";
@@ -52,7 +52,7 @@ const ASSUNTOS = [
   "Geometria Plana",
   "Logaritmo",
   "Matemática Básica",
-  "Matemática Financeira",
+  "Matemática Comercial e Financeira",
   "Matrizes",
   "Módulo",
   "Números complexos",
@@ -118,6 +118,55 @@ export default function Simulado() {
     );
   }
 
+  /**
+   * Busca as questões de um assunto.
+   * - Conteudo tem Document ID = id_conteudo usado nas questões.
+   * - O campo "nome" em Conteudo é o nome do assunto.
+   * - Questao tem o campo "id_conteudo" com esse mesmo valor.
+   */
+  async function buscarQuestoesDoAssunto(assunto: string) {
+    const conteudosSnap = await getDocs(collection(db, COLECAO_CONTEUDOS));
+    const docConteudo = conteudosSnap.docs.find((d) => {
+      const nome = String(d.data().nome ?? "");
+      return textoBusca(nome) === textoBusca(assunto);
+    });
+
+    if (!docConteudo) {
+      console.log(`[SIMULADO] Conteúdo "${assunto}" não encontrado.`);
+      return [];
+    }
+
+    const idConteudo = docConteudo.id;
+    console.log(`[SIMULADO] Assunto "${assunto}" → id_conteudo = "${idConteudo}"`);
+
+    // Tenta string primeiro
+    let docs = (
+      await getDocs(
+        query(
+          collection(db, COLECAO_QUESTOES),
+          where("id_conteudo", "==", idConteudo)
+        )
+      )
+    ).docs;
+
+    // Se não encontrou, tenta número
+    if (docs.length === 0 && Number.isFinite(Number(idConteudo))) {
+      docs = (
+        await getDocs(
+          query(
+            collection(db, COLECAO_QUESTOES),
+            where("id_conteudo", "==", Number(idConteudo))
+          )
+        )
+      ).docs;
+    }
+
+    console.log(
+      `[SIMULADO] Assunto "${assunto}" → ${docs.length} questões encontradas.`
+    );
+    return docs;
+  }
+
   async function gerarSimulado() {
     if (gerando) return;
     const usuario = auth.currentUser;
@@ -143,66 +192,30 @@ export default function Simulado() {
 
     setGerando(true);
     try {
-      const conteudos = await getDocs(collection(db, "Conteudo")).catch((erro) => {
-        console.warn("Não foi possível consultar Conteudo:", erro);
-        return null;
-      });
-
       const grupos = await Promise.all(
         selecionados.map(async (assunto) => {
-          const consulta = query(
-            collection(db, COLECAO_QUESTOES),
-            where(CAMPO_ASSUNTO_QUESTAO, "==", assunto)
-          );
-          let documentos = (await getDocs(consulta)).docs;
-          if (documentos.length === 0 && conteudos) {
-            const docConteudo = conteudos.docs.find((d) => {
-              const dados = d.data();
-              const nome =
-                dados.nome ??
-                dados.nome_conteudo ??
-                dados.titulo ??
-                dados.conteudo ??
-                dados.assunto ??
-                d.id;
-              return textoBusca(String(nome)) === textoBusca(assunto);
-            });
-            if (docConteudo) {
-              const dados = docConteudo.data();
-              const idConteudo = dados.id_conteudo ?? dados.id ?? docConteudo.id;
-              documentos = (
-                await getDocs(
-                  query(collection(db, COLECAO_QUESTOES), where("id_conteudo", "==", idConteudo))
-                )
-              ).docs;
-              if (documentos.length === 0 && Number.isFinite(Number(idConteudo))) {
-                documentos = (
-                  await getDocs(
-                    query(
-                      collection(db, COLECAO_QUESTOES),
-                      where("id_conteudo", "==", Number(idConteudo))
-                    )
-                  )
-                ).docs;
-              }
-            }
-          }
-          const validos = documentos.filter((d) => {
+          const docs = await buscarQuestoesDoAssunto(assunto);
+
+          const validos = docs.filter((d) => {
             const q = d.data();
             return (
               typeof q.enunciado === "string" &&
+              q.enunciado.trim().length > 0 &&
               Array.isArray(q.alternativas) &&
+              q.alternativas.length > 0 &&
               typeof q.respostaCorreta === "string"
             );
           });
+
           return {
             assunto,
-            ids: embaralhar(validos.map((documento) => documento.id)),
+            ids: embaralhar(validos.map((d) => d.id)),
             usadas: 0,
           };
         })
       );
 
+      // Remove IDs duplicados entre grupos
       const idsUnicos = new Set<string>();
       for (const grupo of grupos) {
         grupo.ids = grupo.ids.filter((id) => {
@@ -211,7 +224,8 @@ export default function Simulado() {
           return true;
         });
       }
-      const totalDisponivel = grupos.reduce((total, grupo) => total + grupo.ids.length, 0);
+
+      const totalDisponivel = grupos.reduce((t, g) => t + g.ids.length, 0);
       if (totalDisponivel === 0) {
         Alert.alert(
           "Nenhuma questão disponível",
@@ -220,27 +234,31 @@ export default function Simulado() {
         return;
       }
 
+      // Seleciona de forma balanceada
       const quantidadeFinal = Math.min(quantidade, totalDisponivel);
       const escolhidas: Array<{ id: string; assunto: string }> = [];
       while (escolhidas.length < quantidadeFinal) {
-        const disponiveis = grupos.filter((grupo) => grupo.ids.length > 0);
-        const menorUso = Math.min(...disponiveis.map((grupo) => grupo.usadas));
-        const candidatos = disponiveis.filter((grupo) => grupo.usadas === menorUso);
+        const disponiveis = grupos.filter((g) => g.ids.length > 0);
+        if (disponiveis.length === 0) break;
+        const menorUso = Math.min(...disponiveis.map((g) => g.usadas));
+        const candidatos = disponiveis.filter((g) => g.usadas === menorUso);
         const grupo = candidatos[Math.floor(Math.random() * candidatos.length)];
         const id = grupo.ids.pop();
-        if (!id) throw new Error("Não foi possível selecionar uma questão.");
+        if (!id) break;
         grupo.usadas += 1;
         escolhidas.push({ id, assunto: grupo.assunto });
       }
 
-      const questoes: QuestaoSelecionada[] = embaralhar(escolhidas).map((q, indice) => ({
+      const questoes: QuestaoSelecionada[] = embaralhar(escolhidas).map((q, i) => ({
         ...q,
-        ordem: indice + 1,
+        ordem: i + 1,
       }));
+
       const distribuicao = grupos.map(({ assunto, usadas }) => ({
         assunto,
         quantidade: usadas,
       }));
+
       const nome =
         selecionados.length === 1
           ? `Simulado de ${selecionados[0]}`
@@ -264,6 +282,7 @@ export default function Simulado() {
         status: "pronto",
         criado_em: serverTimestamp(),
       });
+
       batch.set(tentativaRef, {
         usuario_id: usuario.uid,
         simulado_id: simuladoRef.id,
@@ -271,7 +290,7 @@ export default function Simulado() {
         quantidade_questoes: quantidadeFinal,
         tempo_minutos: tempo,
         status: "nao_iniciado",
-        acertos: null,
+        acertos: 0,
         respondidas: 0,
         ids_respondidos: [],
         indice_atual: 0,
@@ -279,15 +298,17 @@ export default function Simulado() {
         finalizado_em: null,
         criado_em: serverTimestamp(),
       });
+
       await batch.commit();
 
-      const mensagemCriacao =
-        quantidadeFinal < quantidade
-          ? `Você pediu ${quantidade}, mas encontramos ${quantidadeFinal}. O simulado foi criado com todas as questões disponíveis.`
-          : `${quantidadeFinal} questões foram selecionadas. Agora você pode respondê-las.`;
-
-      Alert.alert("Simulado criado!", mensagemCriacao, [
-        { text: "Meus simulados", onPress: () => { setPainelAberto(false); setAba("meus"); } },
+      Alert.alert("Simulado criado!", `${quantidadeFinal} questões selecionadas.`, [
+        {
+          text: "Meus simulados",
+          onPress: () => {
+            setPainelAberto(false);
+            setAba("meus");
+          },
+        },
         {
           text: "Responder agora",
           onPress: () =>
@@ -301,7 +322,7 @@ export default function Simulado() {
       console.error("Erro ao gerar simulado:", error);
       Alert.alert(
         "Não foi possível gerar",
-        error instanceof Error ? error.message : "Verifique a conexão e as permissões do Firebase."
+        error instanceof Error ? error.message : "Verifique a conexão."
       );
     } finally {
       setGerando(false);
@@ -315,22 +336,21 @@ export default function Simulado() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Cabeçalho */}
         <View style={styles.header}>
           <View style={styles.headerTop}>
             <Pressable
-              accessibilityLabel="Voltar"
               style={styles.botaoVoltar}
-              onPress={() => (router.canGoBack() ? router.back() : router.replace("/home"))}
+              onPress={() =>
+                router.canGoBack() ? router.back() : router.replace("/home")
+              }
             >
               <Ionicons name="arrow-back" size={22} color={AZUL} />
             </Pressable>
             <Text style={styles.titulo}>Simulados</Text>
           </View>
-          <Text style={styles.subtitulo}>Prepare seu simulado de matemática do ENEM</Text>
+          <Text style={styles.subtitulo}>Prepare seu simulado de matemática</Text>
         </View>
 
-        {/* Abas */}
         <View style={styles.abas}>
           <Pressable
             style={[styles.aba, aba === "criar" && styles.abaAtiva]}
@@ -364,7 +384,7 @@ export default function Simulado() {
           <View style={styles.card}>
             <Text style={styles.tituloCartao}>Novo simulado</Text>
             <Text style={styles.descricaoCartao}>
-              Escolha os assuntos, a quantidade de questões e o tempo.
+              Escolha os assuntos, a quantidade e o tempo.
             </Text>
 
             <Text style={styles.label}>Assuntos</Text>
@@ -399,7 +419,9 @@ export default function Simulado() {
                   onChangeText={setBusca}
                 />
                 <View style={styles.acoes}>
-                  <Text style={styles.textoPequeno}>{selecionados.length} selecionado(s)</Text>
+                  <Text style={styles.textoPequeno}>
+                    {selecionados.length} selecionado(s)
+                  </Text>
                   <Pressable onPress={() => setSelecionados([...ASSUNTOS])}>
                     <Text style={styles.link}>Selecionar todos</Text>
                   </Pressable>
@@ -468,11 +490,10 @@ export default function Simulado() {
                   </View>
                 ))}
                 {previsao.length > 5 && (
-                  <Text style={styles.textoPequeno}>E mais {previsao.length - 5} assunto(s).</Text>
+                  <Text style={styles.textoPequeno}>
+                    E mais {previsao.length - 5} assunto(s).
+                  </Text>
                 )}
-                <Text style={styles.legendaPrevia}>
-                  A distribuição final depende das questões disponíveis no banco.
-                </Text>
               </View>
             )}
 
@@ -487,7 +508,7 @@ export default function Simulado() {
                 <Ionicons name="create-outline" size={20} color="#fff" />
               )}
               <Text style={styles.textoGerar}>
-                {gerando ? "Gerando simulado..." : "Gerar simulado"}
+                {gerando ? "Gerando..." : "Gerar simulado"}
               </Text>
             </Pressable>
           </View>
@@ -498,20 +519,16 @@ export default function Simulado() {
         )}
       </ScrollView>
 
-      {/* Barra inferior */}
       <View style={[styles.barraInferior, { paddingBottom: insets.bottom + 10 }]}>
         <TouchableOpacity
           style={styles.barraItem}
-          activeOpacity={0.7}
           onPress={() => router.replace("/home")}
         >
           <Ionicons name="home" size={24} color="#9CA3AF" />
           <Text style={styles.barraLabel}>Início</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={styles.barraItem}
-          activeOpacity={0.7}
           onPress={() => router.replace("/simulado")}
         >
           <MaterialCommunityIcons name="podium-gold" size={26} color={LARANJA} />
@@ -519,10 +536,8 @@ export default function Simulado() {
             Simulados
           </Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={styles.barraItem}
-          activeOpacity={0.7}
           onPress={() => router.replace("/perfil")}
         >
           <Ionicons name="person" size={24} color="#9CA3AF" />
@@ -727,7 +742,6 @@ const styles = StyleSheet.create({
   },
   nomePrevia: { flex: 1, color: AZUL, fontSize: 12 },
   qtdPrevia: { color: LARANJA, fontSize: 12, fontWeight: "800" },
-  legendaPrevia: { marginTop: 10, fontSize: 11, color: "#6B7280" },
 
   botaoGerar: {
     backgroundColor: LARANJA,
@@ -754,7 +768,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopWidth: 1,
     borderTopColor: CINZA_BORDA,
-    paddingVertical: 10,
+    paddingTop: 10,
     paddingHorizontal: 12,
     shadowColor: "#000",
     shadowOpacity: 0.05,
@@ -762,6 +776,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -2 },
     elevation: 8,
   },
-  barraItem: { flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: 4 },
+  barraItem: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 4,
+  },
   barraLabel: { fontSize: 11, color: "#9CA3AF", marginTop: 3, fontWeight: "600" },
 });

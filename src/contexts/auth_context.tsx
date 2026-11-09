@@ -1,4 +1,4 @@
-// app/auth_context.tsx
+// app/contexts/auth_context.tsx
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -41,13 +41,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     unsubscribeAuth = onAuthStateChanged(auth, async (u) => {
       const userValido = u && !u.isAnonymous ? u : null;
 
-      // Cancela listener do Firestore anterior, se existir
       if (unsubscribeDoc) {
         unsubscribeDoc();
         unsubscribeDoc = undefined;
       }
 
-      // Sem usuário → libera loading e vai para login
       if (!userValido) {
         setUser(null);
         setNome("Usuário");
@@ -55,7 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Usuário logado → busca o nome normalmente
       setUser(userValido);
 
       const docRef = doc(db, "users", userValido.uid);
@@ -95,9 +92,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name,
         email: email.trim(),
         createdAt: new Date(),
+        streak: 0,
+        lastChallengeDate: null,
+        streakGoal: 30,
+        streakGoalMessage: null,
+        metaAtingida: false,        // <-- novo
       });
       await updateProfile(cred.user, { displayName: name });
-      setNome(name);
     }
   };
 

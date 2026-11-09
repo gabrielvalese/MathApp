@@ -47,13 +47,12 @@ export default function CategoriaQuestoes() {
   const [erro, setErro] = useState("");
   const [respondidas, setRespondidas] = useState<Set<string>>(new Set());
   const [consultandoHistorico, setConsultandoHistorico] = useState(true);
-  const [erroHistorico, setErroHistorico] = useState(false);
 
+  // Busca os IDs das questões respondidas do usuário (subcoleção)
   useFocusEffect(
     useCallback(() => {
       let ativo = true;
       setConsultandoHistorico(true);
-      setErroHistorico(false);
 
       const cancelarAuth = onAuthStateChanged(auth, async (usuario) => {
         if (!usuario) {
@@ -66,33 +65,14 @@ export default function CategoriaQuestoes() {
 
         try {
           const snap = await getDocs(
-            query(
-              collection(db, "Executa_Questao"),
-              where("usuario_uid", "==", usuario.uid)
-            )
+            collection(db, "users", usuario.uid, "questoes_respondidas")
           );
-
           const ids = new Set<string>();
-          snap.forEach((registro) => {
-            const dados = registro.data();
-            if (dados.questao_documento_id != null) {
-              ids.add(`doc:${String(dados.questao_documento_id)}`);
-            }
-            if (dados.id_questao != null) {
-              ids.add(`num:${String(dados.id_questao)}`);
-            }
-          });
-
-          if (ativo) {
-            setRespondidas(ids);
-            setErroHistorico(false);
-          }
+          snap.forEach((docSnap) => ids.add(docSnap.id));
+          if (ativo) setRespondidas(ids);
         } catch (e) {
           console.error("Erro ao consultar questões respondidas:", e);
-          if (ativo) {
-            setRespondidas(new Set());
-            setErroHistorico(true);
-          }
+          if (ativo) setRespondidas(new Set());
         } finally {
           if (ativo) setConsultandoHistorico(false);
         }
@@ -105,6 +85,7 @@ export default function CategoriaQuestoes() {
     }, [])
   );
 
+  // Busca as questões do assunto
   useEffect(() => {
     let ativo = true;
 
@@ -194,11 +175,7 @@ export default function CategoriaQuestoes() {
   }, [nome]);
 
   const totalConcluidas = useMemo(
-    () =>
-      questoes.filter(
-        (q) =>
-          respondidas.has(`doc:${q.id}`) || respondidas.has(`num:${q.numero}`)
-      ).length,
+    () => questoes.filter((q) => respondidas.has(q.id)).length,
     [questoes, respondidas]
   );
 
@@ -219,7 +196,9 @@ export default function CategoriaQuestoes() {
                 pressed && { backgroundColor: CINZA_BG },
               ]}
               onPress={() =>
-                router.canGoBack() ? router.back() : router.replace("/tela_categoria")
+                router.canGoBack()
+                  ? router.back()
+                  : router.replace("/tela_categoria")
               }
             >
               <Ionicons name="arrow-back" size={22} color={AZUL} />
@@ -232,7 +211,7 @@ export default function CategoriaQuestoes() {
           <Text style={styles.subtitulo}>Escolha uma questão para praticar</Text>
         </View>
 
-        {/* Card resumo */}
+        {/* Card resumo com progresso */}
         <View style={styles.resumo}>
           <View style={styles.resumoIcone}>
             <Ionicons name="book-outline" size={24} color={AZUL} />
@@ -242,10 +221,12 @@ export default function CategoriaQuestoes() {
             <Text style={styles.resumoDetalhe}>
               {carregando
                 ? "Carregando questões..."
-                : `${questoes.length} questões disponíveis`}
+                : consultandoHistorico
+                ? "Verificando progresso..."
+                : `${totalConcluidas} de ${questoes.length} questões concluídas`}
             </Text>
           </View>
-          {!carregando && !consultandoHistorico && !erroHistorico && (
+          {!carregando && !consultandoHistorico && (
             <View style={styles.contadorBox}>
               <Text style={styles.contador}>
                 {totalConcluidas}/{questoes.length}
@@ -254,18 +235,8 @@ export default function CategoriaQuestoes() {
           )}
         </View>
 
-        {erroHistorico && (
-          <Text style={styles.avisoHistorico}>
-            Não foi possível verificar quais questões foram respondidas.
-          </Text>
-        )}
-
         {carregando ? (
-          <ActivityIndicator
-            color={LARANJA}
-            size="large"
-            style={styles.carregador}
-          />
+          <ActivityIndicator color={LARANJA} size="large" style={styles.carregador} />
         ) : erro ? (
           <View style={styles.cardVazio}>
             <Ionicons name="alert-circle-outline" size={28} color="#DC2626" />
@@ -282,23 +253,15 @@ export default function CategoriaQuestoes() {
           <>
             <Text style={styles.secaoTitulo}>Questões do assunto</Text>
             {questoes.map((questao) => {
-              const concluida =
-                respondidas.has(`doc:${questao.id}`) ||
-                respondidas.has(`num:${questao.numero}`);
-
-              const status = consultandoHistorico
-                ? "Verificando..."
-                : erroHistorico
-                ? "Indisponível"
-                : concluida
-                ? "Concluída"
-                : "Não respondida";
+              const concluida = respondidas.has(questao.id);
 
               return (
                 <Pressable
                   key={questao.id}
                   accessibilityRole="button"
-                  accessibilityLabel={`Questão ${questao.numero}, ${status}`}
+                  accessibilityLabel={`Questão ${questao.numero}, ${
+                    concluida ? "concluída" : "não respondida"
+                  }`}
                   style={({ pressed }) => [
                     styles.cardQuestao,
                     pressed && { opacity: 0.85 },
@@ -319,29 +282,26 @@ export default function CategoriaQuestoes() {
                     <View style={styles.status}>
                       <Ionicons
                         name={
-                          consultandoHistorico || erroHistorico
+                          consultandoHistorico
                             ? "help-circle-outline"
                             : concluida
                             ? "checkmark-circle"
                             : "ellipse-outline"
                         }
-                        color={
-                          !consultandoHistorico && !erroHistorico && concluida
-                            ? VERDE
-                            : "#94A3B8"
-                        }
+                        color={concluida ? VERDE : "#94A3B8"}
                         size={16}
                       />
                       <Text
                         style={[
                           styles.statusTexto,
-                          !consultandoHistorico &&
-                            !erroHistorico &&
-                            concluida &&
-                            styles.statusConcluido,
+                          concluida && styles.statusConcluido,
                         ]}
                       >
-                        {status}
+                        {consultandoHistorico
+                          ? "Verificando..."
+                          : concluida
+                          ? "Concluída"
+                          : "Não respondida"}
                       </Text>
                     </View>
                   </View>
@@ -367,9 +327,7 @@ export default function CategoriaQuestoes() {
                     </View>
                     <View style={styles.acao}>
                       <Text style={styles.acaoTexto}>
-                        {concluida && !erroHistorico && !consultandoHistorico
-                          ? "Ver questão"
-                          : "Resolver"}
+                        {concluida ? "Ver questão" : "Resolver"}
                       </Text>
                       <Ionicons
                         name="chevron-forward"
@@ -515,13 +473,6 @@ const styles = StyleSheet.create({
   metaTexto: { color: "#6B7280", fontSize: 11, flexShrink: 1 },
   acao: { flexDirection: "row", alignItems: "center", gap: 2 },
   acaoTexto: { color: LARANJA, fontWeight: "800", fontSize: 12 },
-
-  avisoHistorico: {
-    fontSize: 12,
-    color: "#B45309",
-    marginBottom: 14,
-    textAlign: "center",
-  },
 
   cardVazio: {
     backgroundColor: "#fff",

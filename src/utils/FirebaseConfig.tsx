@@ -7,6 +7,10 @@ import {
   initializeApp,
 } from "firebase/app";
 
+import { getStorage } from "firebase/storage";
+
+
+
 
 import {
   getAuth,
@@ -44,6 +48,7 @@ try {
 }
 
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-export { app, auth, db };
+export { app, auth, db, storage };
 

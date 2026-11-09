@@ -66,7 +66,6 @@ export default function Register() {
     try {
       await signUp(name.trim(), email.trim(), password);
 
-      // Envia o e-mail de verificação para o usuário recém-criado
       if (auth.currentUser) {
         try {
           await sendEmailVerification(auth.currentUser);
@@ -76,7 +75,6 @@ export default function Register() {
         }
       }
 
-      // Navega para a tela de aviso, passando o e-mail
       router.replace({
         pathname: "/verificar_email",
         params: { email: email.trim() },
