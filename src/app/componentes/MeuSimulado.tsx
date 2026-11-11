@@ -103,11 +103,11 @@ export default function MeuSimulado() {
           status: "em_andamento",
           iniciado_em: serverTimestamp(),
         });
-      }
+      } //olha se já está iniciado, se não, inicia a tentativa e atualiza o status no banco 
 
       const { getDoc } = await import("firebase/firestore");
       const tentSnap = await getDoc(doc(db, "tentativas_simulado", t.id));
-      if (!tentSnap.exists()) return;
+      if (!tentSnap.exists()) return; // 
 
       const tentativa = tentSnap.data();
       const simSnap = await getDoc(
