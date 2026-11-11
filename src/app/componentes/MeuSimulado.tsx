@@ -41,13 +41,13 @@ export default function MeuSimulado() {
   const [tentativas, setTentativas] = useState<Tentativa[]>([]);
   const [carregando, setCarregando] = useState(true);
 
-  useEffect(() => onAuthStateChanged(auth, (u) => setUid(u?.uid ?? null)), []);
+  useEffect(() => onAuthStateChanged(auth, (u) => setUid(u?.uid ?? null)), []); // verifica se o usuário está logado, se estiver, pega o uid do usuário e salva no estado para criar um sessão 
 
   useEffect(() => {
     if (!uid) {
       setCarregando(false);
       return;
-    }
+    } 
     setCarregando(true);
     const q = query(
       collection(db, "tentativas_simulado"),
@@ -93,7 +93,7 @@ export default function MeuSimulado() {
         },
       ]
     );
-  }
+  } // deleta um simulado do banco
 
   async function abrirTentativa(t: Tentativa) {
     try {
@@ -107,28 +107,28 @@ export default function MeuSimulado() {
 
       const { getDoc } = await import("firebase/firestore");
       const tentSnap = await getDoc(doc(db, "tentativas_simulado", t.id));
-      if (!tentSnap.exists()) return; // 
+      if (!tentSnap.exists()) return; // vai até o banco e verifica se aquela tentativa ainda existe, se não existir, retorna 
 
       const tentativa = tentSnap.data();
       const simSnap = await getDoc(
         doc(db, "simulados", tentativa.simulado_id)
       );
-      if (!simSnap.exists()) return;
+      if (!simSnap.exists()) return; // vai até o banco e verifica se aquele simulado correnspondente a tentativa_simulado ainda existe, se não existir, retorna
 
       const ids: string[] =
         (simSnap.data().questoes_ids as string[] | undefined) ?? [];
-      if (ids.length === 0) return;
+      if (ids.length === 0) return; // verifica se o simulado tem questões, se não possuir ele define como vazio e retorna
 
       const respondidos: string[] = Array.isArray(tentativa.ids_respondidos)
         ? tentativa.ids_respondidos
-        : [];
+        : []; // verifica se a tentativa tem questões respondidas, se não possuir ele define como vazio e retorna
 
       const encerrado = ["concluido", "tempo_esgotado"].includes(tentativa.status);
       let indice = 0;
       if (!encerrado) {
         const pendente = ids.findIndex((qId) => !respondidos.includes(qId));
         indice = pendente === -1 ? 0 : pendente;
-      }
+      } // verifica se a tentativa está encerrada, se não estiver, ele procura a primeira questão que ainda não foi respondida e define o índice dela, se todas as questões já foram respondidas, ele define o índice como 0  
 
       router.push({
         pathname: "/QuestoesBase/[id]",
@@ -137,14 +137,14 @@ export default function MeuSimulado() {
     } catch (e) {
       Alert.alert("Erro", "Não foi possível abrir o simulado.");
     }
-  }
+  } // redireciona para a tela de questões do simulado, passando o id da questão e o id da tentativa como parâmetros
 
   function statusInfo(t: Tentativa): { label: string; cor: string } {
     if (t.status === "concluido") return { label: "Concluído", cor: cores.verde };
     if (t.status === "tempo_esgotado") return { label: "Tempo esgotado", cor: cores.perigo };
     if (t.status === "em_andamento") return { label: "Em andamento", cor: cores.laranja };
     return { label: "Não iniciado", cor: cores.textoSuave };
-  }
+  } // cor do status do simulado, dependendo do status da tentativa, ele retorna a cor correspondente
 
   function tempoRestante(t: Tentativa): string | null {
     if (!t.iniciadoEm || t.tempo <= 0) return null;
@@ -155,7 +155,7 @@ export default function MeuSimulado() {
     const min = Math.floor(restante / 60000);
     const seg = Math.floor((restante % 60000) / 1000);
     return `${min}:${String(seg).padStart(2, "0")}`;
-  }
+  } //calcula o tempo restante da tentativa, se o tempo já tiver esgotado, ele retorna
 
   if (carregando) {
     return (
@@ -166,7 +166,7 @@ export default function MeuSimulado() {
       />
     );
   }
-  if (!uid) return <Text style={[styles.aviso, { color: cores.textoSuave }]}>Entre na sua conta.</Text>;
+  if (!uid) return <Text style={[styles.aviso, { color: cores.textoSuave }]}>Entre na sua conta.</Text>; // verifica se está logado, com sessão ativa, se estiver sem, pede para logar
 
   return (
     <View style={styles.container}>

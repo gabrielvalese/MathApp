@@ -1,5 +1,5 @@
 
-import { auth, db } from "../FirebaseConfig";
+import { auth, db } from "../../utils/FirebaseConfig";
 
 import {
   addDoc,
