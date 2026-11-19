@@ -1,7 +1,7 @@
 CREATE DATABASE mathapp;
 
 USE mathapp;
-0
+
 
 CREATE TABLE Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -16,38 +16,11 @@ CREATE TABLE Estudante (
     FOREIGN KEY (id) REFERENCES Usuario(id) ON DELETE CASCADE
 );
 
-
-CREATE TABLE Professor (
-    id INT PRIMARY KEY,
-    FOREIGN KEY (id) REFERENCES Usuario(id) ON DELETE CASCADE
-);
-
-
 CREATE TABLE Admin (
     id INT PRIMARY KEY,
     FOREIGN KEY (id) REFERENCES Usuario(id) ON DELETE CASCADE
 );
 
-
-CREATE TABLE Turma (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  nome VARCHAR(60),
-  descricao VARCHAR(600),
-  chave VARCHAR(6) UNIQUE,
-  id_professor INT,
-  FOREIGN KEY (id_professor) REFERENCES Professor(id) ON DELETE CASCADE
-);
-
-
-
-CREATE TABLE Competicao (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  descricao VARCHAR(600),
-  nome VARCHAR(60),
-  chave VARCHAR(8),
-  id_professor INT,
-  FOREIGN KEY (id_professor) REFERENCES Professor(id) ON DELETE CASCADE
-);
 
 
 
@@ -108,26 +81,6 @@ CREATE TABLE Passo_a_Passo (
 );
 
 
-CREATE TABLE Estudante_Competicao (
-  id_estudante INT,
-  id_competicao INT,
-  
-  PRIMARY KEY (id_estudante, id_competicao),
-  
-  FOREIGN KEY (id_estudante) REFERENCES Estudante(id) ON DELETE CASCADE,
-  FOREIGN KEY (id_competicao) REFERENCES Competicao(id) ON DELETE CASCADE
-);
-
-
-CREATE TABLE Estudante_Turma (
-  id_estudante INT,
-  id_turma INT,
-  
-  PRIMARY KEY (id_estudante, id_turma),
-  
-  FOREIGN KEY (id_estudante) REFERENCES Estudante(id) ON DELETE CASCADE,
-  FOREIGN KEY (id_turma) REFERENCES Turma(id) ON DELETE CASCADE
-);
 
 
 CREATE TABLE Estudante_Questao (
@@ -177,27 +130,6 @@ CREATE TABLE Simulado_Questao (
     FOREIGN KEY (id_simulado) REFERENCES Simulado(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Competicao_Questao (
-    id_questaovest INT,
-    id_competicao INT,
-  
-    PRIMARY KEY (id_questaovest, id_competicao),
-  
-    FOREIGN KEY (id_questaovest) REFERENCES Questao_Vestibular(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_competicao) REFERENCES Competicao(id) ON DELETE CASCADE
-);
-
-CREATE TABLE Turma_Questao (
-    id_questao INT,
-    id_turma INT,
-  
-    PRIMARY KEY (id_questao, id_turma),
-  
-    FOREIGN KEY (id_questao) REFERENCES Questao(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_turma) REFERENCES Turma(id) ON DELETE CASCADE
-
-
-);
 
 
 -----------------------------------------------------------------------------------------------Inserções de dados----------------------------------------------------------------------------------------------------------
