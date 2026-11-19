@@ -1,7 +1,7 @@
 CREATE DATABASE mathapp;
 
 USE mathapp;
-
+0
 
 CREATE TABLE Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -62,6 +62,9 @@ CREATE TABLE Simulado (
 CREATE TABLE Questao (
     id INT AUTO_INCREMENT PRIMARY KEY,
     enunciado TEXT NOT NULL
+    id_conteudo INT,
+
+    FOREIGN KEY (id_conteudo) REFERENCES Conteudo(ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Questao_Vestibular (
@@ -163,17 +166,6 @@ CREATE TABLE Questao_Passo (
     FOREIGN KEY (id_questao) REFERENCES Questao_Introdutoria(id) ON DELETE CASCADE,
     FOREIGN KEY (id_passo) REFERENCES Passo_a_Passo(id) ON DELETE CASCADE
 );
-
-CREATE TABLE Questao_Conteudo (
-    id_questao INT,
-    id_conteudo INT,
-  
-    PRIMARY KEY (id_questao, id_conteudo),
-  
-    FOREIGN KEY (id_questao) REFERENCES Questao(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_conteudo) REFERENCES Conteudo(id) ON DELETE CASCADE
-);
-
 
 CREATE TABLE Simulado_Questao (
     id_questaovest INT,
