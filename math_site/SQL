@@ -3,7 +3,7 @@ CREATE DATABASE mathapp;
 USE mathapp;
 
 
-CREATE TABLE Usuario (
+CREATE TABLE Estudante (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
@@ -11,16 +11,14 @@ CREATE TABLE Usuario (
     nascimento DATE NOT NULL
 );
 
-CREATE TABLE Estudante (
-    id INT PRIMARY KEY,
-    FOREIGN KEY (id) REFERENCES Usuario(id) ON DELETE CASCADE
-);
 
-CREATE TABLE Admin (
-    id INT PRIMARY KEY,
-    FOREIGN KEY (id) REFERENCES Usuario(id) ON DELETE CASCADE
+CREATE TABLE Professor (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    nascimento DATE NOT NULL
 );
-
 
 
 
@@ -32,26 +30,21 @@ CREATE TABLE Simulado (
  FOREIGN KEY (id_estudante) REFERENCES Estudante(id) ON DELETE CASCADE
  );
 
+CREATE TABLE Conteudo (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  dificuldade ENUM('facil', 'medio', 'dificil') NOT NULL,
+  descricao VARCHAR(400),
+  nome VARCHAR(50)
+);
+
 CREATE TABLE Questao (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    enunciado TEXT NOT NULL
+    enunciado TEXT NOT NULL,
     id_conteudo INT,
 
     FOREIGN KEY (id_conteudo) REFERENCES Conteudo(ID) ON DELETE CASCADE
 );
 
-CREATE TABLE Questao_Vestibular (
-    id INT PRIMARY KEY,
-    instituicao VARCHAR(100),
-    dificuldade ENUM('facil', 'medio', 'dificil') NOT NULL,
-    imagem VARCHAR(255) DEFAULT "não tem",
-    FOREIGN KEY (id) REFERENCES Questao(id) ON DELETE CASCADE
-);
-
-CREATE TABLE Questao_Introdutoria (
-    id INT PRIMARY KEY,
-    FOREIGN KEY (id) REFERENCES Questao(id) ON DELETE CASCADE
-);
 
 CREATE TABLE Alternativa (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -62,25 +55,6 @@ CREATE TABLE Alternativa (
 
     FOREIGN KEY (questao_id) REFERENCES Questao(id) ON DELETE CASCADE
 );
-
-CREATE TABLE Conteudo (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  dificuldade ENUM('facil', 'medio', 'dificil') NOT NULL,
-  descricao VARCHAR(400),
-  nome VARCHAR(50)
-);
-
-
-CREATE TABLE Passo_a_Passo (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    questao_id INT NOT NULL,
-    ordem_passo VARCHAR(10) NOT NULL,
-    texto TEXT NOT NULL,
-    resposta_correta VARCHAR(60) NOT NULL,
-    FOREIGN KEY (questao_id) REFERENCES Questao_Introdutoria(id) ON DELETE CASCADE
-);
-
-
 
 
 CREATE TABLE Estudante_Questao (
@@ -96,37 +70,13 @@ CREATE TABLE Estudante_Questao (
 );
 
 
-CREATE TABLE Estudante_Passo (
-    id_estudante INT,
-    id_passo INT,
-    acerto BOOLEAN,
-    resposta VARCHAR(60),
-    data_realizacao DATE,
-    numero_tentativa INT DEFAULT 0,
-    PRIMARY KEY (id_estudante, id_passo),   
-
-    FOREIGN KEY (id_estudante) REFERENCES Estudante(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_passo) REFERENCES Passo_a_Passo(id) ON DELETE CASCADE
-);
-
-
-CREATE TABLE Questao_Passo (
-    id_questao INT,
-    id_passo INT,
-  
-    PRIMARY KEY (id_questao, id_passo),
-  
-    FOREIGN KEY (id_questao) REFERENCES Questao_Introdutoria(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_passo) REFERENCES Passo_a_Passo(id) ON DELETE CASCADE
-);
-
 CREATE TABLE Simulado_Questao (
-    id_questaovest INT,
+    id_questao INT,
     id_simulado INT,
   
-    PRIMARY KEY (id_questaovest, id_simulado),
+    PRIMARY KEY (id_questao, id_simulado),
   
-    FOREIGN KEY (id_questaovest) REFERENCES Questao_Vestibular(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_questao) REFERENCES Questao(id) ON DELETE CASCADE,
     FOREIGN KEY (id_simulado) REFERENCES Simulado(id) ON DELETE CASCADE
 );
 
