@@ -36,7 +36,7 @@ if($logado) {
     <meta name="theme-color" content="#0B132B" />
     <meta name="description" content="DAMA — Descomplicando a Matemática. Problemas por conteúdo e simulados personalizados do básico ao avançado." />
     <title>DAMA | Descomplicando a Matemática</title>
-    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="assets/style.css">
     <script src="assets/app.js" defer></script>
   </head>
   <body>
@@ -289,8 +289,8 @@ if($logado) {
         <button id="voltar_questoes" type="button" class="button button--outline">
           Voltar às questões
         </button>
-        <h3 id="titulo_questao_aberta"></h3>
-        <p id="enunciado_questao_aberta"></p>
+        <h3 id="titulo_questao_aberta" style="margin: 20px 0 12px;">﻿</h3>
+        <p id="enunciado_questao_aberta" style="margin: 0 0 20px; line-height: 1.6;"></p>
         <div id="alternativas_questao" class="lista-questoes"></div>
         </article>
         </section>
