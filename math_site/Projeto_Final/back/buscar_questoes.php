@@ -41,7 +41,7 @@ $questoes = [];
 while ($linha = $resultado->fetch_assoc()) {
     $id = $linha['id'];
 
-    // A consulta traz uma linha por alternativa. Crie a questão uma única vez.
+   
     if (!isset($questoes[$id])) {
         $questoes[$id] = [
             'id' => $id,
