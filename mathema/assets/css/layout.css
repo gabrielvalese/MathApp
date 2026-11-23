@@ -1,0 +1,59 @@
+/* Estrutura: cabeçalho, páginas, grids, rodapé */
+[data-site-header] { min-height: var(--header-h); }
+
+.site-header { position: sticky; top: 0; z-index: 50; background: rgba(248, 249, 250, 0.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.site-header__in { display: flex; align-items: center; gap: var(--s4); height: var(--header-h); }
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font: 700 1.3rem/1 var(--f-display); letter-spacing: -0.03em; }
+.brand svg { width: 26px; height: 26px; }
+.nav { display: flex; gap: 2px; margin-left: var(--s5); flex: 1; }
+.nav a { padding: 8px 12px; font-size: 14px; text-decoration: none; color: var(--ink-2); border-radius: var(--r-sm); }
+.nav a:hover { color: var(--ink); background: var(--paper-2); }
+.nav a[aria-current="page"] { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--orange); border-radius: 0; }
+.header-actions { display: flex; align-items: center; gap: var(--s2); margin-left: auto; }
+.score-chip { font: 600 13px var(--f-display); padding: 6px 10px; background: var(--orange-wash); color: var(--orange-deep); border-radius: 99px; }
+.burger { display: none; width: 40px; height: 40px; border: 1px solid var(--line-2); background: #fff; border-radius: var(--r-sm); align-items: center; justify-content: center; }
+
+@media (max-width: 880px) {
+  .burger { display: inline-flex; }
+  .nav { position: absolute; top: var(--header-h); left: 0; right: 0; margin: 0; flex-direction: column; background: var(--paper); border-bottom: 1px solid var(--line); padding: 8px var(--gutter) 16px; display: none; }
+  .nav.is-open { display: flex; }
+  .nav a[aria-current="page"] { box-shadow: inset 3px 0 0 var(--orange); }
+  .header-actions .hide-sm { display: none; }
+}
+
+/* Página */
+.page { padding-block: var(--s7) var(--s9); }
+.page-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--s5); margin-bottom: var(--s6); }
+.page-head h1 { font-size: clamp(2rem, 4.2vw, 3.1rem); }
+.page-head p { max-width: 58ch; color: var(--ink-2); margin-top: var(--s2); }
+.page-head__actions { display: flex; gap: var(--s2); flex-wrap: wrap; }
+.crumbs { display: flex; gap: 8px; font-size: 13px; color: var(--ink-3); margin-bottom: var(--s3); flex-wrap: wrap; }
+.crumbs a { text-decoration: none; }
+.crumbs a:hover { color: var(--ink); }
+.crumbs > * + *::before { content: "/"; margin-right: 8px; color: var(--line-2); }
+
+.section { margin-top: var(--s8); }
+.section__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s4); flex-wrap: wrap; margin-bottom: var(--s5); }
+.section__head p { color: var(--ink-2); font-size: 14px; }
+
+.grid { display: grid; gap: var(--s4); }
+.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 1000px) { .cols-4, .cols-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .cols-2, .cols-3, .cols-4, .cols-5 { grid-template-columns: 1fr; } }
+
+.split { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--s4); align-items: start; }
+.split--even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.split--wide { grid-template-columns: minmax(0, 1fr) 420px; }
+@media (max-width: 980px) { .split, .split--even, .split--wide { grid-template-columns: 1fr; } }
+
+.row { display: flex; gap: var(--s3); align-items: center; flex-wrap: wrap; }
+.row--between { justify-content: space-between; }
+
+.site-footer { border-top: 1px solid var(--line); padding-block: var(--s6); font-size: 13px; color: var(--ink-3); }
+.site-footer__in { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s4); align-items: center; }
+.site-footer nav { display: flex; gap: var(--s4); flex-wrap: wrap; }
+.site-footer a { text-decoration: none; }
+.site-footer a:hover { color: var(--ink); }
