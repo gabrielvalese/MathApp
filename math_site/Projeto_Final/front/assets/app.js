@@ -376,8 +376,100 @@ botao.querySelector("strong").textContent = conteudo.nome;
 
 
 
+function excluir_conta () {
+  const lixeira = document.getElementById("excluir_conta");
+
+  lixeira.addEventListener("click", async function () {
+  if (!confirm("Tem certeza de que quer excluir sua conta?")) return;
+
+  lixeira.disabled = true;
+
+  try {
+    const resposta = await fetch("../back/excluir_conta.php", {
+      method: "POST"
+    });
+
+    const dados = await resposta.json();
+
+    if (resposta.ok && dados.sucesso === true) {
+      window.location.reload();
+    } else {
+      alert("Não foi possível excluir a conta.");
+    }
+  } catch {
+    alert("Não foi possível excluir a conta.");
+  } finally {
+  lixeira.disabled = false;
+  }
+});
+}
+if (document.getElementById("excluir_conta")) {
+  excluir_conta();
+}
 
 
+function atualizar_campo(idBotao, idTexto, campo, tipo) {
+  const lapis = document.getElementById(idBotao);
+  const texto = document.getElementById(idTexto);
 
+  lapis.addEventListener("click", function () {
+    const editor = document.createElement("form");
+    const input = document.createElement("input");
+    const salvar = document.createElement("button");
 
-    
+    input.type = tipo;
+    input.value = texto.textContent.trim();
+    input.className = "profile-edit-input";
+    input.required = true;
+    input.setAttribute("aria-label", lapis.getAttribute("aria-label"));
+
+    salvar.type = "submit";
+    salvar.textContent = "Salvar";
+    salvar.className = "button button--outline";
+
+    editor.append(input, salvar);
+    texto.after(editor);
+    texto.hidden = true;
+    lapis.hidden = true;
+    input.focus();
+
+    editor.addEventListener("submit", async function (evento) {
+      evento.preventDefault();
+
+      const valor = input.value.trim();
+      const dados = new FormData();
+      dados.append("campo", campo);
+      dados.append("valor", valor);
+
+      salvar.disabled = true;
+
+      try {
+        const resposta = await fetch("../back/atualizar_perfil.php", {
+          method: "POST",
+          body: dados
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok || resultado.sucesso !== true) {
+          throw new Error("Atualização não confirmada");
+        }
+
+        texto.textContent = valor;
+        texto.hidden = false;
+        lapis.hidden = false;
+        editor.remove();
+        lapis.focus();
+      } catch {
+        alert("Não foi possível salvar. Tente novamente.");
+        salvar.disabled = false;
+      }
+    });
+  });
+}
+
+if (document.getElementById("appView")) {
+  atualizar_campo("editar_nome", "profileFullName", "nome", "text");
+  atualizar_campo("editar_nascimento", "profileBirth", "nascimento", "date");
+}
+

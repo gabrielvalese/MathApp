@@ -54,10 +54,12 @@ if($logado) {
       <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
       <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
       <symbol id="i-cap" viewBox="0 0 24 24"><path d="m2 10 10-6 10 6-10 6-10-6ZM6 12v6c3.6 2.4 8.4 2.4 12 0v-6M22 10v7"/></symbol>
-      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" 
+      rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+      <symbol id="i-pencil" viewBox="0 0 24 24"><path d="m15 5 4 4M4 20l4-1 12-12a2.8 2.8 0 0 0-4-4L4 15l-1 5z"fill="none" stroke="currentColor" stroke-width="2"stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v6m4-6v6"fill="none"stroke="currentColor" stroke-width="2"stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="i-bolt" viewBox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 10-12h-7l0-8Z"/></symbol>
       <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
-      <!-- Ícones próprios: o JS escolhe cada símbolo pelo nome do conteúdo recebido do banco. -->
       <symbol id="i-network" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="12" cy="13" r="2"/><path d="M12 6v5M11 15l-5 2M13 15l5 2"/></symbol>
       <symbol id="i-ellipse" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="5"/><path d="M12 3v18M3 12h18"/></symbol>
       <symbol id="i-venn" viewBox="0 0 24 24"><circle cx="9" cy="12" r="7"/><circle cx="15" cy="12" r="7"/></symbol>
@@ -136,7 +138,7 @@ if($logado) {
             </div>
           </div>
 
-          <form id="formulario_login" class="form-stack" novalidate action="/Projeto_Final/back/valida.php"  method="post">
+          <form id="formulario_login" class="form-stack" novalidate action="/Projeto_Final/back/valida_login.php"  method="post">
             <input type="hidden" id ="perfil_login" name="perfil" value="estudante" />
             <label class="form-label">E-mail
               <input id="loginEmail" type="email" name="email" autocomplete="username" placeholder="seuemail@exemplo.com" required />
@@ -308,11 +310,11 @@ if($logado) {
             </article>
 
             <article class="content-panel profile-details" aria-labelledby="profileDetailsHeading">
-              <header class="profile-details__heading"><h2 id="profileDetailsHeading">Dados pessoais</h2><p>Informações disponíveis no seu cadastro.</p></header>
+              <header class="profile-details__heading"><h2 id="profileDetailsHeading">Dados pessoais</h2><p>Informações disponíveis no seu cadastro.</p><button type="button" id="excluir_conta"class="profile-action profile-action--delete" title="Excluir conta" aria-label="Excluir conta"><svg class="icon" aria-hidden="true"><use href="#i-trash"></use></svg></button></header>
               <dl class="profile-fields">
-                <div class="profile-field"><dt>Nome completo</dt><dd id="profileFullName"><?php print($aluno['nome']) ?></dd></div>
+                <div class="profile-field profile-field--editable"><dt>Nome completo</dt><dd id="profileFullName"><?php print($aluno['nome']) ?></dd><button type="button" id="editar_nome" class="profile-action profile-action--edit" title="Editar nome" aria-label="Editar nome"><svg class="icon" aria-hidden="true"><use href="#i-pencil"></use></svg></button></div>
                 <div class="profile-field"><dt>E-mail</dt><dd id="profileEmailDetail"><?php print($aluno['email']) ?></dd></div>
-                <div class="profile-field"><dt>Data de nascimento</dt><dd id="profileBirth"><?php print($aluno['nascimento']) ?></dd></div>
+                <div class="profile-field profile-field--editable"><dt>Data de nascimento</dt><dd id="profileBirth"><?php print($aluno['nascimento']) ?></dd><button type="button" id="editar_nascimento" class="profile-action profile-action--edit" title="Editar nascimento" aria-label="Editar nascimento"> <svg class="icon" aria-hidden="true"><use href="#i-pencil"></use></svg></button></div>
                 <div class="profile-field"><dt>Tipo de conta</dt><dd id="profileRole"><?php print(ucfirst($_SESSION['tipo_conta'])) ?></dd></div>
               </dl>
             </article>

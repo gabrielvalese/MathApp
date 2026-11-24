@@ -244,7 +244,15 @@ h1,h2,h3 { font-family: 'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif; l
 .profile-details__help { display: flex; align-items: flex-start; gap: 8px; margin-top: 24px; padding-top: 18px; border-top: 1px solid #e2e8f0; color: var(--muted); font-size: .8rem; line-height: 1.55; }
 .profile-details__help .icon { width: 17px; height: 17px; flex: none; color: var(--orange-dark); }
 .app-footer { display: flex; justify-content: space-between; gap: 12px; max-width: 1260px; width: 100%; margin: auto; padding: 22px 28px; color: #8894a8; font-size: .77rem; border-top: 1px solid #e0e6ee; }
-
+.profile-field, .profile-details__heading { position: relative; padding-right: 54px; }
+.profile-action { position: absolute; right: 12px; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent; cursor: pointer; }
+.profile-action .icon { width: 18px; height: 18px; }
+.profile-action--edit { top: 8px; right: 4px; width: 32px; transform: none; color: var(--orange-dark); }
+.profile-action--edit:hover { background: var(--orange-light); }
+.profile-action--delete { top: 0; right: 0; color: #b91c1c; }
+.profile-action--delete:hover { background: #fef2f2; }
+.profile-field--editable { padding-right: 42px; }
+.profile-action--delete .icon { width: 22px; height: 22px; }
 @media (max-width: 1140px) {
   .site-header__inner { gap: 16px; padding: 0 20px; }
   .nav-link { padding: 10px 8px; font-size: .75rem; gap: 5px; }
