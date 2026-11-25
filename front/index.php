@@ -4,29 +4,16 @@ require_once __DIR__ . '/../back/config.php';
 session_start();
 $logado = isset($_SESSION['usuario']);
 
-if($logado) {
-  
-  if($_SESSION['tipo_conta'] === 'estudante') {
-    $mysqli = conecta_banco();
-    $email = $_SESSION['usuario'];
-
-    $consulta = $mysqli->prepare('SELECT nome, email, nascimento FROM Estudante WHERE email = ?');
-    $consulta->bind_param('s', $email);
-    $consulta->execute();
-    $aluno = $consulta->get_result()->fetch_assoc();
-    $consulta->close();
-  } elseif($_SESSION['tipo_conta'] === 'professor') {
-    $mysqli = conecta_banco();
-    $email = $_SESSION['usuario'];
-
-    $consulta = $mysqli->prepare('SELECT nome, email, nascimento FROM Professor WHERE email = ?');
-    $consulta->bind_param('s', $email);
-    $consulta->execute();
-    $aluno = $consulta->get_result()->fetch_assoc();
-    $consulta->close();
-  }
+if ($logado) {
+  $mysqli = conecta_banco();
+  $email = $_SESSION['usuario'];
+  $tabela = ($_SESSION['tipo_conta'] === 'estudante') ? 'Estudante' : 'Professor';
+  $consulta = $mysqli->prepare("SELECT nome, email, nascimento FROM $tabela WHERE email = ?");
+  $consulta->bind_param('s', $email);
+  $consulta->execute();
+  $aluno = $consulta->get_result()->fetch_assoc();
+  $consulta->close();
 }
-
 ?>
 <!doctype html>
 <html lang="pt-BR">
@@ -34,7 +21,7 @@ if($logado) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0B132B" />
-    <meta name="description" content="DAMA — Descomplicando a Matemática. Problemas por conteúdo e simulados personalizados do básico ao avançado." />
+    <meta name="description" content="DAMA — Descomplicando a Matemática." />
     <title>DAMA | Descomplicando a Matemática</title>
     <link rel="stylesheet" href="assets/style.css">
     <script src="assets/app.js" defer></script>
@@ -54,10 +41,9 @@ if($logado) {
       <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
       <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
       <symbol id="i-cap" viewBox="0 0 24 24"><path d="m2 10 10-6 10 6-10 6-10-6ZM6 12v6c3.6 2.4 8.4 2.4 12 0v-6M22 10v7"/></symbol>
-      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" 
-      rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
-      <symbol id="i-pencil" viewBox="0 0 24 24"><path d="m15 5 4 4M4 20l4-1 12-12a2.8 2.8 0 0 0-4-4L4 15l-1 5z"fill="none" stroke="currentColor" stroke-width="2"stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v6m4-6v6"fill="none"stroke="currentColor" stroke-width="2"stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+      <symbol id="i-pencil" viewBox="0 0 24 24"><path d="m15 5 4 4M4 20l4-1 12-12a2.8 2.8 0 0 0-4-4L4 15l-1 5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v6m4-6v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="i-bolt" viewBox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 10-12h-7l0-8Z"/></symbol>
       <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
       <symbol id="i-network" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="12" cy="13" r="2"/><path d="M12 6v5M11 15l-5 2M13 15l5 2"/></symbol>
@@ -81,10 +67,7 @@ if($logado) {
       <symbol id="i-sigma" viewBox="0 0 24 24"><text x="4" y="18" fill="currentColor" stroke="none" font-size="21" font-family="Georgia,serif">Σ</text></symbol>
       <symbol id="i-sequence" viewBox="0 0 24 24"><path d="M3 7h2M3 12h2M3 17h2M9 7h12M9 12h12M9 17h12"/></symbol>
     </svg>
-
-    <!-- ACESSO: esta tela é apenas demonstrativa e não autentica usuários. -->
-    
-    <?php if (!$logado): ?>
+        <?php if (!$logado): ?>
     <main id="authView" class="auth-layout">
       <aside class="brand-panel" aria-label="Apresentação DAMA">
         <header class="brand-panel__top">
@@ -93,18 +76,15 @@ if($logado) {
             <span>DAMA</span>
           </a>
         </header>
-
         <section class="brand-panel__body" aria-label="Sobre a DAMA">
           <span class="eyebrow eyebrow--on-dark"><span class="eyebrow__line"></span> DO BÁSICO AO AVANÇADO</span>
           <h1>Descomplicando a <span>matemática.</span><br />Do básico ao avançado.</h1>
           <p>Estude no seu ritmo, enfrente novos desafios e transforme cada questão em uma conquista.</p>
-
           <div class="brand-panel__features">
             <span><svg class="icon"><use href="#i-check"></use></svg> Questões por assunto</span>
             <span><svg class="icon"><use href="#i-check"></use></svg> Simulados personalizados</span>
           </div>
         </section>
-
         <footer class="brand-panel__footer"><span>© 2026 DAMA</span><span>Feito para quem quer aprender.</span></footer>
       </aside>
 
@@ -122,8 +102,8 @@ if($logado) {
           </header>
 
           <div class="auth-tabs" role="tablist" aria-label="Acesso à plataforma">
-            <button id="entrar_conta" class="auth-tabs__button is-active" type="button" role="tab" aria-selected="true" aria-controls="loginForm">Entrar</button>
-            <button id="criar_conta" class="auth-tabs__button" type="button" role="tab" aria-selected="false" aria-controls="registerForm">Criar conta</button>
+            <button id="entrar_conta" class="auth-tabs__button is-active" type="button" role="tab" aria-selected="true">Entrar</button>
+            <button id="criar_conta" class="auth-tabs__button" type="button" role="tab" aria-selected="false">Criar conta</button>
           </div>
 
           <div class="role-picker" aria-label="Tipo de usuário">
@@ -138,24 +118,24 @@ if($logado) {
             </div>
           </div>
 
-          <form id="formulario_login" class="form-stack" novalidate action="/Projeto_Final/back/valida_login.php"  method="post">
-            <input type="hidden" id ="perfil_login" name="perfil" value="estudante" />
+          <form id="formulario_login" class="form-stack" novalidate action="/Projeto_Final/back/valida_login.php" method="post">
+            <input type="hidden" id="perfil_login" name="perfil" value="estudante" />
             <label class="form-label">E-mail
               <input id="loginEmail" type="email" name="email" autocomplete="username" placeholder="seuemail@exemplo.com" required />
             </label>
             <label class="form-label">Senha
               <span class="input-with-action">
                 <input id="senha_login" type="password" name="senha" autocomplete="current-password" placeholder="Digite sua senha" minlength="6" required />
-                <button type="button" id="mostrar_senha" class="show-password" data-target="loginPassword" aria-label="Mostrar senha">Mostrar</button>
+                <button type="button" id="mostrar_senha" class="show-password" aria-label="Mostrar senha">Mostrar</button>
               </span>
             </label>
-            <div class="form-options"><label class="checkbox-label"><input type="checkbox" name="lembrar"  id="lembrar"/> Lembrar de mim</label><span class="form-options__hint">Acesso seguro</span></div>
+            <div class="form-options"><label class="checkbox-label"><input type="checkbox" name="lembrar" id="lembrar"/> Lembrar de mim</label><span class="form-options__hint">Acesso seguro</span></div>
             <p id="erro_login" class="form-error" role="alert"></p>
             <button type="submit" id="botao_entrar" class="button button--primary button--full">Entrar<svg class="icon"><use href="#i-chevron"></use></svg></button>
           </form>
 
           <form id="formulario_registro" action="../back/cadastro.php" class="form-stack" hidden novalidate method="post">
-            <input type="hidden" id ="perfil_registro" name="perfil" value="estudante" />
+            <input type="hidden" id="perfil_registro" name="perfil" value="estudante" />
             <div class="form-row">
               <label class="form-label">Nome completo
                 <input id="nome" type="text" name="nome" autocomplete="name" placeholder="Como podemos te chamar?" minlength="3" required />
@@ -177,21 +157,21 @@ if($logado) {
             </div>
             <p id="erro_senha" class="form-error" role="alert"></p>
             <p id="cadastro_sucesso" class="form-success" role="status"></p>
-            <button type="submit" id="botao_criar_conta"class="button button--primary button--full">Criar conta <svg class="icon"><use href="#i-chevron"></use></svg></button>
-          </form> 
+            <button type="submit" id="botao_criar_conta" class="button button--primary button--full">Criar conta <svg class="icon"><use href="#i-chevron"></use></svg></button>
+          </form>
         </article>
 
         <footer class="auth-panel__footer">Aprenda • Pratique • Evolua <span>DAMA — Descomplicando a Matemática.</span></footer>
       </section>
     </main>
-      <?php else: ?>
-    <!-- PLATAFORMA: os dados serão substituídos por resultados do PHP/MySQL. -->
-     <?php   $partes = preg_split('/\s+/', trim($aluno['nome'] ?? ''));
-             $primeiro_nome = $partes[0] ?? '';
-             $inicial = mb_strtoupper(mb_substr($primeiro_nome, 0, 1, 'UTF-8'), 'UTF-8');
 
-      ?> 
-    
+    <?php else: ?>
+    <?php
+      $partes = preg_split('/\s+/', trim($aluno['nome'] ?? ''));
+      $primeiro_nome = $partes[0] ?? '';
+      $inicial = mb_strtoupper(mb_substr($primeiro_nome, 0, 1, 'UTF-8'), 'UTF-8');
+    ?>
+
     <div id="appView" class="app-layout">
       <header class="site-header">
         <div class="site-header__inner">
@@ -203,14 +183,15 @@ if($logado) {
             <button type="button" data-page="problemas" id="botao_problemas" class="nav-link"><svg class="icon"><use href="#i-book"></use></svg> Problemas</button>
             <button type="button" data-page="perfil" id="botao_perfil" class="nav-link"><svg class="icon"><use href="#i-user"></use></svg> Perfil</button>
           </nav>
-          <aside class="site-header__user" aria-label="Conta atual"><span class="user-avatar" id="userAvatar"><?php print($inicial) ?></span><span class="site-header__user-label"><strong id="userName"> <?php print($primeiro_nome) ?></strong><small id="userRole"> <?php print(ucfirst($_SESSION['tipo_conta'])) ?> </small></span><form action="/Projeto_Final/back/sair.php" method="post">
-    <button type="submit" class="icon-button" aria-label="Sair">
-        <svg class="icon" aria-hidden="true"><use href="#i-logout"></use></svg>
-    </button>
-</form></button></aside>
+          <aside class="site-header__user" aria-label="Conta atual">
+            <span class="user-avatar" id="userAvatar"><?php print($inicial) ?></span>
+            <span class="site-header__user-label"><strong id="userName"><?php print($primeiro_nome) ?></strong><small id="userRole"><?php print(ucfirst($_SESSION['tipo_conta'])) ?></small></span>
+            <form action="/Projeto_Final/back/sair.php" method="post">
+              <button type="submit" class="icon-button" aria-label="Sair"><svg class="icon" aria-hidden="true"><use href="#i-logout"></use></svg></button>
+            </form>
+          </aside>
         </div>
       </header>
-
 
       <main class="app-main">
         <section class="app-page is-active" id="tela_inicio" data-screen="inicio" aria-labelledby="homeHeading">
@@ -220,86 +201,160 @@ if($logado) {
             <p id="welcomeText">Organize seus estudos, pratique com questões e avance na matemática do seu jeito.</p>
             <div class="welcome-heading__hint"><svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg><span>Escolha abaixo como deseja estudar.</span></div>
           </header>
-          <header class="section-heading"><div><span class="eyebrow">EXPERIMENTE A PLATAFORMA</span><h2>O que você quer fazer hoje?</h2></div><span class="section-heading__note">Escolha por onde começar</span></header>
+          <header class="section-heading">
+            <div><span class="eyebrow">EXPERIMENTE A PLATAFORMA</span><h2>O que você quer fazer hoje?</h2></div>
+            <span class="section-heading__note">Escolha por onde começar</span>
+          </header>
           <nav class="action-grid" aria-label="Acesso rápido a simulados e problemas">
-            <button type="button" class="action-card" id="botao_inicio_simulados" data-go="simulados"><span class="action-card__icon action-card__icon--orange"><svg class="icon"><use href="#i-target"></use></svg></span><strong>Criar simulado</strong><span>Escolha os conteúdos, a quantidade de questões e o tempo.</span><span class="action-card__cta">Começar <svg class="icon"><use href="#i-chevron"></use></svg></span></button>
-            <button type="button" class="action-card" id="botao_inicio_problemas" data-go="problemas"><span class="action-card__icon action-card__icon--blue"><svg class="icon"><use href="#i-book"></use></svg></span><strong>Resolver problemas</strong><span>Pratique matemática com exercícios e desafios.</span><span class="action-card__cta">Explorar <svg class="icon"><use href="#i-chevron"></use></svg></span></button>
+            <button type="button" class="action-card" id="botao_inicio_simulados" data-go="simulados">
+              <span class="action-card__icon action-card__icon--orange"><svg class="icon"><use href="#i-target"></use></svg></span>
+              <strong>Criar simulado</strong>
+              <span>Escolha os conteúdos, a quantidade de questões e o tempo.</span>
+              <span class="action-card__cta">Começar <svg class="icon"><use href="#i-chevron"></use></svg></span>
+            </button>
+            <button type="button" class="action-card" id="botao_inicio_problemas" data-go="problemas">
+              <span class="action-card__icon action-card__icon--blue"><svg class="icon"><use href="#i-book"></use></svg></span>
+              <strong>Resolver problemas</strong>
+              <span>Pratique matemática com exercícios e desafios.</span>
+              <span class="action-card__cta">Explorar <svg class="icon"><use href="#i-chevron"></use></svg></span>
+            </button>
           </nav>
-          <aside class="info-strip"><span class="info-strip__badge"><svg class="icon"><use href="#i-spark"></use></svg></span><div><strong>Seu ambiente de estudo, do seu jeito.</strong><p>As questões e o progresso vão aparecer aqui quando conectarmos o banco.</p></div><span class="pill">Prévia do sistema</span></aside>
+          <aside class="info-strip">
+            <span class="info-strip__badge"><svg class="icon"><use href="#i-spark"></use></svg></span>
+            <div><strong>Seu ambiente de estudo, do seu jeito.</strong><p>Escolha um conteúdo, responda questões e crie simulados personalizados.</p></div>
+            <span class="pill">DAMA</span>
+          </aside>
         </section>
+                <section class="app-page" id="tela_simulados" data-screen="simulados" aria-labelledby="simuladosHeading">
+          <header class="page-heading">
+            <div>
+              <span class="eyebrow">PREPARE-SE PARA O PRÓXIMO DESAFIO</span>
+              <h1 id="simuladosHeading">Simulados</h1>
+              <p>Configure seu simulado com os assuntos que deseja praticar.</p>
+            </div>
+            <span class="page-heading__icon"><svg class="icon"><use href="#i-target"></use></svg></span>
+          </header>
 
-        <section class="app-page" id="tela_simulados" data-screen="simulados" aria-labelledby="simuladosHeading">
-          <header class="page-heading"><div><span class="eyebrow">PREPARE-SE PARA O PRÓXIMO DESAFIO</span><h1 id="simuladosHeading">Simulados</h1><p>Configure seu simulado com os assuntos que deseja praticar.</p></div><span class="page-heading__icon"><svg class="icon"><use href="#i-target"></use></svg></span></header>
-          <nav class="section-tabs" aria-label="Seções de simulados"><button type="button" id="criar_simulados" class="section-tab is-active" data-sim-tab="criar">Criar simulado</button><button type="button" class="section-tab" id="meus_simulados" data-sim-tab="meus">Meus simulados</button></nav>
+          <nav class="section-tabs" aria-label="Seções de simulados">
+            <button type="button" id="criar_simulados" class="section-tab is-active">Criar simulado</button>
+            <button type="button" id="meus_simulados" class="section-tab">Meus simulados</button>
+          </nav>
+
           <section id="criar_simulados_aba" class="content-panel" aria-label="Criar simulado">
-            <form id="simuladoForm" class="exam-form">
-              <header class="panel-heading"><div><h2>Personalize sua prática</h2><p>Selecione os conteúdos e defina as opções do seu simulado.</p></div><span class="pill pill--orange"><svg class="icon"><use href="#i-spark"></use></svg> Do seu jeito</span></header>
-              <label class="form-label">Nome do simulado <span class="optional">(opcional)</span><input id="examName" type="text" name="nome" placeholder="Ex.: Revisão de matemática" maxlength="80" /></label>
-              <header class="topics-heading"><div><h3>Assuntos</h3><p>Escolha um ou mais conteúdos para estudar.</p></div><span class="selected-count" id="selectedCount">0 selecionados</span></header>
-              <div class="search-field"><svg class="icon"><use href="#i-search"></use></svg><input id="topicSearch" type="search" placeholder="Buscar entre 26 assuntos..." aria-label="Buscar assunto" /></div>
-              <div id="topicList" class="topic-list" aria-label="Seleção de conteúdos"></div>
-              <div class="form-row form-row--exam"><label class="form-label">Número de questões<input id="examQuantity" type="number" name="numero_questoes" min="1" max="100" value="20" required /></label><label class="form-label">Tempo limite (minutos)<input id="examTime" type="number" name="tempo_limite" min="1" max="300" value="60" required /></label></div>
-              <footer class="exam-footer"><p id="examSummary"><strong>0 assuntos</strong> • 20 questões • 60 minutos</p><button type="submit" class="button button--primary">Criar simulado <svg class="icon"><use href="#i-chevron"></use></svg></button></footer>
-              <div id="examMessage" class="inline-message" role="status" aria-live="polite" hidden></div>
+            <form id="form_simulado" class="exam-form">
+              <header class="panel-heading">
+                <div>
+                  <h2>Personalize sua prática</h2>
+                  <p>Selecione os conteúdos e defina as opções do seu simulado.</p>
+                </div>
+                <span class="pill pill--orange"><svg class="icon"><use href="#i-spark"></use></svg> Do seu jeito</span>
+              </header>
+
+              <header class="topics-heading">
+                <div>
+                  <h3>Assuntos</h3>
+                  <p>Escolha um ou mais conteúdos para estudar.</p>
+                </div>
+                <span class="selected-count" id="contador_conteudos">0 selecionados</span>
+              </header>
+
+              <div class="search-field">
+                <svg class="icon"><use href="#i-search"></use></svg>
+                <input id="simulado_busca" type="search" placeholder="Buscar assunto..." aria-label="Buscar assunto" />
+              </div>
+
+              <div id="topicos_simulado" class="topic-list" aria-label="Seleção de conteúdos"></div>
+
+              <div class="form-row form-row--exam">
+                <label class="form-label">Número de questões
+                  <input id="simulado_numero" type="number" min="1" max="100" value="10" required />
+                </label>
+                <label class="form-label">Tempo limite (minutos)
+                  <input id="simulado_tempo" type="number" min="1" max="180" value="20" required />
+                </label>
+              </div>
+
+              <footer class="exam-footer">
+                <p id="simulado_resumo"><strong>0 assuntos</strong> • 10 questões • 20 minutos</p>
+                <button type="submit" id="gerar_simulado" class="button button--primary">
+                  Criar simulado <svg class="icon"><use href="#i-chevron"></use></svg>
+                </button>
+              </footer>
+
+              <div id="erro_simulado" class="inline-message" role="status" aria-live="polite" hidden></div>
             </form>
           </section>
-          <section id="meus_simulados_aba" class="content-panel empty-panel" aria-label="Meus simulados" hidden><span class="empty-panel__icon"><svg class="icon"><use href="#i-list"></use></svg></span><h2>Seus simulados ficarão aqui</h2><p>Quando conectarmos o MySQL, esta aba mostrará os simulados vinculados à sua conta.</p><button type="button" class="button button--outline" id="primeiro_simulado" data-sim-tab="criar">Criar meu primeiro simulado</button></section>
+
+          <section id="meus_simulados_aba" class="content-panel" aria-label="Meus simulados" hidden>
+            <header class="panel-heading">
+              <div>
+                <h2>Meus simulados</h2>
+                <p>Acompanhe o desempenho e retome simulados em andamento.</p>
+              </div>
+              <span class="pill pill--orange"><svg class="icon"><use href="#i-list"></use></svg> Histórico</span>
+            </header>
+            <div id="lista_meus_simulados" class="simulado-historico"></div>
+          </section>
         </section>
+
         <section class="app-page" id="tela_problemas" data-screen="problemas" aria-labelledby="problemsHeading">
-  <header class="page-heading">
-    <div>
-      <span class="eyebrow">APRENDER É COLOCAR EM PRÁTICA</span>
-      <h1 id="problemsHeading">Problemas</h1>
-      <p>Selecione um conteúdo e pratique com questões de matemática.</p>
-    </div>
-    <span class="page-heading__icon" aria-hidden="true">
-      <svg class="icon"><use href="#i-book"></use></svg>
-    </span>
-  </header>
+          <header class="page-heading">
+            <div>
+              <span class="eyebrow">APRENDER É COLOCAR EM PRÁTICA</span>
+              <h1 id="problemsHeading">Problemas</h1>
+              <p>Selecione um conteúdo e pratique com questões de matemática.</p>
+            </div>
+            <span class="page-heading__icon" aria-hidden="true">
+              <svg class="icon"><use href="#i-book"></use></svg>
+            </span>
+          </header>
 
-  <div id="painel_conteudos">
-    <aside class="tracks-intro">
-      <span class="tracks-intro__icon" aria-hidden="true">
-        <svg class="icon"><use href="#i-cap"></use></svg>
-      </span>
-      <div>
-        <strong>Escolha seu próximo desafio</strong>
-        <p>Explore os assuntos disponíveis e resolva questões do básico ao avançado.</p>
-      </div>
-      <span id="problemTotal" class="pill">26 conteúdos</span>
-    </aside>
-        <header class="tracks-bar">
-        <h2>Todos os conteúdos <span id="problemCount">26 encontrados</span></h2>
-        <div class="search-field search-field--tracks">
-        <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
-        <input id="problemSearch" type="search" placeholder="Buscar conteúdo..."
-               aria-label="Buscar conteúdo para resolver problemas">
-        </div>
-        </header>
+          <div id="painel_conteudos">
+            <aside class="tracks-intro">
+              <span class="tracks-intro__icon" aria-hidden="true">
+                <svg class="icon"><use href="#i-cap"></use></svg>
+              </span>
+              <div>
+                <strong>Escolha seu próximo desafio</strong>
+                <p>Explore os assuntos disponíveis e resolva questões do básico ao avançado.</p>
+              </div>
+              <span id="problemTotal" class="pill">26 conteúdos</span>
+            </aside>
 
-        <section id="aba_problemas" class="tracks-grid" aria-label="Conteúdos disponíveis"></section>
-        <div id="problemMessage" class="inline-message" role="status" hidden></div>
-        </div>
+            <header class="tracks-bar">
+              <h2>Todos os conteúdos <span id="problemCount">26 encontrados</span></h2>
+              <div class="search-field search-field--tracks">
+                <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+                <input id="problemSearch" type="search" placeholder="Buscar conteúdo..." aria-label="Buscar conteúdo">
+              </div>
+            </header>
 
-        <section id="painel_questoes" hidden>
-        <button id="voltar_conteudos" type="button" class="button button--outline">
-        ← Voltar aos conteúdos
-        </button>
-        <h2 id="titulo_conteudo"></h2>
-        <div id="lista_questoes" class="lista-questoes"></div>
-        <article id="questao_aberta" class="content-panel" hidden>
-        <button id="voltar_questoes" type="button" class="button button--outline">
-          Voltar às questões
-        </button>
-        <h3 id="titulo_questao_aberta" style="margin: 20px 0 12px;">﻿</h3>
-        <p id="enunciado_questao_aberta" style="margin: 0 0 20px; line-height: 1.6;"></p>
-        <div id="alternativas_questao" class="lista-questoes"></div>
-        </article>
+            <section id="aba_problemas" class="tracks-grid" aria-label="Conteúdos disponíveis"></section>
+            <div id="problemMessage" class="inline-message" role="status" hidden></div>
+          </div>
+
+          <section id="painel_questoes" hidden>
+            <button id="voltar_conteudos" type="button" class="button button--outline">← Voltar aos conteúdos</button>
+            <h2 id="titulo_conteudo"></h2>
+            <div id="lista_questoes" class="lista-questoes"></div>
+
+            <article id="questao_aberta" class="content-panel" hidden>
+              <button id="voltar_questoes" type="button" class="button button--outline">Voltar às questões</button>
+              <h3 id="titulo_questao_aberta" style="margin: 20px 0 12px;"></h3>
+              <p id="enunciado_questao_aberta" style="margin: 0 0 20px; line-height: 1.6;"></p>
+              <div id="alternativas_questao" class="lista-questoes"></div>
+            </article>
+          </section>
         </section>
-        </section>
-
-        <section class="app-page" id="tela_perfil" data-screen="perfil" aria-labelledby="profileHeading">
-          <header class="page-heading"><div><span class="eyebrow">SUAS INFORMAÇÕES</span><h1 id="profileHeading">Meu perfil</h1><p>Consulte os dados da sua conta na DAMA.</p></div><span class="page-heading__icon"><svg class="icon"><use href="#i-user"></use></svg></span></header>
+                <section class="app-page" id="tela_perfil" data-screen="perfil" aria-labelledby="profileHeading">
+          <header class="page-heading">
+            <div>
+              <span class="eyebrow">SUAS INFORMAÇÕES</span>
+              <h1 id="profileHeading">Meu perfil</h1>
+              <p>Consulte os dados da sua conta na DAMA.</p>
+            </div>
+            <span class="page-heading__icon"><svg class="icon"><use href="#i-user"></use></svg></span>
+          </header>
 
           <div class="profile-layout">
             <article class="content-panel profile-summary" aria-label="Resumo do perfil">
@@ -310,19 +365,59 @@ if($logado) {
             </article>
 
             <article class="content-panel profile-details" aria-labelledby="profileDetailsHeading">
-              <header class="profile-details__heading"><h2 id="profileDetailsHeading">Dados pessoais</h2><p>Informações disponíveis no seu cadastro.</p><button type="button" id="excluir_conta"class="profile-action profile-action--delete" title="Excluir conta" aria-label="Excluir conta"><svg class="icon" aria-hidden="true"><use href="#i-trash"></use></svg></button></header>
+              <header class="profile-details__heading">
+                <h2 id="profileDetailsHeading">Dados pessoais</h2>
+                <p>Informações disponíveis no seu cadastro.</p>
+                <button type="button" id="excluir_conta" class="profile-action profile-action--delete" title="Excluir conta" aria-label="Excluir conta">
+                  <svg class="icon" aria-hidden="true"><use href="#i-trash"></use></svg>
+                </button>
+              </header>
               <dl class="profile-fields">
-                <div class="profile-field profile-field--editable"><dt>Nome completo</dt><dd id="profileFullName"><?php print($aluno['nome']) ?></dd><button type="button" id="editar_nome" class="profile-action profile-action--edit" title="Editar nome" aria-label="Editar nome"><svg class="icon" aria-hidden="true"><use href="#i-pencil"></use></svg></button></div>
-                <div class="profile-field"><dt>E-mail</dt><dd id="profileEmailDetail"><?php print($aluno['email']) ?></dd></div>
-                <div class="profile-field profile-field--editable"><dt>Data de nascimento</dt><dd id="profileBirth"><?php print($aluno['nascimento']) ?></dd><button type="button" id="editar_nascimento" class="profile-action profile-action--edit" title="Editar nascimento" aria-label="Editar nascimento"> <svg class="icon" aria-hidden="true"><use href="#i-pencil"></use></svg></button></div>
-                <div class="profile-field"><dt>Tipo de conta</dt><dd id="profileRole"><?php print(ucfirst($_SESSION['tipo_conta'])) ?></dd></div>
+                <div class="profile-field profile-field--editable">
+                  <dt>Nome completo</dt>
+                  <dd id="profileFullName"><?php print($aluno['nome']) ?></dd>
+                  <button type="button" id="editar_nome" class="profile-action profile-action--edit" title="Editar nome" aria-label="Editar nome">
+                    <svg class="icon" aria-hidden="true"><use href="#i-pencil"></use></svg>
+                  </button>
+                </div>
+                <div class="profile-field">
+                  <dt>E-mail</dt>
+                  <dd id="profileEmailDetail"><?php print($aluno['email']) ?></dd>
+                </div>
+                <div class="profile-field profile-field--editable">
+                  <dt>Data de nascimento</dt>
+                  <dd id="profileBirth"><?php print($aluno['nascimento']) ?></dd>
+                  <button type="button" id="editar_nascimento" class="profile-action profile-action--edit" title="Editar nascimento" aria-label="Editar nascimento">
+                    <svg class="icon" aria-hidden="true"><use href="#i-pencil"></use></svg>
+                  </button>
+                </div>
+                <div class="profile-field">
+                  <dt>Tipo de conta</dt>
+                  <dd id="profileRole"><?php print(ucfirst($_SESSION['tipo_conta'])) ?></dd>
+                </div>
               </dl>
             </article>
           </div>
         </section>
       </main>
+
       <footer class="app-footer">© 2026 DAMA <span>Feito para quem aprende. Feito para quem ensina.</span></footer>
     </div>
+
+    <div id="simulado_overlay" class="simulado-overlay" hidden>
+      <header class="simulado-overlay__header">
+        <div>
+          <span class="eyebrow eyebrow--on-dark"><span class="eyebrow__line"></span> EM ANDAMENTO</span>
+          <h2 id="simulado_titulo">Simulado</h2>
+        </div>
+        <div class="simulado-timer" id="simulado_timer">00:00</div>
+        <button type="button" id="simulado_finalizar" class="button button--primary">Finalizar simulado</button>
+      </header>
+      <main class="simulado-overlay__body">
+        <div id="simulado_questoes" class="simulado-questoes"></div>
+      </main>
+    </div>
+
     <?php endif; ?>
   </body>
 </html>
