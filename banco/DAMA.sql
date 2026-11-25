@@ -153,7 +153,7 @@ CREATE TABLE `professor` (
 
 LOCK TABLES `professor` WRITE;
 /*!40000 ALTER TABLE `professor` DISABLE KEYS */;
-INSERT INTO `professor` VALUES (1,'Jorjão','jorjao_o_grosso@gmail.com','$2y$10$iuRJ2R1RM/LHWf0opKTZLuDB07.nLA0z9z7SKC0UhixK/M6jmEPKu','2005-10-18'),(2,'João Paulo','joaopaulo@gmail.com','$2y$10$O7l9KmEPY7P312xGqpuB6uHWxZXgzzUlInl5BNpByPLhJXyIUmFwa','2004-03-10'),(3,'Maria Joaquina','Mariajoaquina@gmail.com','$2y$10$v0Wr7Kw3WMIHeNyTEjtWX.0tzUw6A5MapnKra/uUYrDyTGueT1tN6','2003-03-20'),(4,'Pamela Trudes Lourenção','lourencaopamela@gmail.com','$2y$10$Z4topPHX03llNGAE2ygJLOZmqnra7FcYKz7IBZg9b4.YObox0fKEK','2010-07-07');
+INSERT INTO `professor` VALUES (2,'João Paulo','joaopaulo@gmail.com','$2y$10$O7l9KmEPY7P312xGqpuB6uHWxZXgzzUlInl5BNpByPLhJXyIUmFwa','2004-03-10'),(3,'Maria Joaquina','Mariajoaquina@gmail.com','$2y$10$v0Wr7Kw3WMIHeNyTEjtWX.0tzUw6A5MapnKra/uUYrDyTGueT1tN6','2003-03-20');
 /*!40000 ALTER TABLE `professor` ENABLE KEYS */;
 UNLOCK TABLES;
 
