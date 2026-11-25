@@ -96,7 +96,7 @@ CREATE TABLE `estudante` (
 
 LOCK TABLES `estudante` WRITE;
 /*!40000 ALTER TABLE `estudante` DISABLE KEYS */;
-INSERT INTO `estudante` VALUES (4,'teste','teste@gmail.com','$2y$10$KdbYgWIJNOi3VnKi0Ej.Z.aFjOzbyfgl8QN2YsAc9cQvzqDkCRLgi','2000-03-24'),(5,'Safado','safadez@gmail.com','$2y$10$Zr5PtUfsY51uII6bVfEj9OYZlyQ4pLk3GDC5ZPIhStASBdmEgpTIS','2008-03-12'),(6,'Viado','viado@gmail.com','$2y$10$4NlfTZlTp.IkTrZyYpnwtOHCU.K.oAK3Nfb1BPVhyNUEifQ3xvWvy','2006-02-09'),(7,'Murilo Pereira Vendrametto','murilo.p.vendrametto@gmail.com','$2y$10$ZOLHU1bMj1twTKwX/1eZaeVat.JdF2AlOfcw8qA5QVeqghqyJXW.u','2009-09-02');
+INSERT INTO `estudante` VALUES (4,'teste','teste@gmail.com','$2y$10$KdbYgWIJNOi3VnKi0Ej.Z.aFjOzbyfgl8QN2YsAc9cQvzqDkCRLgi','2000-03-24');
 /*!40000 ALTER TABLE `estudante` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -160,7 +160,7 @@ UNLOCK TABLES;
 --
 -- Table structure for table `questao`
 --
-
+select * from Estudante;
 DROP TABLE IF EXISTS `questao`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
